@@ -3,4 +3,4 @@ server:
 
 logging:
   level:
-    ru.practicum: info
+    ru.practicum: trace

@@ -3,6 +3,8 @@ package ru.yandex.practicum.telemetry.collector.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ScenarioConditionAvro;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -27,4 +29,13 @@ public class ScenarioAddedEvent extends HubEvent {
     public HubEventType getType() {
         return HubEventType.SCENARIO_ADDED;
     }
+
+//    private static ScenarioConditionAvro toAvro(ScenarioCondition event) {
+//        return ScenarioConditionAvro.newBuilder()
+//                .setOperation(event.getOperation())
+//                .setSensorId()
+//                .setType()
+//                .setValue()
+//                .build();
+//    }
 }

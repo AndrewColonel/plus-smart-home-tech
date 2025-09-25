@@ -9,6 +9,7 @@ import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -28,7 +29,8 @@ import java.time.Instant;
 public abstract class HubEvent {
     @NotBlank
     private String hubId;
-    private Instant timestamp = Instant.now();
+//    private Instant timestamp = Instant.now();
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     @NotNull
     public abstract HubEventType getType();
