@@ -32,7 +32,7 @@ public abstract class BaseHubEventHandler<T> {
         Producer<String, SpecificRecordBase> producer = kafkaEventProducer.getProducer();
         String topic = TelemetryTopics.TELEMETRY_HUBS_TOPIC;
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, eventAvro);
-        log.info(String.format("Объект Avro для отправки в Кафка %s в топик %s", eventAvro, topic));
+        log.info(String.format("Объект Avro для отправки в брокер %s в топик %s", eventAvro, topic));
 
         Future<RecordMetadata> metadataFuture = producer.send(record);
         log.info("Состояние отправки: {} ", metadataFuture.isDone());

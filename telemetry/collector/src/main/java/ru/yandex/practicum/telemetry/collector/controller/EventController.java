@@ -74,6 +74,7 @@ public class EventController {
 //    }
 
         if (hubEventHandlers.containsKey(event.getType())) {
+            log.info("выбран обработчик события типа {}", event.getType());
             hubEventHandlers.get(event.getType()).handle(event);
         } else {
             throw new IllegalArgumentException("не могу найти обработчик для событий хаба");
