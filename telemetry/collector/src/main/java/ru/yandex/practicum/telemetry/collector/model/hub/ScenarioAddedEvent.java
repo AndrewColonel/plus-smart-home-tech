@@ -21,20 +21,12 @@ public class ScenarioAddedEvent extends HubEvent {
     private List<ScenarioCondition> conditions;
     @NotBlank
     private List<DeviceAction> actions;
-//    @NotBlank
-//    private HubEventType type;
+    @NotBlank
+    private HubEventType type;
 
     @Override
     public HubEventType getType() {
         return HubEventType.SCENARIO_ADDED;
     }
 
-//    private static ScenarioConditionAvro toAvro(ScenarioCondition event) {
-//        return ScenarioConditionAvro.newBuilder()
-//                .setOperation(event.getOperation())
-//                .setSensorId()
-//                .setType()
-//                .setValue()
-//                .build();
-//    }
 }

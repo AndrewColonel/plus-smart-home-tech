@@ -50,7 +50,8 @@ protocol HubEventProtocol {
     record DeviceActionAvro {
         string sensor_id;
         ActionTypeAvro type;
-        int? value;
+        // int? value;
+        union { null, int } value = null;
     }
 
     record ScenarioAddedEventAvro {
