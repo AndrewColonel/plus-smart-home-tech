@@ -11,7 +11,7 @@ import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 @Component
 @AllArgsConstructor
 @Slf4j
-public class ScenarioAddedHubEventHandler implements HubEventHandler {
+public class ScenarioAddedHubEventHandler  implements HubEventHandler {
 
     private final KafkaEventProducer kafkaEventProducer;
 
