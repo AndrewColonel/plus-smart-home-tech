@@ -7,13 +7,16 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.stereotype.Component;
+
 import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceTypeAvro;
-import ru.yandex.practicum.telemetry.collector.model.DeviceAddedEvent;
+
+import ru.yandex.practicum.telemetry.collector.model.hub.DeviceAddedEvent;
 import ru.yandex.practicum.telemetry.collector.model.DeviceType;
-import ru.yandex.practicum.telemetry.collector.model.HubEvent;
+import ru.yandex.practicum.telemetry.collector.model.hub.HubEvent;
 import ru.yandex.practicum.telemetry.collector.model.HubEventType;
 import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
+import ru.yandex.practicum.telemetry.collector.service.TelemetryTopics;
 import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 
 import java.util.EnumMap;
@@ -44,7 +47,7 @@ public class DeviceAddedHubEventHandler implements HubEventHandler {
     @Override
     public void handle(HubEvent event) {
         Producer<String, SpecificRecordBase> producer = kafkaEventProducer.getProducer();
-        String topic = "telemetry.hubs.v1";
+        String topic = TelemetryTopics.TELEMETRY_HUBS_TOPIC;
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, toAvro(event));
         log.info(String.format("Создана запись для Avro %s", toAvro(event)));
 //        kafkaEventProducer.getProducer().send(record);

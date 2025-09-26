@@ -1,10 +1,9 @@
-package ru.yandex.practicum.telemetry.collector.model;
+package ru.yandex.practicum.telemetry.collector.model.hub;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
-import ru.yandex.practicum.kafka.telemetry.event.ScenarioConditionAvro;
+import ru.yandex.practicum.telemetry.collector.model.HubEventType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -22,8 +21,8 @@ public class ScenarioAddedEvent extends HubEvent {
     private List<ScenarioCondition> conditions;
     @NotBlank
     private List<DeviceAction> actions;
-    @NotBlank
-    private HubEventType type;
+//    @NotBlank
+//    private HubEventType type;
 
     @Override
     public HubEventType getType() {

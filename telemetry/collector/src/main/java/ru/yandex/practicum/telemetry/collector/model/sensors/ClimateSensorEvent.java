@@ -1,9 +1,10 @@
-package ru.yandex.practicum.telemetry.collector.model;
+package ru.yandex.practicum.telemetry.collector.model.sensors;
 
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.yandex.practicum.telemetry.collector.model.SensorEventType;
 
 @Getter
 @Setter

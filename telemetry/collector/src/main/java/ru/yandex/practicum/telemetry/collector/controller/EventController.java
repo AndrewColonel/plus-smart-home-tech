@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ru.yandex.practicum.telemetry.collector.model.HubEvent;
-import ru.yandex.practicum.telemetry.collector.model.SensorEvent;
+import ru.yandex.practicum.telemetry.collector.model.hub.HubEvent;
+import ru.yandex.practicum.telemetry.collector.model.sensors.SensorEvent;
 
 import ru.yandex.practicum.telemetry.collector.service.handler.hub.DeviceAddedHubEventHandler;
 import ru.yandex.practicum.telemetry.collector.service.handler.hub.DeviceRemovedHubEventHandler;
@@ -38,6 +38,7 @@ public class EventController {
     @PostMapping("/sensors")
     public void collectSensorEvent(@Valid @RequestBody SensorEvent event) {
         log.info("SensorEvent - json: {}", toJson(event));
+        log.info("SensorEvent - toString: {}",event.toString());
     }
 
     @PostMapping("/hubs")

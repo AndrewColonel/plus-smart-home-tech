@@ -1,8 +1,10 @@
-package ru.yandex.practicum.telemetry.collector.model;
+package ru.yandex.practicum.telemetry.collector.model.hub;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.yandex.practicum.telemetry.collector.model.DeviceType;
+import ru.yandex.practicum.telemetry.collector.model.HubEventType;
 
 import javax.validation.constraints.NotBlank;
 
@@ -15,8 +17,8 @@ public class DeviceAddedEvent extends HubEvent {
     private String id;
     @NotBlank
     private DeviceType deviceType;
-    @NotBlank
-    private HubEventType type;
+//    @NotBlank
+//    private HubEventType type;
 
     @Override
     public HubEventType getType() {
