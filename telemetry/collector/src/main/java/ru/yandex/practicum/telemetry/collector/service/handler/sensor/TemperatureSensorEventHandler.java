@@ -24,7 +24,7 @@ public class TemperatureSensorEventHandler extends  BaseSensorEventHandler<Tempe
     public TemperatureSensorAvro toAvro(SensorEvent event) {
         TemperatureSensorEvent _event = (TemperatureSensorEvent) event;
         return TemperatureSensorAvro.newBuilder()
-                .setIf$(_event.getId())
+                .setId(_event.getId())
                 .setHubId(_event.getHubId())
                 .setTimestamp(_event.getTimestamp())
                 .setTemperatureC(_event.getTemperatureC())

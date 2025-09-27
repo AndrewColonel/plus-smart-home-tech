@@ -50,7 +50,7 @@ public class EventController {
         log.info("SensorEvent - toString: {}", event.toString());
         if (sensorEventHandlers.containsKey(event.getType())) {
             SensorEventHandler handler = sensorEventHandlers.get(event.getType());
-            log.info("Выбран обработчик события от сенсоров  {}", handler.getClass());
+            log.info("Выбран обработчик события от сенсоров  {}", handler.getClass().getSimpleName());
             log.info("Тип события сенсора {}", event.getType());
             handler.handle(event);
         } else {
@@ -64,7 +64,7 @@ public class EventController {
         log.info("HubEvent - toString: {}", event.toString());
         if (hubEventHandlers.containsKey(event.getType())) {
             HubEventHandler handler = hubEventHandlers.get(event.getType());
-            log.info("Выбран обработчик события от хаба {}", handler.getClass());
+            log.info("Выбран обработчик события от хаба {}", handler.getClass().getSimpleName());
             log.info("Тип события хаба {}", event.getType());
             handler.handle(event);
         } else {

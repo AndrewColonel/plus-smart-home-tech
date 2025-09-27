@@ -2,6 +2,7 @@ package ru.yandex.practicum.telemetry.collector.service.handler.hub;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.telemetry.collector.common.EnumMapper;
 import ru.yandex.practicum.telemetry.collector.model.hub.DeviceAction;
 import ru.yandex.practicum.telemetry.collector.model.hub.HubEvent;
 import ru.yandex.practicum.telemetry.collector.model.HubEventType;
@@ -12,8 +13,6 @@ import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static ru.yandex.practicum.telemetry.collector.common.EnumMapper.*;
 
 @Component
 public class ScenarioAddedHubEventHandler extends BaseHubEventHandler<ScenarioAddedEventAvro> implements HubEventHandler {
@@ -48,8 +47,10 @@ public class ScenarioAddedHubEventHandler extends BaseHubEventHandler<ScenarioAd
     private ScenarioConditionAvro toConditionAvro(ScenarioCondition scenarioCondition) {
         return ScenarioConditionAvro.newBuilder()
                 .setSensorId(scenarioCondition.getSensorId())
-                .setType(toConditionTypeAvro(scenarioCondition.getType()))
-                .setOperation(toConditionOperationAvro(scenarioCondition.getOperation()))
+                .setType(EnumMapper.toAvroEnum(ConditionTypeAvro.class,
+                        scenarioCondition.getType().toString()))
+                .setOperation(EnumMapper.toAvroEnum(ConditionOperationAvro.class,
+                        scenarioCondition.getOperation().toString()))
                 .setValue(scenarioCondition.getValue())
                 .build();
     }
@@ -57,7 +58,8 @@ public class ScenarioAddedHubEventHandler extends BaseHubEventHandler<ScenarioAd
     private DeviceActionAvro toActionAvro(DeviceAction deviceAction) {
              return DeviceActionAvro.newBuilder()
                 .setSensorId(deviceAction.getSensorId())
-                .setType(toActionTypeAvro(deviceAction.getType()))
+                .setType(EnumMapper.toAvroEnum(ActionTypeAvro.class,
+                        deviceAction.getType().toString()))
                 .setValue(deviceAction.getValue())
                 .build();
     }
