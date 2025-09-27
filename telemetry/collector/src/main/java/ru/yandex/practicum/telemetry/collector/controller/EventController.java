@@ -27,7 +27,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
-//@AllArgsConstructor
 @Validated
 @RequestMapping("/events")
 @Slf4j
@@ -45,17 +44,15 @@ public class EventController {
                         Function.identity()));
     }
 
-//    private final DeviceAddedHubEventHandler deviceAddedHubEventHandler;
-//    private final DeviceRemovedHubEventHandler deviceRemovedHubEventHandler;
-//    private final ScenarioAddedHubEventHandler scenarioAddedHubEventHandler;
-//    private final ScenarioRemovedHubEventHandler scenarioRemovedHubEventHandler;
-
     @PostMapping("/sensors")
     public void collectSensorEvent(@Valid @RequestBody SensorEvent event) {
         log.info("SensorEvent - json: {}", toJson(event));
         log.info("SensorEvent - toString: {}", event.toString());
         if (sensorEventHandlers.containsKey(event.getType())) {
-            sensorEventHandlers.get(event.getType()).handle(event);
+            SensorEventHandler handler = sensorEventHandlers.get(event.getType());
+            log.info("Выбран обработчик события от сенсоров  {}", handler.getClass());
+            log.info("Тип события сенсора {}", event.getType());
+            handler.handle(event);
         } else {
             throw new IllegalArgumentException("не могу найти обработчик для событий сенсоров");
         }
@@ -65,17 +62,11 @@ public class EventController {
     public void collectHubEvent(@Valid @RequestBody HubEvent event) {
         log.info("HubEvent - json: {}", toJson(event));
         log.info("HubEvent - toString: {}", event.toString());
-//        switch (event.getType()) {
-//            case DEVICE_ADDED -> deviceAddedHubEventHandler.handle(event);
-//            case DEVICE_REMOVED -> deviceRemovedHubEventHandler.handle(event);
-//            case SCENARIO_ADDED -> scenarioAddedHubEventHandler.handle(event);
-//            case SCENARIO_REMOVED -> scenarioRemovedHubEventHandler.handle(event);
-//            default -> throw new IllegalArgumentException("не могу найти обработчик");
-//    }
-
         if (hubEventHandlers.containsKey(event.getType())) {
-            log.info("выбран обработчик события типа {}", event.getType());
-            hubEventHandlers.get(event.getType()).handle(event);
+            HubEventHandler handler = hubEventHandlers.get(event.getType());
+            log.info("Выбран обработчик события от хаба {}", handler.getClass());
+            log.info("Тип события хаба {}", event.getType());
+            handler.handle(event);
         } else {
             throw new IllegalArgumentException("не могу найти обработчик для событий хаба");
         }
@@ -89,7 +80,7 @@ public class EventController {
         try {
             json = mapper.writeValueAsString(object);
         } catch (JsonProcessingException exception) {
-            json = String.format("Ошибка сериализации %s, пеолученный объект %s:",
+            json = String.format("Ошибка сериализации %s, полученный объект %s:",
                     exception.getMessage(), object.toString());
         }
         return json;

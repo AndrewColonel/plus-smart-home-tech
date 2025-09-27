@@ -11,7 +11,7 @@ import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 
 import ru.yandex.practicum.telemetry.collector.model.hub.HubEvent;
 import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
-import ru.yandex.practicum.telemetry.collector.service.TelemetryTopics;
+import ru.yandex.practicum.telemetry.collector.common.TelemetryTopics;
 
 import java.util.concurrent.Future;
 

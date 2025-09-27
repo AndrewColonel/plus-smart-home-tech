@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.collector.service;
+package ru.yandex.practicum.telemetry.collector.common;
 
 public class TelemetryTopics {
     public static final String TELEMETRY_HUBS_TOPIC = "telemetry.hubs.v1";
