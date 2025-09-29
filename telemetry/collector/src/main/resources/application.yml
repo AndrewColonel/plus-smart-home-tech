@@ -4,3 +4,10 @@ server:
 logging:
   level:
     ru.practicum: trace
+
+spring:
+ kafka:
+   bootstrap-servers: localhost:9092
+   topics:
+    telemetry-hubs-topics: "telemetry.hubs.v1"
+    telemetry-sensors-topics: "telemetry.sensors.v1"

@@ -2,16 +2,13 @@ package ru.yandex.practicum.telemetry.collector.service.handler.hub;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-
 import ru.yandex.practicum.telemetry.collector.model.hub.HubEvent;
 import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
-import ru.yandex.practicum.telemetry.collector.common.TelemetryTopics;
 
 import java.util.concurrent.Future;
 
@@ -30,7 +27,7 @@ public abstract class BaseHubEventHandler<T> {
                 .setPayload(toAvro(event))
                 .build();
         Producer<String, SpecificRecordBase> producer = this.producer.getProducer();
-        String topic = TelemetryTopics.TELEMETRY_HUBS_TOPIC;
+        String topic = this.producer.getTelemetryHubTopic();
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, eventAvro);
         log.info(String.format("Объект Avro для отправки в брокер %s в топик %s", eventAvro, topic));
 
