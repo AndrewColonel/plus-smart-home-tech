@@ -5,7 +5,6 @@ package telemetry.service.collector;
 option java_package = "ru.yandex.practicum.grpc.telemetry.collector";
 
 import "google/protobuf/Empty.proto";
-// import "telemetry/messages/Empty.proto";
 
 import "telemetry/messages/sensor_event.proto";
 import "telemetry/messages/hub_event.proto";
@@ -13,9 +12,7 @@ import "telemetry/messages/hub_event.proto";
 service CollectorController {
   rpc CollectSensorEvent (telemetry.message.event.SensorEventProto)
       returns (google.protobuf.Empty);
-//      returns (telemetry.message.event.Empty);
 
   rpc CollectHubEvent (telemetry.message.event.HubEventProto)
       returns (google.protobuf.Empty);
-//      returns (telemetry.message.event.Empty);
 }
