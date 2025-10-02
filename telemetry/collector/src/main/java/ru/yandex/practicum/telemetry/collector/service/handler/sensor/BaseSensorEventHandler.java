@@ -6,10 +6,11 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.telemetry.collector.model.sensors.SensorEvent;
 import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 
+import java.time.Instant;
 import java.util.concurrent.Future;
 
 @Slf4j
@@ -18,13 +19,14 @@ public abstract class BaseSensorEventHandler<T> {
 
     private final KafkaEventProducer producer;
 
-    public abstract T toAvro(SensorEvent event);
+    public abstract T toAvro(SensorEventProto event);
 
-    public void handle(SensorEvent event) {
+    public void handle(SensorEventProto event) {
         SensorEventAvro sensorEventAvro = SensorEventAvro.newBuilder()
                 .setId(event.getId())
                 .setHubId(event.getHubId())
-                .setTimestamp(event.getTimestamp())
+                .setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getSeconds(),
+                        event.getTimestamp().getNanos()))
                 .setPayload(toAvro(event))
                 .build();
         Producer<String, SpecificRecordBase> producer = this.producer.getProducer();

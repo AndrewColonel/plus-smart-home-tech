@@ -1,38 +1,27 @@
 package ru.yandex.practicum.telemetry.collector.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.protobuf.Empty;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import ru.yandex.practicum.telemetry.collector.model.HubEventType;
-import ru.yandex.practicum.telemetry.collector.model.SensorEventType;
-import ru.yandex.practicum.telemetry.collector.model.hub.HubEvent;
-import ru.yandex.practicum.telemetry.collector.model.sensors.SensorEvent;
-
+import net.devh.boot.grpc.server.service.GrpcService;
+import ru.yandex.practicum.grpc.telemetry.collector.CollectorControllerGrpc;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandler;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@RestController
-@Validated
-@RequestMapping("/events")
+@GrpcService
 @Slf4j
-public class EventController {
-    private final Map<HubEventType, HubEventHandler> hubEventHandlers;
-    private final Map<SensorEventType, SensorEventHandler> sensorEventHandlers;
+public class EventController extends CollectorControllerGrpc.CollectorControllerImplBase {
+    private final Map<HubEventProto.PayloadCase, HubEventHandler> hubEventHandlers;
+    private final Map<SensorEventProto.PayloadCase, SensorEventHandler> sensorEventHandlers;
 
     public EventController(List<HubEventHandler> hubEventHandlers, List<SensorEventHandler> sensorEventHandlers) {
         this.hubEventHandlers = hubEventHandlers.stream()
@@ -44,46 +33,54 @@ public class EventController {
                         Function.identity()));
     }
 
-    @PostMapping("/sensors")
-    public void collectSensorEvent(@Valid @RequestBody SensorEvent event) {
-        log.info("SensorEvent - json: {}", toJson(event));
-        log.info("SensorEvent - toString: {}", event.toString());
-        if (sensorEventHandlers.containsKey(event.getType())) {
-            SensorEventHandler handler = sensorEventHandlers.get(event.getType());
-            log.info("Выбран обработчик события от сенсоров  {}", handler.getClass().getSimpleName());
-            log.info("Тип события сенсора {}", event.getType());
-            handler.handle(event);
-        } else {
-            throw new IllegalArgumentException("не могу найти обработчик для событий сенсоров");
-        }
-    }
-
-    @PostMapping("/hubs")
-    public void collectHubEvent(@Valid @RequestBody HubEvent event) {
-        log.info("HubEvent - json: {}", toJson(event));
-        log.info("HubEvent - toString: {}", event.toString());
-        if (hubEventHandlers.containsKey(event.getType())) {
-            HubEventHandler handler = hubEventHandlers.get(event.getType());
-            log.info("Выбран обработчик события от хаба {}", handler.getClass().getSimpleName());
-            log.info("Тип события хаба {}", event.getType());
-            handler.handle(event);
-        } else {
-            throw new IllegalArgumentException("не могу найти обработчик для событий хаба");
-        }
-    }
-
-    private <T> String toJson(T object) {
-        String json;
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.writerWithDefaultPrettyPrinter();
+    @Override
+    public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
         try {
-            json = mapper.writeValueAsString(object);
-        } catch (JsonProcessingException exception) {
-            json = String.format("Ошибка сериализации %s, полученный объект %s:",
-                    exception.getMessage(), object.toString());
+            if (sensorEventHandlers.containsKey(request.getPayloadCase())) {
+                SensorEventHandler handler = sensorEventHandlers.get(request.getPayloadCase());
+                log.info("Выбран обработчик события от сенсоров  {}", handler.getClass().getSimpleName());
+                log.info("Тип события сенсора {}", request.getPayloadCase());
+                handler.handle(request);
+            } else {
+                throw new IllegalArgumentException("Не могу найти обработчик для события " + request.getPayloadCase());
+            }
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(new StatusRuntimeException(
+                    Status.INTERNAL
+                            .withDescription(e.getLocalizedMessage())
+                            .withCause(e)
+            ));
         }
-        return json;
+
+//    } catch (Exception e) {
+//        // в случае исключения отправляем ошибку клиенту
+//        responseObserver.onError(new StatusRuntimeException(Status.fromThrowable(e)));
+//    }
+//
+
     }
 
+    @Override
+    public void collectHubEvent(HubEventProto request, StreamObserver<Empty> responseObserver) {
+        try {
+            if (hubEventHandlers.containsKey(request.getPayloadCase())) {
+                HubEventHandler handler = hubEventHandlers.get(request.getPayloadCase());
+                log.info("Выбран обработчик события от хаба {}", handler.getClass().getSimpleName());
+                log.info("Тип события хаба {}", request.getPayloadCase());
+                handler.handle(request);
+            } else {
+                throw new IllegalArgumentException("Не могу найти обработчик для события " + request.getPayloadCase());
+            }
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(new StatusRuntimeException(
+                    Status.INTERNAL
+                            .withDescription(e.getLocalizedMessage())
+                            .withCause(e)
+            ));
+        }
+    }
 }
