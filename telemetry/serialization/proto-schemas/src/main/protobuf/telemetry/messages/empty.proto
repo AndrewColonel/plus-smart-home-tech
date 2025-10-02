@@ -30,7 +30,8 @@
 
 syntax = "proto3";
 
-package google.protobuf;
+// package google.protobuf;
+package telemetry.message.event;
 
 option go_package = "google.golang.org/protobuf/types/known/emptypb";
 option java_package = "com.google.protobuf";

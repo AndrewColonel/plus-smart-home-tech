@@ -4,6 +4,7 @@ package telemetry.service.collector;
 
 option java_package = "ru.yandex.practicum.grpc.telemetry.collector";
 
+// import "google/protobuf/Empty.proto";
 import "telemetry/messages/Empty.proto";
 
 import "telemetry/messages/sensor_event.proto";
