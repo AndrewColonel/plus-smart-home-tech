@@ -10,6 +10,7 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
 
 public class SensorEventAvroDeserializer implements Deserializer<SensorEventAvro> {
+
     private final DecoderFactory decoderFactory = DecoderFactory.get();
     private final DatumReader<SensorEventAvro> reader = new SpecificDatumReader<>(SensorEventAvro.getClassSchema());
 
