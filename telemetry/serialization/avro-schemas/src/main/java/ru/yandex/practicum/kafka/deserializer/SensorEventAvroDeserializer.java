@@ -14,7 +14,6 @@ public class SensorEventAvroDeserializer implements Deserializer<SensorEventAvro
     private final DecoderFactory decoderFactory = DecoderFactory.get();
     private final DatumReader<SensorEventAvro> reader = new SpecificDatumReader<>(SensorEventAvro.getClassSchema());
 
-
     @Override
     public SensorEventAvro deserialize(String topic, byte[] data) {
         try {
