@@ -52,7 +52,6 @@ public class AggregationStarter {
 
             consumer.subscribe(List.of(kafkaClient.getTelemetrySensorTopic()));
 
-
             // Цикл обработки событий
             while (true) {
                 // ... реализация цикла опроса ...
