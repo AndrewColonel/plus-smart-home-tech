@@ -53,13 +53,6 @@ public class EventController extends CollectorControllerGrpc.CollectorController
                             .withCause(e)
             ));
         }
-
-//    } catch (Exception e) {
-//        // в случае исключения отправляем ошибку клиенту
-//        responseObserver.onError(new StatusRuntimeException(Status.fromThrowable(e)));
-//    }
-//
-
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
+import ru.yandex.practicum.telemetry.collector.service.KafkaClient;
 
 import java.time.Instant;
 import java.util.concurrent.Future;
@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 @AllArgsConstructor
 public abstract class BaseHubEventHandler<T> {
 
-    private final KafkaEventProducer producer;
+    private final KafkaClient kafkaClient;
 
     public abstract T toAvro(HubEventProto event);
 
@@ -28,8 +28,8 @@ public abstract class BaseHubEventHandler<T> {
                         event.getTimestamp().getNanos()))
                 .setPayload(toAvro(event))
                 .build();
-        Producer<String, SpecificRecordBase> producer = this.producer.getProducer();
-        String topic = this.producer.getTelemetryHubTopic();
+        Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
+        String topic = kafkaClient.getTelemetryHubTopic();
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, eventAvro);
         log.info(String.format("Объект Avro для отправки в брокер %s в топик %s", eventAvro, topic));
 
