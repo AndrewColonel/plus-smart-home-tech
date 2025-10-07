@@ -161,11 +161,15 @@ public class AggregationStarter {
             if (snapShot.getSensorsState().containsKey(event.getId())) {
                 // Если данные есть, то достаём их в переменную oldState
                 SensorStateAvro oldState = snapShot.getSensorsState().get(event.getId());
+                log.info("Получена предыдущее состояние{}", oldState);
                 // Проверка, если oldState.getTimestamp() произошёл позже, чем
                 // event.getTimestamp() или oldState.getData() равен event.getPayload(),
                 // то ничего обнавлять не нужно, выходим из метода вернув Optional.empty()
                 if (oldState.getTimestamp().isAfter(event.getTimestamp())
                         || oldState.getData().equals(event.getPayload())) {
+                    log.info("Данные телементрии не изменились");
+                    log.info("Старые показания. Время {}, Данные {}", oldState.getTimestamp(), oldState.getData());
+                    log.info("Новые показания. Время {}, Данные {}", event.getTimestamp(), event.getPayload());
                     return Optional.empty();
                 } else {
                     // если дошли до сюда, значит, пришли новые данные и снапшот нужно обновить
