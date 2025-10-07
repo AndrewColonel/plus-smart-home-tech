@@ -118,7 +118,7 @@ public class AggregationStarter {
             ConsumerRecord<String, SpecificRecordBase> record,
             Producer<String, SpecificRecordBase> producer,
             String topicProducer) throws InterruptedException {
-        log.info("Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
+        log.info("<<<<<<<<<<<<<<<<<<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
                 record.topic(), record.partition(), record.offset(), record.value());
         if (record.value() instanceof SensorEventAvro event) {
 
@@ -127,10 +127,11 @@ public class AggregationStarter {
             if (optionalSensorsSnapshotAvro.isPresent()) {
                 ProducerRecord<String, SpecificRecordBase> producerRecord =
                         new ProducerRecord<>(topicProducer, optionalSensorsSnapshotAvro.get());
-                log.info("Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
+                log.info(">>>>>>>>>>>>>>>>>>> Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
                 producer.send(producerRecord);
+                producer.flush();
             } else {
-                log.info("Изменений телеметрии датчиков нет");
+                log.info("-------------------- Новый снапшот не сформирован и не отправлен");
             }
         }
     }
@@ -143,23 +144,10 @@ public class AggregationStarter {
         // Если нет, то созадём новый
         if (snapshots.containsKey(event.getHubId())) {
             snapShot = snapshots.get(event.getHubId());
-        } else {
-            snapShot = SensorsSnapshotAvro.newBuilder()
-                    .setHubId(event.getHubId())
-                    .setTimestamp(Instant.now())
-                    .setSensorsState(Map.of(event.getId(), SensorStateAvro.newBuilder()
-                            .setTimestamp(event.getTimestamp())
-                            .setData(event.getPayload())
-                            .build()))
-                    .build();
-            snapshots.put(event.getHubId(), snapShot);
-        }
-
-
-        if (Objects.nonNull(snapShot)) {
             // Проверяем, есть ли в снапшоте данные для event.getId()
             if (snapShot.getSensorsState().containsKey(event.getId())) {
                 // Если данные есть, то достаём их в переменную oldState
+                log.info("проверяем имеющееся в мапе событие {}", event);
                 SensorStateAvro oldState = snapShot.getSensorsState().get(event.getId());
                 log.info("Получена предыдущее состояние{}", oldState);
                 // Проверка, если oldState.getTimestamp() произошёл позже, чем
@@ -179,7 +167,9 @@ public class AggregationStarter {
                             .setData(event.getPayload())
                             .build();
                     // Добавляем полученный экземпляр в снапшот
-                    snapShot.getSensorsState().put(event.getId(), newState);
+//                    snapShot.getSensorsState().put(event.getId(), newState);
+                    oldState.setTimestamp(event.getTimestamp());
+                    oldState.setData(event.getPayload());
                     // Обновляем таймстемп снапшота таймстемпом из события
                     snapShot.setTimestamp(event.getTimestamp());
                     // Возвращаем снапшот - Optional.of(snapshot)
@@ -187,9 +177,21 @@ public class AggregationStarter {
                     return Optional.of(snapShot);
                 }
             }
+
         }
-        log.info("Обработано сообщение от сенсоров, снапшот не обновлен");
-        return Optional.empty();
+//        else {
+            snapShot = SensorsSnapshotAvro.newBuilder()
+                    .setHubId(event.getHubId())
+                    .setTimestamp(event.getTimestamp())
+                    .setSensorsState(Map.of(event.getId(), SensorStateAvro.newBuilder()
+                            .setTimestamp(event.getTimestamp())
+                            .setData(event.getPayload())
+                            .build()))
+                    .build();
+            snapshots.put(event.getHubId(), snapShot);
+
+        log.info("++++++++++++++++++++++Обработано сообщение от сенсоров, создан новый снапшот {}", snapShot);
+        return Optional.of(snapShot);
     }
 
     private <T extends SpecificRecordBase> void producerRecordSend(
