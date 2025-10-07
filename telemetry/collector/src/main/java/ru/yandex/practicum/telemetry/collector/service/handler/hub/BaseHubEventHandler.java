@@ -15,14 +15,14 @@ import java.util.concurrent.Future;
 
 @Slf4j
 @AllArgsConstructor
-public abstract class BaseHubEventHandler<T> {
+public abstract class BaseHubEventHandler<T extends SpecificRecordBase> {
 
     private final KafkaClient kafkaClient;
 
     public abstract T toAvro(HubEventProto event);
 
     public void handle(HubEventProto event) {
-        HubEventAvro eventAvro = HubEventAvro.newBuilder()
+        HubEventAvro hubEventAvro = HubEventAvro.newBuilder()
                 .setHubId(event.getHubId())
                 .setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getSeconds(),
                         event.getTimestamp().getNanos()))
@@ -30,8 +30,8 @@ public abstract class BaseHubEventHandler<T> {
                 .build();
         Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
         String topic = kafkaClient.getTelemetryHubTopic();
-        ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, eventAvro);
-        log.info(String.format("Объект Avro для отправки в брокер %s в топик %s", eventAvro, topic));
+        ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, hubEventAvro);
+        log.info("Объект Avro для отправки в брокер {} в топик {}", hubEventAvro, topic);
 
         Future<RecordMetadata> metadataFuture = producer.send(record);
         log.info("Состояние отправки: {} ", metadataFuture.isDone());

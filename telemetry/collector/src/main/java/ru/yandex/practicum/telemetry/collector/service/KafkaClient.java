@@ -29,6 +29,8 @@ public class KafkaClient {
     private String telemetryHubTopic;
     @Value(value = "${spring.kafka.topics.telemetry-sensors-topics}")
     private String telemetrySensorTopic;
+    @Value(value = "${spring.kafka.topics.telemetry-snapshots-topics}")
+    private String telemetrySnapshotsTopic;
 
     @Value(value = "${spring.kafka.consumer.client-id}")
     private String clientId;
@@ -72,7 +74,6 @@ public class KafkaClient {
 
         config.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId + counter.getAndIncrement());
-//        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
 
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);

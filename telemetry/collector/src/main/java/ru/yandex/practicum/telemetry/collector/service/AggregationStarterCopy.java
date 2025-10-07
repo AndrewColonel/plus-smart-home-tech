@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.collector;
+package ru.yandex.practicum.telemetry.collector.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-import ru.yandex.practicum.telemetry.collector.service.KafkaClient;
 
 import java.time.Duration;
 import java.util.*;
@@ -22,32 +21,27 @@ import java.util.*;
  * Класс AggregationStarter, ответственный за запуск агрегации данных.
  */
 @Slf4j
-@Component
+//@Component
 @RequiredArgsConstructor
-public class AggregationStarter {
+public class AggregationStarterCopy {
 
     private final KafkaClient kafkaClient;
 
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
-
-    // готовим продьюсер для отправки подготовленных снапшотов SensorsSnapshotAvro в топик telemetry.snapshots.v1
-//    private final Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
-//    private final String topicProducer = kafkaClient.getTelemetrySnapshotsTopic();
-
     /**
      * Метод для начала процесса агрегации данных.
      * Подписывается на топики для получения событий от датчиков,
      * формирует снимок их состояния и записывает в кафку.
      */
     public void start() {
-
         // готовим консьюмер для получение данных SensorEventAvro из топика telemetry.sensors.v1
         Properties config = kafkaClient.getConsumerProperties();
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
         Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer(config);
         String topicConsumer = kafkaClient.getTelemetrySensorTopic();
 
+        // готовим продьюсер для отправки подготовленных снапшотов SensorsSnapshotAvro в топик telemetry.snapshots.v1
         Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
         String topicProducer = kafkaClient.getTelemetrySnapshotsTopic();
 
@@ -67,7 +61,7 @@ public class AggregationStarter {
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     // обрабатываем очередную запись
-                    handleRecord(record);
+                    handleRecord(record, producer, topicProducer);
                     // фиксируем оффсеты обработанных записей, каждые 10 штук
                     manageOffsets(record, count, consumer);
                     count++;
@@ -118,18 +112,21 @@ public class AggregationStarter {
     }
 
     // подготовка и отправка снапшота
-    private void handleRecord(ConsumerRecord<String, SpecificRecordBase> record) throws InterruptedException {
+    private void handleRecord(
+            ConsumerRecord<String, SpecificRecordBase> record,
+            Producer<String, SpecificRecordBase> producer,
+            String topicProducer) throws InterruptedException {
         log.info("топик = {}, партиция = {}, смещение = {}, значение: {}\n",
                 record.topic(), record.partition(), record.offset(), record.value());
         SensorEventAvro event = (SensorEventAvro) record.value();
         Optional<SensorsSnapshotAvro> optionalSensorsSnapshotAvro = updateState(event);
         // если снапшот сформирован, то его надо отправить в брокер
-//        if (optionalSensorsSnapshotAvro.isPresent()) {
-//            ProducerRecord<String, SpecificRecordBase> producerRecord =
-//                    new ProducerRecord<>(topicProducer, optionalSensorsSnapshotAvro.get());
-//            log.info("Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
-//            producer.send(producerRecord);
-//        }
+        if (optionalSensorsSnapshotAvro.isPresent()) {
+            ProducerRecord<String, SpecificRecordBase> producerRecord =
+                    new ProducerRecord<>(topicProducer, optionalSensorsSnapshotAvro.get());
+            log.info("Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
+            producer.send(producerRecord);
+        }
 //        int seconds = getRandomNumber(1, 3);
 //        Thread.sleep(Duration.ofSeconds(seconds));
 //    }

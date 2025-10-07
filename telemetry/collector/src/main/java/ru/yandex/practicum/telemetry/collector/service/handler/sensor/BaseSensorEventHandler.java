@@ -15,7 +15,7 @@ import java.util.concurrent.Future;
 
 @Slf4j
 @AllArgsConstructor
-public abstract class BaseSensorEventHandler<T> {
+public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> {
 
     private final KafkaClient kafkaClient;
 
@@ -32,7 +32,7 @@ public abstract class BaseSensorEventHandler<T> {
         Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
         String topic = kafkaClient.getTelemetrySensorTopic();
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, sensorEventAvro);
-        log.info(String.format("Объект Avro для отправки в брокер %s в топик %s", sensorEventAvro, topic));
+        log.info("Объект Avro для отправки в брокер {} в топик {}", sensorEventAvro, topic);
 
         Future<RecordMetadata> metadataFuture = producer.send(record);
         log.info("Состояние отправки: {} ", metadataFuture.isDone());

@@ -16,6 +16,7 @@ spring:
    topics:
     telemetry-hubs-topics: "telemetry.hubs.v1"
     telemetry-sensors-topics: "telemetry.sensors.v1"
+    telemetry-snapshots-topics: "telemetry.snapshots.v1"
    consumer:
     client-id: "SomeConsumer"
     group-id: "some.group.id-"
