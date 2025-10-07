@@ -8,7 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 /**
  * Главный класс сервиса Aggregator.
  */
-//@SpringBootApplication
+@SpringBootApplication
 @ConfigurationPropertiesScan
 
 public class Aggregator {
