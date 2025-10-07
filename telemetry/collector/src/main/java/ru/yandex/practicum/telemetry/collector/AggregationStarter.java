@@ -162,10 +162,10 @@ public class AggregationStarter {
                 } else {
                     // если дошли до сюда, значит, пришли новые данные и снапшот нужно обновить
                     // Создаём экземпляр SensorStateAvro на основе данных события
-                    SensorStateAvro newState = SensorStateAvro.newBuilder()
-                            .setTimestamp(event.getTimestamp())
-                            .setData(event.getPayload())
-                            .build();
+//                    SensorStateAvro newState = SensorStateAvro.newBuilder()
+//                            .setTimestamp(event.getTimestamp())
+//                            .setData(event.getPayload())
+//                            .build();
                     // Добавляем полученный экземпляр в снапшот
 //                    snapShot.getSensorsState().put(event.getId(), newState);
                     oldState.setTimestamp(event.getTimestamp());
@@ -173,21 +173,39 @@ public class AggregationStarter {
                     // Обновляем таймстемп снапшота таймстемпом из события
                     snapShot.setTimestamp(event.getTimestamp());
                     // Возвращаем снапшот - Optional.of(snapshot)
-                    log.info("Обработано сообщение от сенсоров, снапшот обновлен {}", snapShot);
+                    log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Обработано сообщение от сенсоров, снапшот обновлен {}", snapShot);
                     return Optional.of(snapShot);
                 }
             }
 
+            SensorStateAvro newState = SensorStateAvro.newBuilder()
+                    .setTimestamp(event.getTimestamp())
+                    .setData(event.getPayload())
+                    .build();
+
+            snapShot.getSensorsState().put(event.getId(), newState);
+
+            return Optional.of(snapShot);
         }
 //        else {
+        Map<String, SensorStateAvro> sensorStateAvroMap = new HashMap<>();
+        SensorStateAvro sensorStateAvro = SensorStateAvro.newBuilder()
+                .setTimestamp(event.getTimestamp())
+                .setData(event.getPayload())
+                .build();
+        sensorStateAvroMap.put(event.getId(), sensorStateAvro);
+
             snapShot = SensorsSnapshotAvro.newBuilder()
                     .setHubId(event.getHubId())
                     .setTimestamp(event.getTimestamp())
-                    .setSensorsState(Map.of(event.getId(), SensorStateAvro.newBuilder()
-                            .setTimestamp(event.getTimestamp())
-                            .setData(event.getPayload())
-                            .build()))
+                    .setSensorsState(sensorStateAvroMap)
+
+
+
+
                     .build();
+
+
             snapshots.put(event.getHubId(), snapShot);
 
         log.info("++++++++++++++++++++++Обработано сообщение от сенсоров, создан новый снапшот {}", snapShot);
