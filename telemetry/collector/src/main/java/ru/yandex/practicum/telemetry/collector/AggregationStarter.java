@@ -118,20 +118,18 @@ public class AggregationStarter {
             ConsumerRecord<String, SpecificRecordBase> record,
             Producer<String, SpecificRecordBase> producer,
             String topicProducer) throws InterruptedException {
-        log.info("<<<<<<<<<<<<<<<<<<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
+        log.info("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
                 record.topic(), record.partition(), record.offset(), record.value());
         if (record.value() instanceof SensorEventAvro event) {
-
             Optional<SensorsSnapshotAvro> optionalSensorsSnapshotAvro = updateState(event);
             // если снапшот сформирован, то его надо отправить в брокер
             if (optionalSensorsSnapshotAvro.isPresent()) {
                 ProducerRecord<String, SpecificRecordBase> producerRecord =
                         new ProducerRecord<>(topicProducer, optionalSensorsSnapshotAvro.get());
-                log.info(">>>>>>>>>>>>>>>>>>> Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
+                log.info(">>> Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
                 producer.send(producerRecord);
-                producer.flush();
             } else {
-                log.info("-------------------- Новый снапшот не сформирован и не отправлен");
+                log.info("<--- Изменений в состоянии телеметрии нет --->");
             }
         }
     }
@@ -147,68 +145,67 @@ public class AggregationStarter {
             // Проверяем, есть ли в снапшоте данные для event.getId()
             if (snapShot.getSensorsState().containsKey(event.getId())) {
                 // Если данные есть, то достаём их в переменную oldState
-                log.info("проверяем имеющееся в мапе событие {}", event);
                 SensorStateAvro oldState = snapShot.getSensorsState().get(event.getId());
-                log.info("Получена предыдущее состояние{}", oldState);
                 // Проверка, если oldState.getTimestamp() произошёл позже, чем
                 // event.getTimestamp() или oldState.getData() равен event.getPayload(),
                 // то ничего обнавлять не нужно, выходим из метода вернув Optional.empty()
                 if (oldState.getTimestamp().isAfter(event.getTimestamp())
                         || oldState.getData().equals(event.getPayload())) {
-                    log.info("Данные телементрии не изменились");
-                    log.info("Старые показания. Время {}, Данные {}", oldState.getTimestamp(), oldState.getData());
-                    log.info("Новые показания. Время {}, Данные {}", event.getTimestamp(), event.getPayload());
+                    log.trace("Данные телементрии в событии {} не изменились", event);
+                    log.trace("Старые показания. Время {}, Данные {}", oldState.getTimestamp(), oldState.getData());
+                    log.trace("Новые показания. Время {}, Данные {}", event.getTimestamp(), event.getPayload());
                     return Optional.empty();
-                } else {
+                }
+//                else {
                     // если дошли до сюда, значит, пришли новые данные и снапшот нужно обновить
                     // Создаём экземпляр SensorStateAvro на основе данных события
-//                    SensorStateAvro newState = SensorStateAvro.newBuilder()
-//                            .setTimestamp(event.getTimestamp())
-//                            .setData(event.getPayload())
-//                            .build();
                     // Добавляем полученный экземпляр в снапшот
-//                    snapShot.getSensorsState().put(event.getId(), newState);
-                    oldState.setTimestamp(event.getTimestamp());
-                    oldState.setData(event.getPayload());
+//                    oldState.setTimestamp(event.getTimestamp());
+//                    oldState.setData(event.getPayload());
                     // Обновляем таймстемп снапшота таймстемпом из события
-                    snapShot.setTimestamp(event.getTimestamp());
+//                    snapShot.setTimestamp(event.getTimestamp());
                     // Возвращаем снапшот - Optional.of(snapshot)
-                    log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Обработано сообщение от сенсоров, снапшот обновлен {}", snapShot);
-                    return Optional.of(snapShot);
-                }
+//                    log.trace("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Обработано сообщение от сенсоров, снапшот обновлен {}", snapShot);
+////                    return Optional.of(snapShot);
+//                }
+
             }
 
-            SensorStateAvro newState = SensorStateAvro.newBuilder()
+//            else {
+
+
+            // если дошли до сюда, значит, пришли новые данные и снапшот нужно обновить
+            // Создаём экземпляр SensorStateAvro на основе данных события
+            // Добавляем полученный экземпляр в снапшот
+                SensorStateAvro newState = SensorStateAvro.newBuilder()
+                        .setTimestamp(event.getTimestamp())
+                        .setData(event.getPayload())
+                        .build();
+
+                snapShot.getSensorsState().put(event.getId(), newState);
+            // Обновляем таймстемп снапшота таймстемпом из события
+                snapShot.setTimestamp(event.getTimestamp());
+
+//                return Optional.of(snapShot);
+//            }
+        } else {
+            // Создаем новый снапшот
+            Map<String, SensorStateAvro> sensorStats = new HashMap<>();
+            sensorStats.put(event.getId(), SensorStateAvro.newBuilder()
                     .setTimestamp(event.getTimestamp())
                     .setData(event.getPayload())
-                    .build();
-
-            snapShot.getSensorsState().put(event.getId(), newState);
-
-            return Optional.of(snapShot);
-        }
-//        else {
-        Map<String, SensorStateAvro> sensorStateAvroMap = new HashMap<>();
-        SensorStateAvro sensorStateAvro = SensorStateAvro.newBuilder()
-                .setTimestamp(event.getTimestamp())
-                .setData(event.getPayload())
-                .build();
-        sensorStateAvroMap.put(event.getId(), sensorStateAvro);
+                    .build());
 
             snapShot = SensorsSnapshotAvro.newBuilder()
                     .setHubId(event.getHubId())
                     .setTimestamp(event.getTimestamp())
-                    .setSensorsState(sensorStateAvroMap)
-
-
-
-
+                    .setSensorsState(sensorStats)
                     .build();
-
-
+            // Добавляем его в мапу
             snapshots.put(event.getHubId(), snapShot);
-
-        log.info("++++++++++++++++++++++Обработано сообщение от сенсоров, создан новый снапшот {}", snapShot);
+        }
+        log.trace("<++ Обработано сообщение от сенсоров, создан новый снапшот {} ++>", snapShot);
+        // Возвращаем снапшот - Optional.of(snapshot)
         return Optional.of(snapShot);
     }
 
