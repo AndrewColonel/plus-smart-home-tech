@@ -79,9 +79,9 @@ public class KafkaClient {
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
 
-        config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecordConfig);
-        config.put(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, fetchMaxBytesConfig);
-        config.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, maxPartitionFetchBytesConfig);
+//        config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecordConfig);
+//        config.put(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, fetchMaxBytesConfig);
+//        config.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, maxPartitionFetchBytesConfig);
 
         return config;
     }
