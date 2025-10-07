@@ -16,7 +16,6 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.telemetry.collector.service.KafkaClient;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 
 
@@ -156,24 +155,7 @@ public class AggregationStarter {
                     log.trace("Новые показания. Время {}, Данные {}", event.getTimestamp(), event.getPayload());
                     return Optional.empty();
                 }
-//                else {
-                    // если дошли до сюда, значит, пришли новые данные и снапшот нужно обновить
-                    // Создаём экземпляр SensorStateAvro на основе данных события
-                    // Добавляем полученный экземпляр в снапшот
-//                    oldState.setTimestamp(event.getTimestamp());
-//                    oldState.setData(event.getPayload());
-                    // Обновляем таймстемп снапшота таймстемпом из события
-//                    snapShot.setTimestamp(event.getTimestamp());
-                    // Возвращаем снапшот - Optional.of(snapshot)
-//                    log.trace("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Обработано сообщение от сенсоров, снапшот обновлен {}", snapShot);
-////                    return Optional.of(snapShot);
-//                }
-
             }
-
-//            else {
-
-
             // если дошли до сюда, значит, пришли новые данные и снапшот нужно обновить
             // Создаём экземпляр SensorStateAvro на основе данных события
             // Добавляем полученный экземпляр в снапшот
@@ -185,9 +167,6 @@ public class AggregationStarter {
                 snapShot.getSensorsState().put(event.getId(), newState);
             // Обновляем таймстемп снапшота таймстемпом из события
                 snapShot.setTimestamp(event.getTimestamp());
-
-//                return Optional.of(snapShot);
-//            }
         } else {
             // Создаем новый снапшот
             Map<String, SensorStateAvro> sensorStats = new HashMap<>();
@@ -207,15 +186,5 @@ public class AggregationStarter {
         log.trace("<++ Обработано сообщение от сенсоров, создан новый снапшот {} ++>", snapShot);
         // Возвращаем снапшот - Optional.of(snapshot)
         return Optional.of(snapShot);
-    }
-
-    private <T extends SpecificRecordBase> void producerRecordSend(
-            Producer<String, SpecificRecordBase> producer,
-            String topicProducer,
-            T avroObject) {
-        ProducerRecord<String, SpecificRecordBase> producerRecord =
-                new ProducerRecord<>(topicProducer, avroObject);
-        log.info("Снапшот {} для отправки в топик {}", avroObject, topicProducer);
-        producer.send(producerRecord);
     }
 }
