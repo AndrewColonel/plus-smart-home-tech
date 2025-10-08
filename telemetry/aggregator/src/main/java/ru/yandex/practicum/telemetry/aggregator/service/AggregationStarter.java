@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.collector;
+package ru.yandex.practicum.telemetry.aggregator.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-import ru.yandex.practicum.telemetry.collector.service.KafkaClient;
+
 
 import java.time.Duration;
 import java.util.*;
