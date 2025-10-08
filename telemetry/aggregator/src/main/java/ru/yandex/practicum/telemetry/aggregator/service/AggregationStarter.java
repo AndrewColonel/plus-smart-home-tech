@@ -11,7 +11,6 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 
@@ -31,7 +30,8 @@ public class AggregationStarter {
 
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
-    private final Map<String, SensorsSnapshotAvro> snapshots = new HashMap<>();
+
+    private final SnapshotService snapshotService;
 
     /**
      * Метод для начала процесса агрегации данных.
@@ -120,7 +120,7 @@ public class AggregationStarter {
         log.info("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
                 record.topic(), record.partition(), record.offset(), record.value());
         if (record.value() instanceof SensorEventAvro event) {
-            Optional<SensorsSnapshotAvro> optionalSensorsSnapshotAvro = updateState(event);
+            Optional<SensorsSnapshotAvro> optionalSensorsSnapshotAvro = snapshotService.updateState(event);
             // если снапшот сформирован, то его надо отправить в брокер
             if (optionalSensorsSnapshotAvro.isPresent()) {
                 ProducerRecord<String, SpecificRecordBase> producerRecord =
@@ -133,58 +133,4 @@ public class AggregationStarter {
         }
     }
 
-    // метод по обработке полученной записи
-    private Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
-        SensorsSnapshotAvro snapShot;
-        // Проверяем, есть ли снапшот для event.getHubId()
-        // Если снапшот есть, то достаём его
-        // Если нет, то созадём новый
-        if (snapshots.containsKey(event.getHubId())) {
-            snapShot = snapshots.get(event.getHubId());
-            // Проверяем, есть ли в снапшоте данные для event.getId()
-            if (snapShot.getSensorsState().containsKey(event.getId())) {
-                // Если данные есть, то достаём их в переменную oldState
-                SensorStateAvro oldState = snapShot.getSensorsState().get(event.getId());
-                // Проверка, если oldState.getTimestamp() произошёл позже, чем
-                // event.getTimestamp() или oldState.getData() равен event.getPayload(),
-                // то ничего обнавлять не нужно, выходим из метода вернув Optional.empty()
-                if (oldState.getTimestamp().isAfter(event.getTimestamp())
-                        || oldState.getData().equals(event.getPayload())) {
-                    log.trace("Данные телементрии в событии {} не изменились", event);
-                    log.trace("Старые показания. Время {}, Данные {}", oldState.getTimestamp(), oldState.getData());
-                    log.trace("Новые показания. Время {}, Данные {}", event.getTimestamp(), event.getPayload());
-                    return Optional.empty();
-                }
-            }
-            // если дошли до сюда, значит, пришли новые данные и снапшот нужно обновить
-            // Создаём экземпляр SensorStateAvro на основе данных события
-            // Добавляем полученный экземпляр в снапшот
-                SensorStateAvro newState = SensorStateAvro.newBuilder()
-                        .setTimestamp(event.getTimestamp())
-                        .setData(event.getPayload())
-                        .build();
-
-                snapShot.getSensorsState().put(event.getId(), newState);
-            // Обновляем таймстемп снапшота таймстемпом из события
-                snapShot.setTimestamp(event.getTimestamp());
-        } else {
-            // Создаем новый снапшот
-            Map<String, SensorStateAvro> sensorStats = new HashMap<>();
-            sensorStats.put(event.getId(), SensorStateAvro.newBuilder()
-                    .setTimestamp(event.getTimestamp())
-                    .setData(event.getPayload())
-                    .build());
-
-            snapShot = SensorsSnapshotAvro.newBuilder()
-                    .setHubId(event.getHubId())
-                    .setTimestamp(event.getTimestamp())
-                    .setSensorsState(sensorStats)
-                    .build();
-            // Добавляем его в мапу
-            snapshots.put(event.getHubId(), snapShot);
-        }
-        log.trace("<++ Обработано сообщение от сенсоров, создан новый снапшот {} ++>", snapShot);
-        // Возвращаем снапшот - Optional.of(snapshot)
-        return Optional.of(snapShot);
-    }
 }
