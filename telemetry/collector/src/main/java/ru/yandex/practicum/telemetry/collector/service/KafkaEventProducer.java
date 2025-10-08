@@ -14,10 +14,8 @@ import java.util.Objects;
 import java.util.Properties;
 
 @Component
-
 @Getter
 public class KafkaEventProducer {
-
 
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootStrapServers;
@@ -43,4 +41,5 @@ public class KafkaEventProducer {
         }
         return producer;
     }
+
 }
