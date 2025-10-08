@@ -4,14 +4,14 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.MotionSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
-import ru.yandex.practicum.telemetry.collector.service.KafkaClient;
+import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandler;
 
 @Component
 public class MotionSensorEventHandler extends  BaseSensorEventHandler<MotionSensorAvro> implements SensorEventHandler {
 
 
-    public MotionSensorEventHandler(KafkaClient producer) {
+    public MotionSensorEventHandler(KafkaEventProducer producer) {
         super(producer);
     }
 

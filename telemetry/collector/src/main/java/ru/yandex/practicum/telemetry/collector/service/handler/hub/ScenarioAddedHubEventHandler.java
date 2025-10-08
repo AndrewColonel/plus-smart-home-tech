@@ -7,7 +7,7 @@ import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.collector.common.EnumMapper;
-import ru.yandex.practicum.telemetry.collector.service.KafkaClient;
+import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 
 import java.util.List;
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @Component
 public class ScenarioAddedHubEventHandler extends BaseHubEventHandler<ScenarioAddedEventAvro> implements HubEventHandler {
 
-    public ScenarioAddedHubEventHandler(KafkaClient kafkaClient) {
-        super(kafkaClient);
+    public ScenarioAddedHubEventHandler(KafkaEventProducer kafkaEventProducer) {
+        super(kafkaEventProducer);
     }
 
     @Override

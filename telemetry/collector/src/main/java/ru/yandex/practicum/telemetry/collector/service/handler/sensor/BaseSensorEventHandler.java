@@ -8,7 +8,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.telemetry.collector.service.KafkaClient;
+import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 
 import java.time.Instant;
 import java.util.concurrent.Future;
@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 @AllArgsConstructor
 public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> {
 
-    private final KafkaClient kafkaClient;
+    private final KafkaEventProducer kafkaEventProducer;
 
     public abstract T toAvro(SensorEventProto event);
 
@@ -29,8 +29,8 @@ public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> {
                         event.getTimestamp().getNanos()))
                 .setPayload(toAvro(event))
                 .build();
-        Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
-        String topic = kafkaClient.getTelemetrySensorTopic();
+        Producer<String, SpecificRecordBase> producer = kafkaEventProducer.getProducer();
+        String topic = kafkaEventProducer.getTelemetrySensorTopic();
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, sensorEventAvro);
         log.info("Объект Avro для отправки в брокер {} в топик {}", sensorEventAvro, topic);
 

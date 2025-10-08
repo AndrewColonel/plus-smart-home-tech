@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.TemperatureSensorProto;
 import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
-import ru.yandex.practicum.telemetry.collector.service.KafkaClient;
+import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandler;
 
 import java.time.Instant;
@@ -12,7 +12,7 @@ import java.time.Instant;
 @Component
 public class TemperatureSensorEventHandler extends  BaseSensorEventHandler<TemperatureSensorAvro> implements SensorEventHandler {
 
-    public TemperatureSensorEventHandler(KafkaClient producer) {
+    public TemperatureSensorEventHandler(KafkaEventProducer producer) {
         super(producer);
     }
 
