@@ -9,10 +9,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-
+import ru.yandex.practicum.telemetry.aggregator.kafkaclient.KafkaClient;
 
 import java.time.Duration;
 import java.util.*;
@@ -40,9 +39,7 @@ public class AggregationStarter {
      */
     public void start() {
         // готовим консьюмер для получение данных SensorEventAvro из топика telemetry.sensors.v1
-        Properties config = kafkaClient.getConsumerProperties();
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
-        Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer(config);
+        Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer();
         String topicConsumer = kafkaClient.getTelemetrySensorTopic();
 
         // готовим продьюсер для отправки подготовленных снапшотов SensorsSnapshotAvro в топик telemetry.snapshots.v1

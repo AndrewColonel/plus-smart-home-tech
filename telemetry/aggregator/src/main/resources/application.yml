@@ -1,11 +1,3 @@
-#grpc:
-#  server:
-#    port: 59091
-
-
-#server:
-#  port: 8080
-
 logging:
   level:
     ru.practicum: trace
@@ -21,8 +13,9 @@ spring:
     client-id: "SomeConsumer"
     group-id: "some.group.id-"
     auto-offset-reset: "earliest"
+    auto-commit: false
     key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
-    value-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    value-deserializer: "ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer"
     max-poll-record-config: 100
     fetch-max-bytes-config: 3072000
     max-partition-fetch-bytes-config: 307200

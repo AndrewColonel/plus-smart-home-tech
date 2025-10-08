@@ -2,10 +2,6 @@ grpc:
   server:
     port: 59091
 
-
-#server:
-#  port: 8080
-
 logging:
   level:
     ru.practicum: trace

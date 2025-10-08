@@ -1,27 +1,19 @@
-package ru.yandex.practicum.telemetry.aggregator.service;
+package ru.yandex.practicum.telemetry.aggregator.kafkaclient;
 
 import lombok.Getter;
-import org.apache.avro.specific.SpecificRecordBase;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer;
 
-import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Getter
-public class KafkaClient {
-
-    private final AtomicInteger counter = new AtomicInteger(0);
+public class KafkaClientConfiguration {
 
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootStrapServers;
@@ -38,6 +30,8 @@ public class KafkaClient {
     private String groupId;
     @Value(value = "${spring.kafka.consumer.auto-offset-reset}")
     private String autoOffsetReset;
+    @Value(value = "${spring.kafka.consumer.auto-commit}")
+    private String autoCommit;
     @Value(value = "${spring.kafka.consumer.key-deserializer}")
     private String keyDeserializer;
     @Value(value = "${spring.kafka.consumer.value-deserializer}")
@@ -49,31 +43,22 @@ public class KafkaClient {
     @Value(value = "${spring.kafka.consumer.max-partition-fetch-bytes-config}")
     private String maxPartitionFetchBytesConfig;
 
-    private Producer<String, SpecificRecordBase> producer;
+    private final AtomicInteger counter = new AtomicInteger(0);
 
-    private Consumer<String, SpecificRecordBase> consumer;
-
-    private void initProducer() {
+    public Properties getProduserConfig() {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralAvroSerializer.class);
-
-        producer = new KafkaProducer<>(config);
+        return config;
     }
 
-    public Producer<String, SpecificRecordBase> getProducer() {
-        if (Objects.isNull(producer)) {
-            initProducer();
-        }
-        return producer;
-    }
-
-    public Properties getConsumerProperties() {
+    public Properties getConsumerConfig() {
         Properties config = new Properties();
 
         config.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId + counter.getAndIncrement());
+        config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, autoCommit);
 
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
@@ -82,18 +67,6 @@ public class KafkaClient {
         return config;
     }
 
-    public Consumer<String, SpecificRecordBase> getConsumer() {
-        if (Objects.isNull(consumer)) {
-            consumer = new KafkaConsumer<>(getConsumerProperties());
-        }
-        return consumer;
-    }
 
-    public Consumer<String, SpecificRecordBase> getConsumer(Properties config) {
-        if (Objects.isNull(consumer)) {
-            consumer = new KafkaConsumer<>(config);
-        }
-        return consumer;
-    }
 
 }
