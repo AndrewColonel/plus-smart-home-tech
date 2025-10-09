@@ -1,3 +1,11 @@
+grpc:
+  client:
+    hub-router:
+      address: 'static://localhost:59090'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+
 logging:
   level:
     ru.practicum: trace
@@ -28,10 +36,10 @@ spring:
     max-partition-fetch-bytes-config: 307200
 
  datasource:
-   url: jdbc:postgresql://localhost:5432/ewm
+   url: jdbc:postgresql://localhost:5432/sht
    driver-class-name: org.postgresql.Driver
-   username: ewm
-   password: ewm
+   username: sht
+   password: sht
  sql:
    init:
     mode: always
