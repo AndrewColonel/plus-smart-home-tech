@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-import ru.yandex.practicum.telemetry.aggregator.kafkaclient.KafkaClient;
+import ru.yandex.practicum.telemetry.aggregator.config.KafkaConfiguration;
 
 import java.time.Duration;
 import java.util.*;
@@ -25,12 +27,25 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AggregationStarter {
 
-    private final KafkaClient kafkaClient;
+    private final KafkaConfiguration cofiguration;
+    private final SnapshotService snapshotService;
+
+    private final Producer<String, SpecificRecordBase> producer;
+    private final Consumer<String, SpecificRecordBase> consumer;
+
+
+    @Autowired
+    public AggregationStarter(KafkaConfiguration cofiguration, SnapshotService snapshotService) {
+        this.snapshotService = snapshotService;
+        this.cofiguration = cofiguration;
+        this.consumer = new KafkaConsumer<>(cofiguration.getConsumerConfig());
+        ;
+        this.producer = new KafkaProducer<>(cofiguration.getProduserConfig());
+        ;
+    }
 
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
-
-    private final SnapshotService snapshotService;
 
     /**
      * Метод для начала процесса агрегации данных.
@@ -39,12 +54,12 @@ public class AggregationStarter {
      */
     public void start() {
         // готовим консьюмер для получение данных SensorEventAvro из топика telemetry.sensors.v1
-        Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer();
-        String topicConsumer = kafkaClient.getTelemetrySensorTopic();
+//        Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer();
+        String topicConsumer = cofiguration.getTelemetrySensorTopic();
 
         // готовим продьюсер для отправки подготовленных снапшотов SensorsSnapshotAvro в топик telemetry.snapshots.v1
-        Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
-        String topicProducer = kafkaClient.getTelemetrySnapshotsTopic();
+//        Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
+        String topicProducer = cofiguration.getTelemetrySnapshotsTopic();
 
         // регистрируем хук, в котором вызываем метод wakeup.
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));

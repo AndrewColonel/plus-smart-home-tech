@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.aggregator.kafkaclient;
+package ru.yandex.practicum.telemetry.aggregator.config;
 
 import lombok.Getter;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Getter
-public class KafkaClientConfiguration {
+public class KafkaConfiguration {
 
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootStrapServers;

@@ -10,7 +10,7 @@ import ru.yandex.practicum.telemetry.analyzer.service.HubEventProcessor;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class Analyzer {
-    public static <HubEventProcessor> void main(String[] args) {
+    public static  void main(String[] args) {
         ConfigurableApplicationContext context =
                 SpringApplication.run(Analyzer.class, args);
 

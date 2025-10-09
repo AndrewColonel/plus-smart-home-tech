@@ -36,7 +36,7 @@ spring:
     max-partition-fetch-bytes-config: 307200
 
  datasource:
-   url: jdbc:postgresql://localhost:5432/sht
+   url: jdbc:postgresql://localhost:6432/sht
    driver-class-name: org.postgresql.Driver
    username: sht
    password: sht
