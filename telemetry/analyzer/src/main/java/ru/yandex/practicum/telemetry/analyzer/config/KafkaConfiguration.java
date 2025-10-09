@@ -43,7 +43,7 @@ public class KafkaConfiguration {
     @Value(value = "${spring.kafka.consumer.max-partition-fetch-bytes-config}")
     private String maxPartitionFetchBytesConfig;
 
-    private final AtomicInteger counter = new AtomicInteger(0);
+    private final AtomicInteger counter = new AtomicInteger(100);
 
     public Properties getProduserConfig() {
         Properties config = new Properties();

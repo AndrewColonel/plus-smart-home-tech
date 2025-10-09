@@ -3,12 +3,11 @@ package ru.yandex.practicum.telemetry.analyzer.service;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfiguration;
 
 import java.time.Duration;
@@ -52,8 +51,12 @@ public class HubEventProcessor implements Runnable {
 
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
+
+
                     // TODO
-                    handleRecord();
+                    handleRecord(record);
+
+
                     manageOffsets(record, count, consumer);
                     count++;
                 }
@@ -90,9 +93,28 @@ public class HubEventProcessor implements Runnable {
         }
     }
 
-    private void handleRecord() {
+    private void handleRecord(ConsumerRecord<String, SpecificRecordBase> record) {
+//        log.info("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
+//                record.topic(), record.partition(), record.offset(), record.value());
+        log.info(">>> Сообщение хаба: <<< {}", record.value());
+        if (record.value() instanceof HubEventAvro hubEventAvro) {
+            if (hubEventAvro.getPayload() instanceof DeviceAddedEventAvro deviceAddedEventAvro)
+                 log.info("Событие deviceAddedEventAvro : {}", hubEventAvro.getPayload().getClass().getSimpleName());
+
+            if (hubEventAvro.getPayload() instanceof DeviceRemovedEventAvro deviceRemovedEventAvro)
+                log.info("Событие deviceRemovedEventAvro : {}", hubEventAvro.getPayload().getClass().getSimpleName());
+
+            if (hubEventAvro.getPayload() instanceof ScenarioAddedEventAvro scenarioAddedEventAvro)
+                log.info("Событие scenarioAddedEventAvro : {}", hubEventAvro.getPayload().getClass().getSimpleName());
+
+            if (hubEventAvro.getPayload() instanceof ScenarioRemovedEventAvro scenarioRemovedEventAvro)
+                log.info("Событие scenarioRemovedEventAvro : {}", hubEventAvro.getPayload().getClass().getSimpleName());
+        }
+
+
 
     }
+
 
 
 }

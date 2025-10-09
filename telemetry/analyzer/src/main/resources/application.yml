@@ -1,10 +1,10 @@
-grpc:
-  client:
-    hub-router:
-      address: 'static://localhost:59090'
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
+#grpc:
+#  client:
+#    hub-router:
+#      address: 'static://localhost:59090'
+#      enableKeepAlive: true
+#      keepAliveWithoutCalls: true
+#      negotiationType: plaintext
 
 logging:
   level:
@@ -30,7 +30,7 @@ spring:
     auto-offset-reset: "earliest"
     auto-commit: false
     key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
-    value-deserializer: "ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer"
+    value-deserializer: "ru.yandex.practicum.kafka.deserializer.HubEventDeserializer"
     max-poll-record-config: 100
     fetch-max-bytes-config: 3072000
     max-partition-fetch-bytes-config: 307200

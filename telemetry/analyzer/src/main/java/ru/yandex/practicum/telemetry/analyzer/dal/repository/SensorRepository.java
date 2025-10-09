@@ -1,7 +1,7 @@
-package ru.yandex.practicum.telemetry.analyzer.repository;
+package ru.yandex.practicum.telemetry.analyzer.dal.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.yandex.practicum.telemetry.analyzer.model.Sensor;
+import ru.yandex.practicum.telemetry.analyzer.dal.model.Sensor;
 
 import java.util.Collection;
 import java.util.Optional;
