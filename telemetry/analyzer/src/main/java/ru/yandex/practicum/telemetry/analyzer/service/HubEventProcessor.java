@@ -9,25 +9,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfiguration;
+import ru.yandex.practicum.telemetry.analyzer.exception.NotFoundException;
+import ru.yandex.practicum.telemetry.analyzer.service.handler.HubProcessorHandler;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class HubEventProcessor implements Runnable {
 
-    private final KafkaConfiguration cofiguration;
+       private final KafkaConfiguration cofiguration;
 
     private final Consumer<String, SpecificRecordBase> consumer;
 
+    private final Map<String, HubProcessorHandler> hubProcessorHandlers;
+
     @Autowired
-    public HubEventProcessor(KafkaConfiguration cofiguration) {
+    public HubEventProcessor(KafkaConfiguration cofiguration, List<HubProcessorHandler> hubProcessorHandlers) {
         this.cofiguration = cofiguration;
         this.consumer = new KafkaConsumer<>(cofiguration.getConsumerConfig());
+
+        this.hubProcessorHandlers = hubProcessorHandlers.stream()
+                .collect(Collectors.toMap(HubProcessorHandler::getRecordType,
+                        Function.identity()));
+
     }
 
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
@@ -48,14 +59,11 @@ public class HubEventProcessor implements Runnable {
             while (true) {
 
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
-
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
 
-
                     // TODO
                     handleRecord(record);
-
 
                     manageOffsets(record, count, consumer);
                     count++;
@@ -63,7 +71,7 @@ public class HubEventProcessor implements Runnable {
                 consumer.commitAsync();
             }
 
-        } catch (WakeupException ignored) {
+        } catch (WakeupException | NotFoundException ignored) {
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от датчиков", e);
         } finally {
@@ -74,7 +82,6 @@ public class HubEventProcessor implements Runnable {
                 consumer.close();
             }
         }
-
     }
 
     private void manageOffsets(ConsumerRecord<String, SpecificRecordBase> record, int count,
@@ -97,24 +104,9 @@ public class HubEventProcessor implements Runnable {
 //        log.info("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
 //                record.topic(), record.partition(), record.offset(), record.value());
         log.info(">>> Сообщение хаба: <<< {}", record.value());
-        if (record.value() instanceof HubEventAvro hubEventAvro) {
-            if (hubEventAvro.getPayload() instanceof DeviceAddedEventAvro deviceAddedEventAvro)
-                 log.info("Событие deviceAddedEventAvro : {}", hubEventAvro.getPayload().getClass().getSimpleName());
-
-            if (hubEventAvro.getPayload() instanceof DeviceRemovedEventAvro deviceRemovedEventAvro)
-                log.info("Событие deviceRemovedEventAvro : {}", hubEventAvro.getPayload().getClass().getSimpleName());
-
-            if (hubEventAvro.getPayload() instanceof ScenarioAddedEventAvro scenarioAddedEventAvro)
-                log.info("Событие scenarioAddedEventAvro : {}", hubEventAvro.getPayload().getClass().getSimpleName());
-
-            if (hubEventAvro.getPayload() instanceof ScenarioRemovedEventAvro scenarioRemovedEventAvro)
-                log.info("Событие scenarioRemovedEventAvro : {}", hubEventAvro.getPayload().getClass().getSimpleName());
+        if (record.value() instanceof HubEventAvro event) {
+            HubProcessorHandler handler = hubProcessorHandlers.get(event.getPayload().getClass().getSimpleName());
+                if (Objects.nonNull(handler))  handler.handleRecord(event);
         }
-
-
-
     }
-
-
-
 }
