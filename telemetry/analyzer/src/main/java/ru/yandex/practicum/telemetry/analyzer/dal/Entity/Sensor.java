@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.analyzer.dal.model;
+package ru.yandex.practicum.telemetry.analyzer.dal.Entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,18 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "scenarios")
+@Table(name = "sensors")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Scenario {
+public class Sensor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     @Column(name = "hub_id")
     private String hubId;
-    @Column(name = "name")
-    private String name;
-
 }

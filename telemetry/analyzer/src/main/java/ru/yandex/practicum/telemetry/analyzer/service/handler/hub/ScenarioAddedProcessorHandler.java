@@ -7,14 +7,15 @@ import ru.yandex.practicum.kafka.telemetry.event.DeviceActionAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioConditionAvro;
-import ru.yandex.practicum.telemetry.analyzer.dal.model.Action;
-import ru.yandex.practicum.telemetry.analyzer.dal.model.Condition;
-import ru.yandex.practicum.telemetry.analyzer.dal.model.Scenario;
+import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Action;
+import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Condition;
+import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Scenario;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.ActionRepository;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.ConditionRepository;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.ScenarioRepository;
 import ru.yandex.practicum.telemetry.analyzer.service.handler.HubProcessorHandler;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,24 +40,35 @@ public class ScenarioAddedProcessorHandler implements HubProcessorHandler {
         Scenario scenario = Scenario.builder()
                 .hubId(event.getHubId())
                 .name(scenarioAddedEventAvro.getName())
+                .conditions(new HashMap<>())
+                .actions(new HashMap<>())
                 .build();
         scenarioRepository.findByHubIdAndName(scenario.getHubId(), scenario.getName()).ifPresentOrElse(
-                v -> log.info("Сценарий {} уже существует", scenario.getName()),
+                v -> log.info("Сценарий {} уже существует", v.getName()),
                 () -> {
-                    scenarioRepository.save(scenario);
-                    log.trace("Добавалена новая запись для нового сценария {}", scenario.getName());
+
                     List<Condition> conditions = scenarioAddedEventAvro.getConditions().stream()
                             .map(this::toCondition)
+                            .peek(c -> scenario.addCondition(c.getSensorId(), c))
                             .toList();
-                    conditionRepository.saveAll(conditions);
-                    log.trace("добавлен список кондиций {} для сценария {}", conditions, scenario.getName());
+                    log.debug("Список кондиций - {}", conditions);
+                    List<Condition> _conditions = conditionRepository.saveAll(conditions);
+                    log.trace("добавлен список кондиций {} для сценария {}", _conditions, scenario.getName());
+
                     List<Action> actions = scenarioAddedEventAvro.getActions().stream()
                             .map(this::toAction)
+                            .peek(a -> scenario.addAction(a.getSensorId(), a))
                             .toList();
-                    actionRepository.saveAll(actions);
-                    log.trace("Добавлен список действий {} для сценария {}", actions, scenario.getName());
+                    log.debug("Список дейсвтий - {}", actions);
+                    List<Action> _actions = actionRepository.saveAll(actions);
+                    log.trace("Добавлен список действий {} для сценария {}", _actions, scenario.getName());
+
+                    scenarioRepository.save(scenario);
+                    log.trace("Добавалена новая запись для нового сценария {}", scenario.getName());
+
                     log.info("Сценарий {} создан", scenario.getName());
                 });
+
 
     }
 
@@ -64,6 +76,7 @@ public class ScenarioAddedProcessorHandler implements HubProcessorHandler {
         Condition condition = Condition.builder()
                 .type(scenarioConditionAvro.getType().toString())
                 .operation(scenarioConditionAvro.getOperation().toString())
+                .sensorId(scenarioConditionAvro.getSensorId())
                 .build();
         Object value = scenarioConditionAvro.getValue();
         if (Objects.nonNull(value)) {
@@ -80,6 +93,7 @@ public class ScenarioAddedProcessorHandler implements HubProcessorHandler {
         return Action.builder()
                 .type(deviceActionAvro.getType().toString())
                 .value(deviceActionAvro.getValue())
+                .sensorId(deviceActionAvro.getSensorId())
                 .build();
     }
 

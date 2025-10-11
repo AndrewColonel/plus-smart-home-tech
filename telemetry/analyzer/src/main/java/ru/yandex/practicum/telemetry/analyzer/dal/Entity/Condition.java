@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.analyzer.dal.model;
+package ru.yandex.practicum.telemetry.analyzer.dal.Entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,12 +12,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Action {
+public class Condition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "type")
     private String type;
+    @Column(name = "operation")
+    private String operation;
     @Column(name = "value")
     private Integer value;
+    @Transient
+    private String sensorId;
+
 }

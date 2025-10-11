@@ -1,7 +1,7 @@
 package ru.yandex.practicum.telemetry.analyzer.dal.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.yandex.practicum.telemetry.analyzer.dal.model.Scenario;
+import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Scenario;
 
 import java.util.List;
 import java.util.Optional;

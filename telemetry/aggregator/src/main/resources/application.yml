@@ -1,6 +1,6 @@
 logging:
   level:
-    ru.practicum: trace
+    ru.yandex.practicum: TRACE
 
 spring:
  kafka:

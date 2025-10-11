@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfiguration;
-import ru.yandex.practicum.telemetry.analyzer.exception.NotFoundException;
 import ru.yandex.practicum.telemetry.analyzer.service.handler.HubProcessorHandler;
 
 import java.time.Duration;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 @Component
 public class HubEventProcessor implements Runnable {
 
-       private final KafkaConfiguration cofiguration;
+    private final KafkaConfiguration cofiguration;
 
     private final Consumer<String, SpecificRecordBase> consumer;
 
@@ -71,7 +70,7 @@ public class HubEventProcessor implements Runnable {
                 consumer.commitAsync();
             }
 
-        } catch (WakeupException | NotFoundException ignored) {
+        } catch (WakeupException ignored) {
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от датчиков", e);
         } finally {
@@ -101,12 +100,18 @@ public class HubEventProcessor implements Runnable {
     }
 
     private void handleRecord(ConsumerRecord<String, SpecificRecordBase> record) {
-//        log.info("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
-//                record.topic(), record.partition(), record.offset(), record.value());
+        log.debug("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
+                record.topic(), record.partition(), record.offset(), record.value());
         log.info(">>> Сообщение хаба: <<< {}", record.value());
         if (record.value() instanceof HubEventAvro event) {
-            HubProcessorHandler handler = hubProcessorHandlers.get(event.getPayload().getClass().getSimpleName());
-                if (Objects.nonNull(handler))  handler.handleRecord(event);
+            String handlerName = event.getPayload().getClass().getSimpleName();
+            HubProcessorHandler handler = hubProcessorHandlers.get(handlerName);
+            if (Objects.nonNull(handler)) {
+                log.trace("Выбран обработчик {}",handler.getClass().getSimpleName());
+                handler.handleRecord(event);
+            } else {
+                log.trace("Обработчика для {} не найдено",handlerName);
+            }
         }
     }
 }

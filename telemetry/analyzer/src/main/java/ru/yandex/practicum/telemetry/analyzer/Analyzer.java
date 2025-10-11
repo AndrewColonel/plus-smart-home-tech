@@ -11,12 +11,12 @@ import ru.yandex.practicum.telemetry.analyzer.service.HubEventProcessor;
 @ConfigurationPropertiesScan
 public class Analyzer {
     public static  void main(String[] args) {
-        ConfigurableApplicationContext context =
+//        ConfigurableApplicationContext context =
                 SpringApplication.run(Analyzer.class, args);
 
-
-        HubEventProcessor hubEventProcessor = context.getBean(HubEventProcessor.class);
-        hubEventProcessor.run();
+//
+//        HubEventProcessor hubEventProcessor = context.getBean(HubEventProcessor.class);
+//        hubEventProcessor.run();
 
 
 //        final HubEventProcessor hubEventProcessor =

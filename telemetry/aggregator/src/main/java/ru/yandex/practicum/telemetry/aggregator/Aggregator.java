@@ -19,10 +19,12 @@ public class Aggregator {
         // Запуск Spring Boot приложения при помощи вспомогательного класса SpringApplication
         // метод run возвращает назад настроенный контекст, который мы можем использовать для
         // получения настроенных бинов
-        ConfigurableApplicationContext context = SpringApplication.run(Aggregator.class, args);
-
-        // Получаем бин AggregationStarter из контекста и запускаем основную логику сервиса
-        AggregationStarter aggregator = context.getBean(AggregationStarter.class);
-        aggregator.start();
+//        ConfigurableApplicationContext context = SpringApplication.run(Aggregator.class, args);
+//
+//        // Получаем бин AggregationStarter из контекста и запускаем основную логику сервиса
+//        AggregationStarter aggregator = context.getBean(AggregationStarter.class);
+//        aggregator.start();
+//    }
+        SpringApplication.run(Aggregator.class, args);
     }
 }

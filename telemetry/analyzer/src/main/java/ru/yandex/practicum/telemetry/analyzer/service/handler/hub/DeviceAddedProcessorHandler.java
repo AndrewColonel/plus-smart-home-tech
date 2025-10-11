@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.telemetry.analyzer.dal.model.Sensor;
+import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Sensor;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.SensorRepository;
 import ru.yandex.practicum.telemetry.analyzer.service.handler.HubProcessorHandler;
 
@@ -29,10 +29,10 @@ public class DeviceAddedProcessorHandler implements HubProcessorHandler {
                 .hubId(event.getHubId())
                 .build();
         sensorRepository.findByIdAndHubId(sensor.getId(), sensor.getHubId()).ifPresentOrElse(
-                v -> log.info("Такое устройство {} уже подключено", sensor),
+                v -> log.info("Такое устройство {} уже подключено", v),
                 () -> {
                     sensorRepository.save(sensor);
-                    log.info("Подключено устройство - сенсор, {}", sensor);
+                    log.info("Подключено устройство {}", sensor);
                 });
     }
 }
