@@ -29,9 +29,9 @@ public class DeviceRemovedProcessrHandler implements HubProcessorHandler {
                 .hubId(event.getHubId())
                 .build();
         sensorRepository.findByIdAndHubId(sensor.getId(), sensor.getHubId()).ifPresentOrElse(
-                v -> {
-                    sensorRepository.delete(v);
-                    log.info("Удалено устройство {}", v);
+                d -> {
+                    sensorRepository.delete(d);
+                    log.info("Удалено устройство {}", d);
                 }, () -> log.info("Не найдено устройство {}", sensor));
     }
 }

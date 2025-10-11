@@ -29,7 +29,7 @@ public class DeviceAddedProcessorHandler implements HubProcessorHandler {
                 .hubId(event.getHubId())
                 .build();
         sensorRepository.findByIdAndHubId(sensor.getId(), sensor.getHubId()).ifPresentOrElse(
-                v -> log.info("Такое устройство {} уже подключено", v),
+                d -> log.info("Такое устройство {} уже подключено", d),
                 () -> {
                     sensorRepository.save(sensor);
                     log.info("Подключено устройство {}", sensor);

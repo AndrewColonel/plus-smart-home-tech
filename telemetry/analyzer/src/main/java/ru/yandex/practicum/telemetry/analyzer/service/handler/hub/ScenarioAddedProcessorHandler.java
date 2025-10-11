@@ -44,16 +44,18 @@ public class ScenarioAddedProcessorHandler implements HubProcessorHandler {
                 .actions(new HashMap<>())
                 .build();
         scenarioRepository.findByHubIdAndName(scenario.getHubId(), scenario.getName()).ifPresentOrElse(
-                v -> log.info("Сценарий {} уже существует", v.getName()),
+                s -> {
+                    log.info("Сценарий -{}- уже существует", s.getName());
+                },
                 () -> {
-
+                    log.debug("Сценария {} еще не существует, создаем...", scenario.getName());
                     List<Condition> conditions = scenarioAddedEventAvro.getConditions().stream()
                             .map(this::toCondition)
                             .peek(c -> scenario.addCondition(c.getSensorId(), c))
                             .toList();
                     log.debug("Список кондиций - {}", conditions);
                     List<Condition> _conditions = conditionRepository.saveAll(conditions);
-                    log.trace("добавлен список кондиций {} для сценария {}", _conditions, scenario.getName());
+                    log.trace("добавлен список кондиций -{}- для сценария -{}-", _conditions, scenario.getName());
 
                     List<Action> actions = scenarioAddedEventAvro.getActions().stream()
                             .map(this::toAction)
@@ -61,15 +63,14 @@ public class ScenarioAddedProcessorHandler implements HubProcessorHandler {
                             .toList();
                     log.debug("Список дейсвтий - {}", actions);
                     List<Action> _actions = actionRepository.saveAll(actions);
-                    log.trace("Добавлен список действий {} для сценария {}", _actions, scenario.getName());
+                    log.trace("Добавлен список действий -{}- для сценария -{}-", _actions, scenario.getName());
 
-                    scenarioRepository.save(scenario);
-                    log.trace("Добавалена новая запись для нового сценария {}", scenario.getName());
+                    Scenario _scenario = scenarioRepository.save(scenario);
+                    log.debug("Список состояний -{}- для сценария -{}-", _scenario.getConditions(), _scenario.getName());
+                    log.debug("Список действий -{}- для сценария -{}-", _scenario.getActions(), _scenario.getName());
 
-                    log.info("Сценарий {} создан", scenario.getName());
+                    log.info("Сценарий -{}- создан", _scenario.getName());
                 });
-
-
     }
 
     private Condition toCondition(ScenarioConditionAvro scenarioConditionAvro) {
@@ -86,7 +87,6 @@ public class ScenarioAddedProcessorHandler implements HubProcessorHandler {
             condition.setValue(null);
         }
         return condition;
-
     }
 
     private Action toAction(DeviceActionAvro deviceActionAvro) {

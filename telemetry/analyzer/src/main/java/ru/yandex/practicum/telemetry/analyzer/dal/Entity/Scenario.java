@@ -24,7 +24,7 @@ public class Scenario {
     @Column(name = "name")
     private String name;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @MapKeyColumn(
             table = "scenario_conditions",
             name = "sensor_id")
@@ -35,7 +35,7 @@ public class Scenario {
     private Map<String, Condition> conditions = new HashMap<>();
 
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @MapKeyColumn(
             table = "scenario_actions",
             name = "sensor_id")
