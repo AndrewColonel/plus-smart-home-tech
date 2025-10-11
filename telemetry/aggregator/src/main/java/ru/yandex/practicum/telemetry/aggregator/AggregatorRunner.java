@@ -1,8 +1,9 @@
-package ru.yandex.practicum.telemetry.aggregator.service;
+package ru.yandex.practicum.telemetry.aggregator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.telemetry.aggregator.service.AggregationStarter;
 
 @Component
 @RequiredArgsConstructor
@@ -12,6 +13,6 @@ public class AggregatorRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        aggregationStarter.start();
+        aggregationStarter.run();
     }
 }

@@ -60,10 +60,7 @@ public class HubEventProcessor implements Runnable {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
-
-                    // TODO
                     handleRecord(record);
-
                     manageOffsets(record, count, consumer);
                     count++;
                 }

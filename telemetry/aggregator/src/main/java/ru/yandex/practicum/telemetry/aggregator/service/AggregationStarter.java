@@ -25,7 +25,7 @@ import java.util.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AggregationStarter {
+public class AggregationStarter implements Runnable {
 
     private final KafkaConfiguration cofiguration;
     private final SnapshotService snapshotService;
@@ -52,7 +52,8 @@ public class AggregationStarter {
      * Подписывается на топики для получения событий от датчиков,
      * формирует снимок их состояния и записывает в кафку.
      */
-    public void start() {
+    @Override
+    public void run() {
         // готовим консьюмер для получение данных SensorEventAvro из топика telemetry.sensors.v1
 //        Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer();
         String topicConsumer = cofiguration.getTelemetrySensorTopic();
