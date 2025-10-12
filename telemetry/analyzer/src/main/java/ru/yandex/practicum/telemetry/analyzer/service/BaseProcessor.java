@@ -6,7 +6,6 @@ import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfiguration;
 
 import java.time.Duration;
 import java.util.*;
@@ -16,16 +15,27 @@ import java.util.*;
 public abstract class BaseProcessor implements Runnable {
 
     private final String topicConsumer;
-
     private final Consumer<String, SpecificRecordBase> consumer;
+    private final Duration pollTimeout;
 
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
-    private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
+//    private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
 
-    public BaseProcessor(Consumer<String, SpecificRecordBase> consumer, String topicConsumer) {
+//    public BaseProcessor(Consumer<String, SpecificRecordBase> consumer, String topicConsumer) {
+//        this.topicConsumer = topicConsumer;
+//        this.consumer = consumer;
+//    }
+
+    public BaseProcessor(Properties properties, String topicConsumer, Duration pollTimeout) {
+
+        System.out.println("---------------------");
+        System.out.println(properties);
+
+        this.consumer = new KafkaConsumer<String, SpecificRecordBase>(properties);
         this.topicConsumer = topicConsumer;
-        this.consumer = consumer;
+        this.pollTimeout = pollTimeout;
     }
+
 
     @Override
     public void run() {
@@ -40,7 +50,7 @@ public abstract class BaseProcessor implements Runnable {
 
             while (true) {
 
-                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
+                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(pollTimeout);
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     handleRecord(record);

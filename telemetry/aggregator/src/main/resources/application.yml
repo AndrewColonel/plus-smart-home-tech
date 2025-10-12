@@ -1,7 +1,10 @@
 logging:
   level:
     ru.yandex.practicum: TRACE
+    org:
+      springframework: WARN
 
+# для версии KafkaConfiguration
 spring:
  kafka:
    bootstrap-servers: localhost:9092
@@ -19,4 +22,29 @@ spring:
     max-poll-record-config: 100
     fetch-max-bytes-config: 3072000
     max-partition-fetch-bytes-config: 307200
+
+
+# для версии KafkaConfig
+aggregator:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    producerconfig:
+      properties:
+        bootstrap.servers: ${aggregator.kafka.bootstrap-servers}
+        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        value.serializer: ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer
+        linger.ms: 0
+      topic: "telemetry.snapshots.v1"
+
+    consumerconfig:
+      properties:
+        bootstrap.servers: ${aggregator.kafka.bootstrap-servers}
+        enable.auto.commit: false
+        client.id: "telemetry.aggregator.sensor.client"
+        group.id: "telemetry.aggregator.sensor"
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer
+      topic: "telemetry.sensors.v1"
+      poll-timeout: 100ms
+
 

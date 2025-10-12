@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
+import ru.yandex.practicum.telemetry.aggregator.config.KafkaConfig;
 import ru.yandex.practicum.telemetry.aggregator.config.KafkaConfiguration;
 
 import java.time.Duration;
@@ -27,25 +28,27 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AggregationStarter implements Runnable {
 
-    private final KafkaConfiguration cofiguration;
     private final SnapshotService snapshotService;
 
     private final Producer<String, SpecificRecordBase> producer;
-    private final Consumer<String, SpecificRecordBase> consumer;
+    private final KafkaConfig.ProducerConfig producerConfig;
 
+    private final Consumer<String, SpecificRecordBase> consumer;
+    private final KafkaConfig.ConsumerConfig consumerConfig;
 
     @Autowired
-    public AggregationStarter(KafkaConfiguration cofiguration, SnapshotService snapshotService) {
+    public AggregationStarter(SnapshotService snapshotService, KafkaConfig kafkaConfig) {
         this.snapshotService = snapshotService;
-        this.cofiguration = cofiguration;
-        this.consumer = new KafkaConsumer<>(cofiguration.getConsumerConfig());
 
-        this.producer = new KafkaProducer<>(cofiguration.getProduserConfig());
+        this.producerConfig = kafkaConfig.getProducerConfig();
+        this.consumerConfig = kafkaConfig.getConsumerConfig();
+
+        this.producer = new KafkaProducer<>(producerConfig.getProperties());
+        this.consumer = new KafkaConsumer<>(consumerConfig.getProperties());
 
     }
 
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
-    private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
 
     /**
      * Метод для начала процесса агрегации данных.
@@ -56,11 +59,11 @@ public class AggregationStarter implements Runnable {
     public void run() {
         // готовим консьюмер для получение данных SensorEventAvro из топика telemetry.sensors.v1
 //        Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer();
-        String topicConsumer = cofiguration.getTelemetrySensorTopic();
+        String topicConsumer = consumerConfig.getTopic();
 
         // готовим продьюсер для отправки подготовленных снапшотов SensorsSnapshotAvro в топик telemetry.snapshots.v1
 //        Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
-        String topicProducer = cofiguration.getTelemetrySnapshotsTopic();
+        String topicProducer = producerConfig.getTopic();
 
         // регистрируем хук, в котором вызываем метод wakeup.
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
@@ -72,7 +75,7 @@ public class AggregationStarter implements Runnable {
             // Цикл обработки событий
             while (true) {
                 // реализация цикла опроса и обработка полученных данных
-                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
+                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(consumerConfig.getPollTimeout());
 
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
@@ -144,15 +147,6 @@ public class AggregationStarter implements Runnable {
                     () -> {
                         log.info("<--- Изменений в состоянии телеметрии нет --->");
                     });
-
-//            if (optionalSensorsSnapshotAvro.isPresent()) {
-//                ProducerRecord<String, SpecificRecordBase> producerRecord =
-//                        new ProducerRecord<>(topicProducer, optionalSensorsSnapshotAvro.get());
-//                log.info(">>> Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
-//                producer.send(producerRecord);
-//            } else {
-//                log.info("<--- Изменений в состоянии телеметрии нет --->");
-//            }
         }
     }
 

@@ -17,6 +17,31 @@ logging:
         transaction: INFO
         transaction.interceptor: INFO
 
+analyzer:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    hubconsumer:
+      properties:
+        bootstrap.servers: ${analyzer.kafka.bootstrap-servers}
+        enable.auto.commit: false
+        client.id: "telemetry.analyser.hub.client"
+        group.id: "telemetry.analyser.hub"
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.kafka.deserializer.HubEventDeserializer
+      topic: "telemetry.hubs.v1"
+      poll-timeout: 500ms
+
+    snapshotconsumer:
+      properties:
+        bootstrap.servers: ${analyzer.kafka.bootstrap-servers}
+        enable.auto.commit: false
+        client.id: "telemetry.analyser.snapshot.client"
+        group.id: "telemetry.analyser.snapshot"
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.kafka.deserializer.SensorsSnapshotDeserializer
+      topic: "telemetry.snapshots.v1"
+      poll-timeout: 500ms
+
 spring:
  kafka:
    bootstrap-servers: localhost:9092
@@ -34,6 +59,8 @@ spring:
     max-poll-record-config: 100
     fetch-max-bytes-config: 3072000
     max-partition-fetch-bytes-config: 307200
+
+
 
  datasource:
    url: jdbc:postgresql://localhost:6432/sht
