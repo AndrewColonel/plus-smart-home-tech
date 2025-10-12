@@ -6,7 +6,6 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.kafka.deserializer.SensorsSnapshotDeserializer;
 import ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer;
 
 import java.util.Properties;
@@ -14,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Getter
-public class KafkaConfiguration {
+public class KafkaConfCons2 {
 
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootStrapServers;
@@ -48,7 +47,7 @@ public class KafkaConfiguration {
 
     public Properties getProduserConfig() {
         Properties config = new Properties();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "SomeConsumer2");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralAvroSerializer.class);
         return config;
@@ -57,13 +56,13 @@ public class KafkaConfiguration {
     public Properties getConsumerConfig() {
         Properties config = new Properties();
 
-        config.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
+        config.put(ConsumerConfig.CLIENT_ID_CONFIG, "SomeConsumer2");
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId + counter.getAndIncrement());
         config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, autoCommit);
 
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorsSnapshotDeserializer.class);
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
 
         return config;
     }

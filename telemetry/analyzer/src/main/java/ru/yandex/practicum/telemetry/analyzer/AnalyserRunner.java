@@ -11,7 +11,7 @@ import ru.yandex.practicum.telemetry.analyzer.service.SnapshotProcessor;
 @RequiredArgsConstructor
 public class AnalyserRunner implements CommandLineRunner {
     final HubEventProcessor hubEventProcessor;
-//    final SnapshotProcessor snapshotProcessor;
+    final SnapshotProcessor snapshotProcessor;
 
     @Override
     public void run(String... args) throws Exception {
@@ -20,7 +20,7 @@ public class AnalyserRunner implements CommandLineRunner {
         hubEventsThread.setName("HubEventHandlerThread");
         hubEventsThread.start();
 
-//        snapshotProcessor.start();
+        snapshotProcessor.run();
 
     }
 }

@@ -39,9 +39,9 @@ public class AggregationStarter implements Runnable {
         this.snapshotService = snapshotService;
         this.cofiguration = cofiguration;
         this.consumer = new KafkaConsumer<>(cofiguration.getConsumerConfig());
-        ;
+
         this.producer = new KafkaProducer<>(cofiguration.getProduserConfig());
-        ;
+
     }
 
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
@@ -135,14 +135,24 @@ public class AggregationStarter implements Runnable {
         if (record.value() instanceof SensorEventAvro event) {
             Optional<SensorsSnapshotAvro> optionalSensorsSnapshotAvro = snapshotService.updateState(event);
             // если снапшот сформирован, то его надо отправить в брокер
-            if (optionalSensorsSnapshotAvro.isPresent()) {
-                ProducerRecord<String, SpecificRecordBase> producerRecord =
-                        new ProducerRecord<>(topicProducer, optionalSensorsSnapshotAvro.get());
-                log.info(">>> Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
-                producer.send(producerRecord);
-            } else {
-                log.info("<--- Изменений в состоянии телеметрии нет --->");
-            }
+            optionalSensorsSnapshotAvro.ifPresentOrElse(s -> {
+                        ProducerRecord<String, SpecificRecordBase> producerRecord =
+                                new ProducerRecord<>(topicProducer, s);
+                        log.info(">>> Снапшот {} для отправки в топик {}", s, topicProducer);
+                        producer.send(producerRecord);
+                    },
+                    () -> {
+                        log.info("<--- Изменений в состоянии телеметрии нет --->");
+                    });
+
+//            if (optionalSensorsSnapshotAvro.isPresent()) {
+//                ProducerRecord<String, SpecificRecordBase> producerRecord =
+//                        new ProducerRecord<>(topicProducer, optionalSensorsSnapshotAvro.get());
+//                log.info(">>> Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
+//                producer.send(producerRecord);
+//            } else {
+//                log.info("<--- Изменений в состоянии телеметрии нет --->");
+//            }
         }
     }
 
