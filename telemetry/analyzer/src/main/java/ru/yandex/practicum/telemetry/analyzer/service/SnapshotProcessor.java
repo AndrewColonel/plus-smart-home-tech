@@ -7,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfig;
-import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfiguration;
 import ru.yandex.practicum.telemetry.analyzer.service.handler.SnapshotProcessorHandler;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,8 +21,6 @@ public class SnapshotProcessor extends BaseProcessor {
 
     private final Map<String, SnapshotProcessorHandler> snapshotProcessorHandlers;
 
-//    private final KafkaConfig.ConsumerConfig consumerConfig;
-
     @Autowired
     public SnapshotProcessor(KafkaConfig kafkaConfig,
                              List<SnapshotProcessorHandler> snapshotProcessorHandlers) {
@@ -36,42 +32,6 @@ public class SnapshotProcessor extends BaseProcessor {
                 .collect(Collectors.toMap(SnapshotProcessorHandler::getRecordType,
                         Function.identity()));
     }
-
-
-
-//    public SnapshotProcessor(KafkaConfiguration cofiguration,
-//                             List<SnapshotProcessorHandler> snapshotProcessorHandlers,
-//                             KafkaConfig kafkaConfig) {
-//        super(cofiguration.getConsumerConfig(),
-//                cofiguration.getTelemetryHubTopic(),
-//                Duration.ofMillis(100));
-//
-//
-//        this.consumerConfig = kafkaConfig.getSnapshotConsumer();
-//
-//        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//        System.out.println(consumerConfig.getProperties());
-//
-//
-//
-//        this.snapshotProcessorHandlers = snapshotProcessorHandlers.stream()
-//                .collect(Collectors.toMap(SnapshotProcessorHandler::getRecordType,
-//                        Function.identity()));
-//    }
-
-
-
-//
-//    public SnapshotProcessor(KafkaConfiguration cofiguration,
-//                             List<SnapshotProcessorHandler> snapshotProcessorHandlers) {
-//        super(new KafkaConsumer<String, SpecificRecordBase>(cofiguration.getConsumerConfig())
-//                ,cofiguration.getTelemetrySnapshotsTopic());
-//
-//        this.snapshotProcessorHandlers = snapshotProcessorHandlers.stream()
-//                .collect(Collectors.toMap(SnapshotProcessorHandler::getRecordType,
-//                        Function.identity()));
-//    }
-
 
     @Override
     public void handleRecord(ConsumerRecord<String, SpecificRecordBase> record) {

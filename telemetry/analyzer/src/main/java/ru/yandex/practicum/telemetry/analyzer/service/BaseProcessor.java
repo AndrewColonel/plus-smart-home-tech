@@ -19,23 +19,12 @@ public abstract class BaseProcessor implements Runnable {
     private final Duration pollTimeout;
 
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
-//    private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
-
-//    public BaseProcessor(Consumer<String, SpecificRecordBase> consumer, String topicConsumer) {
-//        this.topicConsumer = topicConsumer;
-//        this.consumer = consumer;
-//    }
 
     public BaseProcessor(Properties properties, String topicConsumer, Duration pollTimeout) {
-
-        System.out.println("---------------------");
-        System.out.println(properties);
-
         this.consumer = new KafkaConsumer<String, SpecificRecordBase>(properties);
         this.topicConsumer = topicConsumer;
         this.pollTimeout = pollTimeout;
     }
-
 
     @Override
     public void run() {
