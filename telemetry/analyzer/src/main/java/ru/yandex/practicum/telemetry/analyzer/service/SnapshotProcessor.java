@@ -103,34 +103,34 @@ public class SnapshotProcessor extends BaseProcessor {
                                     switch (ConditionType.valueOf(condition.getType())) {
                                         case ConditionType.TEMPERATURE -> {
                                             conditionState = conditionOperationCheck(sensor.getTemperatureC(), condition,
-                                                    scenario.getName());
+                                                    idSensor, scenario.getName());
                                         }
                                         case ConditionType.CO2LEVEL -> {
                                             conditionState = conditionOperationCheck(sensor.getCo2Level(), condition,
-                                                    scenario.getName());
+                                                    idSensor, scenario.getName());
                                         }
                                         case ConditionType.HUMIDITY -> {
                                             conditionState = conditionOperationCheck(sensor.getHumidity(), condition,
-                                                    scenario.getName());
+                                                    idSensor, scenario.getName());
                                         }
 
                                     }
                                 }
                                 if (sensorState.getData() instanceof LightSensorAvro sensor) {
                                     conditionState = conditionOperationCheck(sensor.getLuminosity(), condition,
-                                            scenario.getName());
+                                            idSensor, scenario.getName());
                                 }
                                 if (sensorState.getData() instanceof MotionSensorAvro sensor) {
                                     conditionState = conditionOperationCheck((sensor.getMotion() ? 1 : 0), condition,
-                                            scenario.getName());
+                                            idSensor,scenario.getName());
                                 }
                                 if (sensorState.getData() instanceof SwitchSensorAvro sensor) {
                                     conditionState = conditionOperationCheck((sensor.getState() ? 1 : 0), condition,
-                                            scenario.getName());
+                                            idSensor,scenario.getName());
                                 }
                                 if (sensorState.getData() instanceof TemperatureSensorAvro sensor) {
                                     conditionState = conditionOperationCheck(sensor.getTemperatureC(), condition,
-                                            scenario.getName());
+                                            idSensor,scenario.getName());
                                 }
 
                                 //------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ public class SnapshotProcessor extends BaseProcessor {
     }
 
 
-    public boolean conditionOperationCheck(int sensorValue, Condition condition, String scenarioName) {
+    public boolean conditionOperationCheck(int sensorValue, Condition condition,String idSensor, String scenarioName) {
         boolean conditionState = false;
         switch (ConditionOperation.valueOf(condition.getOperation())) {
 
@@ -242,7 +242,7 @@ public class SnapshotProcessor extends BaseProcessor {
         }
         log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         log.debug("Проверка кондиции");
-        log.debug("сенсор: {} типа: {}", condition.getSensorId(), condition.getType());
+        log.debug("сенсор: {} типа: {}", idSensor, condition.getType());
         log.info("кондиция {} сценария {}", condition.getId(), scenarioName);
         log.debug("пороговое значение: {}", condition.getValue());
         log.debug("условие: {}", condition.getOperation());
