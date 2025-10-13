@@ -29,7 +29,7 @@ public class SnapshotProcessor extends BaseProcessor {
                 record.topic(), record.partition(), record.offset(), record.value());
         log.info("+++ Получен снапшот: +++ {}", record.value());
         if (record.value() instanceof SensorsSnapshotAvro event) {
-            snapshotDeviceAction.handleAction(event);
+            snapshotDeviceAction.handleScenario(event);
         }
     }
 }
