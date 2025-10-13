@@ -65,7 +65,7 @@ public class SnapshotDeviceActionImpl implements SnapshotDeviceAction {
                             event.getSensorsState().keySet()
                                     .containsAll(scenario.getConditions().keySet()))
                     .toList();
-            log.info("@@@@@@ Список сценариев, который будет проверяться на срабатывание {}", activeScenarios);
+            log.debug("Список сценариев, который будет проверяться на срабатывание {}", activeScenarios);
 
             // далее необходимо проверить все состояния каждого сценария на сработку
 
@@ -77,32 +77,34 @@ public class SnapshotDeviceActionImpl implements SnapshotDeviceAction {
                 activeScenario.getActions().forEach((key, value) -> {
                     DeviceActionProto deviceActionProto = DeviceActionProto.newBuilder()
                             .setSensorId(key)
-                            .setType(ActionTypeProto.valueOf(value.getType()))
+                            .setType(ActionTypeProto.valueOf(value.getType().trim().toUpperCase()))
                             .setValue(value.getValue())
                             .build();
-
                     DeviceActionRequest deviceActionRequest = DeviceActionRequest.newBuilder()
                             .setHubId(hubId)
                             .setScenarioName(activeScenario.getName())
                             .setAction(deviceActionProto)
-                            .setTimestamp( Timestamp.newBuilder()
+                            .setTimestamp(Timestamp.newBuilder()
                                     .setSeconds(Instant.now().getEpochSecond())
                                     .setNanos(Instant.now().getNano())
                                     .build())
                             .build();
-
+                    log.debug("----------------------------------------------------------------------");
+                    log.debug("Запрос на отправку:");
+                    log.debug("сценарий - {}", deviceActionRequest.getScenarioName());
+                    log.debug("устройство - {}", deviceActionRequest.getAction().getSensorId());
+                    log.debug("действие - {}", deviceActionRequest.getAction().getType());
+                    log.debug("величина - {}", deviceActionRequest.getAction().getValue());
+                    log.debug("----------------------------------------------------------------------");
                     sendRequest(deviceActionRequest);
                 });
             }
         }
     }
 
-
     private void sendRequest(DeviceActionRequest request) {
         log.info("Отправляю данные: {}", request.getAllFields());
-//        CollectorResponse response = collectorStub.collectSensorEvent(event);
         Empty response = hubRouterClient.handleDeviceAction(request);
-//        log.info("Получил ответ от коллектора: {}", response);
     }
 
 
