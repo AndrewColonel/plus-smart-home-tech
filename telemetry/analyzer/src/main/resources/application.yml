@@ -21,6 +21,7 @@ logging:
 analyzer:
   kafka:
     bootstrap-servers: "localhost:9092"
+    offset-fix-count: 10
     hubconsumer:
       properties:
         bootstrap.servers: ${analyzer.kafka.bootstrap-servers}

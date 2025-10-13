@@ -5,6 +5,7 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -13,6 +14,10 @@ import java.util.*;
 @Slf4j
 @Component
 public abstract class BaseProcessor implements Runnable {
+
+
+    @Value(value = "${analyzer.kafka.offset-fix-count}")
+    private int offSetFixCount;
 
     private final String topicConsumer;
     private final Consumer<String, SpecificRecordBase> consumer;
@@ -68,7 +73,7 @@ public abstract class BaseProcessor implements Runnable {
                 new TopicPartition(record.topic(), record.partition()),
                 new OffsetAndMetadata(record.offset() + 1)
         );
-        if (count % 10 == 0) {
+        if (count % offSetFixCount == 0) {
             consumer.commitAsync(currentOffsets, (offsets, exception) -> {
                 if (Objects.nonNull(exception)) {
                     log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);

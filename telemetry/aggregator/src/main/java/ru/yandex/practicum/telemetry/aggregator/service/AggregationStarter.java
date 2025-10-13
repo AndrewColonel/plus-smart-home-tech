@@ -10,6 +10,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
@@ -25,6 +26,9 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class AggregationStarter implements Runnable {
+
+    @Value(value = "${aggregator.kafka.offset-fix-count}")
+    private int offSetFixCount;
 
     private final SnapshotService snapshotService;
 
@@ -117,7 +121,7 @@ public class AggregationStarter implements Runnable {
                 new TopicPartition(record.topic(), record.partition()),
                 new OffsetAndMetadata(record.offset() + 1)
         );
-        if (count % 10 == 0) {
+        if (count % offSetFixCount == 0) {
             consumer.commitAsync(currentOffsets, (offsets, exception) -> {
                 if (Objects.nonNull(exception)) {
                     log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);

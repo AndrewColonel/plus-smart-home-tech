@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
-import ru.yandex.practicum.grpc.telemetry.event.MotionSensorProto;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfig;
@@ -140,8 +139,8 @@ public class SnapshotProcessor extends BaseProcessor {
                         })
                         .peek(scenario -> {
                                     log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                                    log.debug("Сценарий сработал");
-                                    log.info("сценариq {}", scenario.getName());
+                                    log.debug("Сценарий сработал, все кондиции изменились в снапшоте");
+                                    log.info("сценарий {}", scenario.getName());
                                     log.debug("кондиции {}", scenario.getConditions());
                                     log.debug("действия: {}", scenario.getActions());
                                     log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -151,7 +150,7 @@ public class SnapshotProcessor extends BaseProcessor {
                         )
                         .toList();
                 log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                log.debug("Отклонено {} сценариев", checkScenarios.size() - activeScenarios.size());
+                log.debug("Отклонено сценариев: {}", checkScenarios.size() - activeScenarios.size());
                 log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 //                for (Scenario checkScenario : checkScenarios) {
@@ -242,6 +241,7 @@ public class SnapshotProcessor extends BaseProcessor {
             }
         }
         log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        log.debug("Проверка кондиции");
         log.debug("сенсор: {} типа: {}", condition.getSensorId(), condition.getType());
         log.info("кондиция {} сценария {}", condition.getId(), scenarioName);
         log.debug("пороговое значение: {}", condition.getValue());

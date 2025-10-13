@@ -7,6 +7,7 @@ logging:
 aggregator:
   kafka:
     bootstrap-servers: "localhost:9092"
+    offset-fix-count: 10
     producerconfig:
       properties:
         bootstrap.servers: ${aggregator.kafka.bootstrap-servers}
