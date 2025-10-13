@@ -9,7 +9,7 @@ grpc:
 
 logging:
   level:
-    ru.yandex.practicum: INFO
+    ru.yandex.practicum: TRACE
     org:
       springframework:
         orm:
