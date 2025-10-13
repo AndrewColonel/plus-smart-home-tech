@@ -21,17 +21,16 @@ import java.util.List;
 @Slf4j
 public class SnapshotDeviceActionImpl implements SnapshotDeviceAction {
 
-//    private final HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
-
-    @GrpcClient("hub-router")
-    private HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
+    private final HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
 
     private final SensorRepository sensorRepository;
 
     private final ScenarioRepository scenarioRepository;
 
-    public SnapshotDeviceActionImpl(
-            SensorRepository sensorRepository, ScenarioRepository scenarioRepository) {
+    public SnapshotDeviceActionImpl(@GrpcClient("hub-router")
+                                    HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient,
+                                    SensorRepository sensorRepository, ScenarioRepository scenarioRepository) {
+        this.hubRouterClient = hubRouterClient;
         this.sensorRepository = sensorRepository;
         this.scenarioRepository = scenarioRepository;
     }
