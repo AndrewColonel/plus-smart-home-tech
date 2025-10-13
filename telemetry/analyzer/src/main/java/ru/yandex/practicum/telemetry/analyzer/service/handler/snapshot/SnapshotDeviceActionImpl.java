@@ -4,12 +4,10 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
-import ru.yandex.practicum.grpc.telemetry.event.MotionSensorProto;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Condition;
@@ -20,7 +18,6 @@ import ru.yandex.practicum.telemetry.analyzer.dal.repository.ScenarioRepository;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.SensorRepository;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -154,7 +151,7 @@ public class SnapshotDeviceActionImpl implements SnapshotDeviceAction {
         }
     }
 
-    public boolean conditionOperationCheck(int sensorValue, Condition condition, String scenarioName) {
+    private boolean conditionOperationCheck(int sensorValue, Condition condition, String scenarioName) {
         boolean conditionState = false;
         switch (ConditionOperation.valueOf(condition.getOperation())) {
 
@@ -176,8 +173,6 @@ public class SnapshotDeviceActionImpl implements SnapshotDeviceAction {
         log.debug("изменение: {}", sensorValue);
         log.info("выполниться: {}", conditionState);
         log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-
         return conditionState;
     }
 
