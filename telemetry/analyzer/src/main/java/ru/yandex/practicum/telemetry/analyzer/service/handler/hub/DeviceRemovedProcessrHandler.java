@@ -7,7 +7,6 @@ import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Sensor;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.SensorRepository;
-import ru.yandex.practicum.telemetry.analyzer.service.handler.HubProcessorHandler;
 
 @Slf4j
 @Component

@@ -26,10 +26,16 @@
         </dependency>
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
-            <artifactId>collector</artifactId>
+            <artifactId>proto-schemas</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <!--            <scope>compile</scope>-->
+            <scope>compile</scope>
         </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>ru.yandex.practicum</groupId>-->
+        <!--            <artifactId>collector</artifactId>-->
+        <!--            <version>1.0-SNAPSHOT</version>-->
+        <!--            &lt;!&ndash;            <scope>compile</scope>&ndash;&gt;-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -46,6 +52,11 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.devh</groupId>
+            <artifactId>grpc-client-spring-boot-starter</artifactId>
+            <version>3.1.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -85,6 +96,32 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>io.github.ascopes</groupId>-->
+<!--                <artifactId>protobuf-maven-plugin</artifactId>-->
+
+<!--                <configuration>-->
+<!--                    <protocVersion>3.23.4</protocVersion>-->
+
+<!--                    <binaryMavenPlugins>-->
+<!--                        <binaryMavenPlugin>-->
+<!--                            <groupId>io.grpc</groupId>-->
+<!--                            <artifactId>protoc-gen-grpc-java</artifactId>-->
+<!--                            <version>${grpc.version}</version>-->
+<!--                        </binaryMavenPlugin>-->
+<!--                    </binaryMavenPlugins>-->
+<!--                </configuration>-->
+
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>generate</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
         </plugins>
     </build>
 

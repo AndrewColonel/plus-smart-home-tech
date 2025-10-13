@@ -7,30 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfig;
-import ru.yandex.practicum.telemetry.analyzer.service.handler.SnapshotProcessorHandler;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import ru.yandex.practicum.telemetry.analyzer.service.handler.snapshot.SnapshotDeviceActionImpl;
 
 @Slf4j
 @Component
 public class SnapshotProcessor extends BaseProcessor {
 
-    private final Map<String, SnapshotProcessorHandler> snapshotProcessorHandlers;
+    private final SnapshotDeviceActionImpl snapshotDeviceAction;
 
     @Autowired
-    public SnapshotProcessor(KafkaConfig kafkaConfig,
-                             List<SnapshotProcessorHandler> snapshotProcessorHandlers) {
+    public SnapshotProcessor(KafkaConfig kafkaConfig, SnapshotDeviceActionImpl snapshotDeviceAction) {
         super(kafkaConfig.getSnapshotConsumer().getProperties(),
                 kafkaConfig.getSnapshotConsumer().getTopic(),
                 kafkaConfig.getSnapshotConsumer().getPollTimeout());
-
-        this.snapshotProcessorHandlers = snapshotProcessorHandlers.stream()
-                .collect(Collectors.toMap(SnapshotProcessorHandler::getRecordType,
-                        Function.identity()));
+        this.snapshotDeviceAction = snapshotDeviceAction;
     }
 
     @Override
@@ -39,23 +29,7 @@ public class SnapshotProcessor extends BaseProcessor {
                 record.topic(), record.partition(), record.offset(), record.value());
         log.info("+++ Получен снапшот: +++ {}", record.value());
         if (record.value() instanceof SensorsSnapshotAvro event) {
-
-
-
-            String handlerName = event.getSensorsState().getClass().getSimpleName();
-            SnapshotProcessorHandler handler = snapshotProcessorHandlers.get(handlerName);
-
-
-
-
-            if (Objects.nonNull(handler)) {
-                log.debug("Выбран обработчик {}",handler.getClass().getSimpleName());
-                handler.handleRecord(event);
-            } else {
-                log.debug("Обработчика для {} не найдено",handlerName);
-            }
+            snapshotDeviceAction.handleAction(event);
         }
     }
-
-
 }

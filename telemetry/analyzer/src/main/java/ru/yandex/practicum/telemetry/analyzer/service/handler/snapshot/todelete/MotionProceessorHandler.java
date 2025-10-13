@@ -1,25 +1,23 @@
-package ru.yandex.practicum.telemetry.analyzer.service.handler.snapshot;
+package ru.yandex.practicum.telemetry.analyzer.service.handler.snapshot.todelete;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-import ru.yandex.practicum.telemetry.analyzer.service.handler.SnapshotProcessorHandler;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SwitchProcessorHandler implements SnapshotProcessorHandler {
-
+public class MotionProceessorHandler implements SnapshotProcessorHandler {
 
     @Override
     public String getRecordType() {
-        return "SwitchSensorAvro";
+        return "MotionSensorAvro";
     }
 
     @Override
     public void handleRecord(SensorsSnapshotAvro event) {
-        log.info("Начинаю регулеровку выключателей");
+        log.info("Начинаю регулеровку по датчикам движения");
 
     }
 }

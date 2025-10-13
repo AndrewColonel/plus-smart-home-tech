@@ -9,7 +9,6 @@ import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Scenario;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.ActionRepository;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.ConditionRepository;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.ScenarioRepository;
-import ru.yandex.practicum.telemetry.analyzer.service.handler.HubProcessorHandler;
 
 @Slf4j
 @Component
