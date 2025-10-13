@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.analyzer.service.handler.snapshot;
+package ru.yandex.practicum.telemetry.analyzer.service.handler.snapshot.todelete;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
