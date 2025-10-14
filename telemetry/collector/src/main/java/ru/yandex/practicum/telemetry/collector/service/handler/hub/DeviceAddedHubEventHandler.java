@@ -5,11 +5,16 @@ import ru.yandex.practicum.grpc.telemetry.event.DeviceAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceTypeAvro;
+import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 import static ru.yandex.practicum.telemetry.collector.common.EnumMapper.toAvroEnum;
 
 @Component
 public class DeviceAddedHubEventHandler extends BaseHubEventHandler<DeviceAddedEventAvro> implements HubEventHandler {
+
+    public DeviceAddedHubEventHandler(KafkaEventProducer producer) {
+        super(producer);
+    }
 
     @Override
     public HubEventProto.PayloadCase getMessageType() {

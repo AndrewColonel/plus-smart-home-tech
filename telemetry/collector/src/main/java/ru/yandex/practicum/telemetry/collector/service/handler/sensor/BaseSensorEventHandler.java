@@ -3,25 +3,40 @@ package ru.yandex.practicum.telemetry.collector.service.handler.sensor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 
 import java.time.Instant;
+import java.util.concurrent.Future;
 
 @Slf4j
 @AllArgsConstructor
 public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> {
 
+    private final KafkaEventProducer kafkaEventProducer;
+
     public abstract T toAvro(SensorEventProto event);
 
-    public SensorEventAvro handle(SensorEventProto event) {
-        return SensorEventAvro.newBuilder()
+    public void handle(SensorEventProto event) {
+        SensorEventAvro sensorEventAvro = SensorEventAvro.newBuilder()
                 .setId(event.getId())
                 .setHubId(event.getHubId())
                 .setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getSeconds(),
                         event.getTimestamp().getNanos()))
                 .setPayload(toAvro(event))
                 .build();
+        Producer<String, SpecificRecordBase> producer = kafkaEventProducer.getProducer();
+        String topic = kafkaEventProducer.getSensorTopic();
+        ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, sensorEventAvro);
+        log.info("Объект Avro для отправки в брокер {} в топик {}", sensorEventAvro, topic);
 
+        Future<RecordMetadata> metadataFuture = producer.send(record);
+        log.info("Состояние отправки: {} ", metadataFuture.isDone());
+        producer.flush();
+        log.info("Состояние отправки: {} ", metadataFuture.isDone());
     }
 }

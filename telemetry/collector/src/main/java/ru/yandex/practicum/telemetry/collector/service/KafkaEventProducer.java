@@ -39,11 +39,5 @@ public class KafkaEventProducer {
             producer.close();
         }
     }
-    public void flushProducer() {
-        if (Objects.nonNull(producer)) {
-            producer.flush();
-        }
-    }
-
 
 }
