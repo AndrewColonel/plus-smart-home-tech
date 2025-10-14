@@ -20,8 +20,8 @@ aggregator:
       properties:
         bootstrap.servers: ${aggregator.kafka.bootstrap-servers}
         enable.auto.commit: false
-        client.id: "telemetry.aggregator.sensor.client"
-        group.id: "telemetry.aggregator.sensor"
+        client.id: "telemetry.aggregator.sensor.client.v1"
+        group.id: "telemetry.aggregator.sensor.v1"
         key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value.deserializer: ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer
       topic: "telemetry.sensors.v1"

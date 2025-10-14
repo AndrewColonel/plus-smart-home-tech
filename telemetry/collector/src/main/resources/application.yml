@@ -4,11 +4,18 @@ grpc:
 
 logging:
   level:
-    ru.practicum: trace
+    ru.yandex.practicum: TRACE
+    org:
+      springframework: WARN
 
-spring:
- kafka:
-   bootstrap-servers: localhost:9092
-   topics:
-    telemetry-hubs-topics: "telemetry.hubs.v1"
-    telemetry-sensors-topics: "telemetry.sensors.v1"
+collector:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    producerconfig:
+      properties:
+        bootstrap.servers: ${collector.kafka.bootstrap-servers}
+        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        value.serializer: ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer
+        linger.ms: 0
+      hubtopic: "telemetry.hubs.v1"
+      sensortopic: "telemetry.sensors.v1"

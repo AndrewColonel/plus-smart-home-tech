@@ -29,7 +29,7 @@ public abstract class BaseHubEventHandler<T extends SpecificRecordBase> {
                 .setPayload(toAvro(event))
                 .build();
         Producer<String, SpecificRecordBase> producer = kafkaEventProducer.getProducer();
-        String topic = kafkaEventProducer.getTelemetryHubTopic();
+        String topic = kafkaEventProducer.getHubTopic();
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, hubEventAvro);
         log.info("Объект Avro для отправки в брокер {} в топик {}", hubEventAvro, topic);
 
