@@ -21,8 +21,6 @@ public class HubEventProcessor extends BaseProcessor {
 
     private final Map<String, HubProcessorHandler> hubProcessorHandlers;
 
-//    private final KafkaConfig.ConsumerConfig consumerConfig;
-
     @Autowired
     public HubEventProcessor(KafkaConfig kafkaConfig,
                              List<HubProcessorHandler> hubProcessorHandlers) {

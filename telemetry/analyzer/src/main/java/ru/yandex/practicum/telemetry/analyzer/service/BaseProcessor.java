@@ -15,7 +15,6 @@ import java.util.*;
 @Component
 public abstract class BaseProcessor implements Runnable {
 
-
     @Value(value = "${analyzer.kafka.offset-fix-count}")
     private int offSetFixCount;
 
@@ -54,6 +53,7 @@ public abstract class BaseProcessor implements Runnable {
                 consumer.commitAsync();
             }
         } catch (WakeupException ignored) {
+            log.warn("Вызван метод wakeup, poll будет прерван");
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от датчиков", e);
         } finally {

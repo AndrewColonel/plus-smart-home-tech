@@ -1,6 +1,5 @@
 package ru.yandex.practicum.telemetry.analyzer.service;
 
-import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
@@ -33,8 +32,6 @@ public class SnapshotProcessor extends BaseProcessor {
 
     private final DeviceActionRequestProducer deviceActionRequestProducer;
 
-    private final SensorRepository sensorRepository;
-
     private final ScenarioRepository scenarioRepository;
 
     @Autowired
@@ -45,7 +42,6 @@ public class SnapshotProcessor extends BaseProcessor {
                 kafkaConfig.getSnapshotConsumer().getTopic(),
                 kafkaConfig.getSnapshotConsumer().getPollTimeout());
         this.deviceActionRequestProducer = deviceActionRequestProducer;
-        this.sensorRepository = sensorRepository;
         this.scenarioRepository = scenarioRepository;
         this.snapshotProcessorHandlers = snapshotProcessorHandlers.stream()
                 .collect(Collectors.toMap(SnapshotProcessorHandler::getRecordType,
@@ -65,7 +61,6 @@ public class SnapshotProcessor extends BaseProcessor {
             String hubId = event.getHubId();
             List<String> sensorIds = event.getSensorsState().keySet().stream().toList();
             // проверяем соответсвует ли списко сенсоров данному хабу
-//            if (sensorRepository.existsByIdInAndHubId(sensorIds, hubId)) {
             List<Scenario> scenarios = scenarioRepository.findByHubId(hubId);
             if (!scenarios.isEmpty()) {
                 log.trace("Найдены сценарии {} использующие сенсоры из снапшота {}",
