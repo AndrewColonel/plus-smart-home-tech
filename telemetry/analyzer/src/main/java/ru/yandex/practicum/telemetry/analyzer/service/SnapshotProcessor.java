@@ -25,6 +25,7 @@ import ru.yandex.practicum.telemetry.analyzer.service.handler.snapshot.SnapshotP
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -90,6 +91,7 @@ public class SnapshotProcessor extends BaseProcessor {
 
                 List<Scenario> activeScenarios = checkScenarios.stream()
                         .filter(scenario -> {
+                            // сценарий не сработает, если хотя бы одна кондиция не сработает по эвенту из снапшота
                             boolean conditionState = false;
                             for (Map.Entry<String, Condition> entry : scenario.getConditions().entrySet()) {
                                 String idSensor = entry.getKey();
@@ -98,40 +100,50 @@ public class SnapshotProcessor extends BaseProcessor {
                                 SensorStateAvro sensorState = event.getSensorsState().get(idSensor);
 
                                 // ----------------------------------------------------------------------
-//
-                                if (sensorState.getData() instanceof ClimateSensorAvro sensor) {
-                                    switch (ConditionType.valueOf(condition.getType())) {
-                                        case ConditionType.TEMPERATURE -> {
-                                            conditionState = conditionOperationCheck(sensor.getTemperatureC(), condition,
-                                                    idSensor, scenario.getName());
-                                        }
-                                        case ConditionType.CO2LEVEL -> {
-                                            conditionState = conditionOperationCheck(sensor.getCo2Level(), condition,
-                                                    idSensor, scenario.getName());
-                                        }
-                                        case ConditionType.HUMIDITY -> {
-                                            conditionState = conditionOperationCheck(sensor.getHumidity(), condition,
-                                                    idSensor, scenario.getName());
-                                        }
 
-                                    }
-                                }
-                                if (sensorState.getData() instanceof LightSensorAvro sensor) {
-                                    conditionState = conditionOperationCheck(sensor.getLuminosity(), condition,
+                                String handlerName = sensorState.getData().getClass().getSimpleName();
+                                SnapshotProcessorHandler handler = snapshotProcessorHandlers.get(handlerName);
+                                if (Objects.nonNull(handler)) {
+                                    log.debug("Выбран обработчик {}", handler.getClass().getSimpleName());
+                                    conditionState = handler.handleScenario(sensorState, condition,
                                             idSensor, scenario.getName());
+                                } else {
+                                    log.debug("Обработчика для {} не найдено", handlerName);
                                 }
-                                if (sensorState.getData() instanceof MotionSensorAvro sensor) {
-                                    conditionState = conditionOperationCheck((sensor.getMotion() ? 1 : 0), condition,
-                                            idSensor,scenario.getName());
-                                }
-                                if (sensorState.getData() instanceof SwitchSensorAvro sensor) {
-                                    conditionState = conditionOperationCheck((sensor.getState() ? 1 : 0), condition,
-                                            idSensor,scenario.getName());
-                                }
-                                if (sensorState.getData() instanceof TemperatureSensorAvro sensor) {
-                                    conditionState = conditionOperationCheck(sensor.getTemperatureC(), condition,
-                                            idSensor,scenario.getName());
-                                }
+
+//                                if (sensorState.getData() instanceof ClimateSensorAvro sensor) {
+//                                    switch (ConditionType.valueOf(condition.getType())) {
+//                                        case ConditionType.TEMPERATURE -> {
+//                                            conditionState = conditionOperationCheck(sensor.getTemperatureC(), condition,
+//                                                    idSensor, scenario.getName());
+//                                        }
+//                                        case ConditionType.CO2LEVEL -> {
+//                                            conditionState = conditionOperationCheck(sensor.getCo2Level(), condition,
+//                                                    idSensor, scenario.getName());
+//                                        }
+//                                        case ConditionType.HUMIDITY -> {
+//                                            conditionState = conditionOperationCheck(sensor.getHumidity(), condition,
+//                                                    idSensor, scenario.getName());
+//                                        }
+//
+//                                    }
+//                                }
+//                                if (sensorState.getData() instanceof LightSensorAvro sensor) {
+//                                    conditionState = conditionOperationCheck(sensor.getLuminosity(), condition,
+//                                            idSensor, scenario.getName());
+//                                }
+//                                if (sensorState.getData() instanceof MotionSensorAvro sensor) {
+//                                    conditionState = conditionOperationCheck((sensor.getMotion() ? 1 : 0), condition,
+//                                            idSensor, scenario.getName());
+//                                }
+//                                if (sensorState.getData() instanceof SwitchSensorAvro sensor) {
+//                                    conditionState = conditionOperationCheck((sensor.getState() ? 1 : 0), condition,
+//                                            idSensor, scenario.getName());
+//                                }
+//                                if (sensorState.getData() instanceof TemperatureSensorAvro sensor) {
+//                                    conditionState = conditionOperationCheck(sensor.getTemperatureC(), condition,
+//                                            idSensor, scenario.getName());
+//                                }
 
                                 //------------------------------------------------------------------------------
                             }
@@ -143,6 +155,7 @@ public class SnapshotProcessor extends BaseProcessor {
                                     log.info("сценарий {}", scenario.getName());
                                     log.debug("кондиции {}", scenario.getConditions());
                                     log.debug("действия: {}", scenario.getActions());
+                                    log.debug("количество действий: {}", scenario.getActions().size());
                                     log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
                                 }
@@ -226,7 +239,7 @@ public class SnapshotProcessor extends BaseProcessor {
     }
 
 
-    public boolean conditionOperationCheck(int sensorValue, Condition condition,String idSensor, String scenarioName) {
+    public boolean conditionOperationCheck(int sensorValue, Condition condition, String idSensor, String scenarioName) {
         boolean conditionState = false;
         switch (ConditionOperation.valueOf(condition.getOperation())) {
 

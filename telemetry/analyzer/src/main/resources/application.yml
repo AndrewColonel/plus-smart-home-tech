@@ -31,7 +31,7 @@ analyzer:
         key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value.deserializer: ru.yandex.practicum.kafka.deserializer.HubEventDeserializer
       topic: "telemetry.hubs.v1"
-      poll-timeout: 500ms
+      poll-timeout: 200ms
 
     snapshotconsumer:
       properties:
@@ -42,7 +42,7 @@ analyzer:
         key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value.deserializer: ru.yandex.practicum.kafka.deserializer.SensorsSnapshotDeserializer
       topic: "telemetry.snapshots.v1"
-      poll-timeout: 500ms
+      poll-timeout: 200ms
 
 spring:
  datasource:

@@ -1,15 +1,13 @@
 package ru.yandex.practicum.telemetry.analyzer.service.handler.snapshot;
 
-import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Scenario;
-
-import java.util.List;
-import java.util.Optional;
+import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
+import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Condition;
 
 public interface SnapshotProcessorHandler {
 
     String getRecordType();
 
-    Optional<List<Scenario>> handleScenario(SensorsSnapshotAvro event);
+    boolean handleScenario(SensorStateAvro sensorState, Condition condition,
+                           String idSensor, String scenarioName);
 
 }
