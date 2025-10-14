@@ -7,6 +7,7 @@ import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -16,7 +17,7 @@ import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
+import ru.yandex.practicum.telemetry.collector.config.KafkaConfig;
 import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandler;
 
@@ -32,11 +33,12 @@ public class EventController extends CollectorControllerGrpc.CollectorController
     private final Map<HubEventProto.PayloadCase, HubEventHandler> hubEventHandlers;
     private final Map<SensorEventProto.PayloadCase, SensorEventHandler> sensorEventHandlers;
 
-    private final KafkaEventProducer kafkaEventProducer;
+    private final Producer<String, SpecificRecordBase> producer;
+    private final KafkaConfig.ProducerConfig producerConfig;
 
     @Autowired
     public EventController(List<HubEventHandler> hubEventHandlers, List<SensorEventHandler> sensorEventHandlers,
-                           KafkaEventProducer kafkaEventProducer) {
+                           KafkaConfig kafkaConfig) {
         this.hubEventHandlers = hubEventHandlers.stream()
                 .collect(Collectors.toMap(HubEventHandler::getMessageType,
                         Function.identity()));
@@ -44,7 +46,9 @@ public class EventController extends CollectorControllerGrpc.CollectorController
         this.sensorEventHandlers = sensorEventHandlers.stream()
                 .collect(Collectors.toMap(SensorEventHandler::getMessageType,
                         Function.identity()));
-        this.kafkaEventProducer = kafkaEventProducer;
+        this.producerConfig = kafkaConfig.getProducerConfig();
+        this.producer = new KafkaProducer<>(producerConfig.getProperties());
+
     }
 
     @Override
@@ -54,13 +58,11 @@ public class EventController extends CollectorControllerGrpc.CollectorController
                 SensorEventHandler handler = sensorEventHandlers.get(request.getPayloadCase());
                 log.info("Выбран обработчик события от сенсоров  {}", handler.getClass().getSimpleName());
                 log.info("Тип события сенсора {}", request.getPayloadCase());
-                SensorEventAvro sensorEventAvro =  handler.handle(request);
+                SensorEventAvro sensorEventAvro = handler.handle(request);
 
-                Producer<String, SpecificRecordBase> producer = kafkaEventProducer.getProducer();
-                String topic = kafkaEventProducer.getSensorTopic();
+                String topic = producerConfig.getSensortopic();
                 ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, sensorEventAvro);
                 log.info("Объект Avro для отправки в брокер {} в топик {}", sensorEventAvro, topic);
-
                 Future<RecordMetadata> metadataFuture = producer.send(record);
                 log.info("Состояние отправки: {} ", metadataFuture.isDone());
                 producer.flush();
@@ -88,17 +90,13 @@ public class EventController extends CollectorControllerGrpc.CollectorController
                 log.info("Тип события хаба {}", request.getPayloadCase());
                 HubEventAvro hubEventAvro = handler.handle(request);
 
-                Producer<String, SpecificRecordBase> producer = kafkaEventProducer.getProducer();
-                String topic = kafkaEventProducer.getHubTopic();
+                String topic = producerConfig.getHubtopic();
                 ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, hubEventAvro);
                 log.info("Объект Avro для отправки в брокер {} в топик {}", hubEventAvro, topic);
-
                 Future<RecordMetadata> metadataFuture = producer.send(record);
                 log.info("Состояние отправки: {} ", metadataFuture.isDone());
                 producer.flush();
                 log.info("Состояние отправки: {} ", metadataFuture.isDone());
-
-
 
             } else {
                 throw new IllegalArgumentException("Не могу найти обработчик для события " + request.getPayloadCase());
@@ -112,21 +110,5 @@ public class EventController extends CollectorControllerGrpc.CollectorController
                             .withCause(e)
             ));
         }
-//        finally {
-//            try {
-//                // Перед тем, как закрыть продюсер и консьюмер, нужно убедится,
-//                // что все сообщения, лежащие в буффере, отправлены и
-//                // все оффсеты обработанных сообщений зафиксированы
-//                // здесь нужно вызвать метод продюсера для сброса данных в буффере
-//                producer.flush();
-//                // здесь нужно вызвать метод консьюмера для фиксиции смещений
-//                consumer.commitSync(currentOffsets);
-//            } finally {
-//                log.info("Закрываем консьюмер");
-//                consumer.close();
-//                log.info("Закрываем продюсер");
-//                producer.close();
-//            }
-//        }
     }
 }
