@@ -16,6 +16,7 @@ public class HubRouterService extends HubRouterControllerGrpc.HubRouterControlle
     @Override
     public void handleDeviceAction(DeviceActionRequest request, StreamObserver<Empty> responseObserver) {
         try {
+            log.info("----------------------------------------------------------------------");
             log.info("Запрос получен ");
             log.info("сценарий - {}", request.getScenarioName());
             log.info("устройство - {}", request.getAction().getSensorId());

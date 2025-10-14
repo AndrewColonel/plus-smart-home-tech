@@ -37,17 +37,19 @@ public class HubEventProcessor extends BaseProcessor {
 
     @Override
     public void handleRecord(ConsumerRecord<String, SpecificRecordBase> record) {
-        log.debug("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
+        log.trace("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
                 record.topic(), record.partition(), record.offset(), record.value());
-        log.info(">>> Сообщение хаба: <<< {}", record.value());
+        log.debug("***************************************************************");
+        log.debug(">>> Сообщение хаба: <<< {}", record.value());
+        log.debug("***************************************************************");
         if (record.value() instanceof HubEventAvro event) {
             String handlerName = event.getPayload().getClass().getSimpleName();
             HubProcessorHandler handler = hubProcessorHandlers.get(handlerName);
             if (Objects.nonNull(handler)) {
-                log.debug("Выбран обработчик {}",handler.getClass().getSimpleName());
+                log.trace("Выбран обработчик {}",handler.getClass().getSimpleName());
                 handler.handleRecord(event);
             } else {
-                log.debug("Обработчика для {} не найдено",handlerName);
+                log.trace("Обработчика для {} не найдено",handlerName);
             }
         }
     }

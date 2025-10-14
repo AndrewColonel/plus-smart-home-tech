@@ -3,15 +3,13 @@ package ru.yandex.practicum.telemetry.analyzer.service;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import lombok.extern.slf4j.Slf4j;
-import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
-import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.analyzer.config.KafkaConfig;
 import ru.yandex.practicum.telemetry.analyzer.dal.Entity.Condition;
@@ -28,28 +26,25 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@Component
 public class SnapshotProcessor extends BaseProcessor {
 
     private final Map<String, SnapshotProcessorHandler> snapshotProcessorHandlers;
 
-    private final HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
-
+    private final DeviceActionRequestProducer deviceActionRequestProducer;
 
     private final SensorRepository sensorRepository;
 
     private final ScenarioRepository scenarioRepository;
 
     @Autowired
-    public SnapshotProcessor(@GrpcClient("hub-router")
-                             HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient,
-                             KafkaConfig kafkaConfig, List<SnapshotProcessorHandler> snapshotProcessorHandlers,
+    public SnapshotProcessor(KafkaConfig kafkaConfig, List<SnapshotProcessorHandler> snapshotProcessorHandlers, DeviceActionRequestProducer deviceActionRequestProducer,
                              SensorRepository sensorRepository, ScenarioRepository scenarioRepository) {
 
         super(kafkaConfig.getSnapshotConsumer().getProperties(),
                 kafkaConfig.getSnapshotConsumer().getTopic(),
                 kafkaConfig.getSnapshotConsumer().getPollTimeout());
-        this.hubRouterClient = hubRouterClient;
+        this.deviceActionRequestProducer = deviceActionRequestProducer;
         this.sensorRepository = sensorRepository;
         this.scenarioRepository = scenarioRepository;
         this.snapshotProcessorHandlers = snapshotProcessorHandlers.stream()
@@ -59,9 +54,11 @@ public class SnapshotProcessor extends BaseProcessor {
 
     @Override
     public void handleRecord(ConsumerRecord<String, SpecificRecordBase> record) {
-        log.debug("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
+        log.trace("<<< Получено сообщение топика = {}, партиция = {}, смещение = {}, значение: {}\n",
                 record.topic(), record.partition(), record.offset(), record.value());
-        log.info("+++ Получен снапшот: +++ {}", record.value());
+        log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        log.debug("Получен снапшот: {}", record.value());
+        log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         if (record.value() instanceof SensorsSnapshotAvro event) {
 
             // получаем id хаба и список id сенсоров из снапшота
@@ -80,8 +77,9 @@ public class SnapshotProcessor extends BaseProcessor {
                                 event.getSensorsState().keySet()
                                         .containsAll(scenario.getConditions().keySet()))
                         .toList();
+                log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 log.debug("Список сценариев, который будет проверяться на срабатывание {}", checkScenarios);
-
+                log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 // далее необходимо проверить все состояния каждого сценария на сработку по снапшоту
                 // и получить список сценариев на исполнение
                 // сценарий сработает, только если все условия выполнены
@@ -101,18 +99,18 @@ public class SnapshotProcessor extends BaseProcessor {
                                 String handlerName = sensorState.getData().getClass().getSimpleName();
                                 SnapshotProcessorHandler handler = snapshotProcessorHandlers.get(handlerName);
                                 if (Objects.nonNull(handler)) {
-                                    log.debug("Выбран обработчик {}", handler.getClass().getSimpleName());
+                                    log.trace("Выбран обработчик {}", handler.getClass().getSimpleName());
                                     conditionState = handler.handleScenario(sensorState, condition,
                                             idSensor, scenario.getName());
                                 } else {
-                                    log.debug("Обработчика для {} не найдено", handlerName);
+                                    log.trace("Обработчика для {} не найдено", handlerName);
                                 }
                             }
                             return conditionState;
                         })
                         .peek(scenario -> {
                                     log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                                    log.debug("Сценарий сработал, все кондиции изменились в снапшоте");
+                                    log.info("Сценарий сработал, все кондиции изменились в снапшоте");
                                     log.info("сценарий {}", scenario.getName());
                                     log.debug("кондиции {}", scenario.getConditions());
                                     log.debug("действия: {}", scenario.getActions());
@@ -150,15 +148,14 @@ public class SnapshotProcessor extends BaseProcessor {
                                 .build())
                         .build();
                 log.debug("----------------------------------------------------------------------");
-                log.debug("Запрос на отправку:");
-                log.debug("сценарий - {}", deviceActionRequest.getScenarioName());
+                log.info("Запрос на отправку:");
+                log.info("сценарий - {}", deviceActionRequest.getScenarioName());
                 log.debug("устройство - {}", deviceActionRequest.getAction().getSensorId());
                 log.debug("действие - {}", deviceActionRequest.getAction().getType());
                 log.debug("величина - {}", deviceActionRequest.getAction().getValue());
                 log.debug("----------------------------------------------------------------------");
 
-                Empty response = hubRouterClient.handleDeviceAction(deviceActionRequest);
-
+                deviceActionRequestProducer.send(deviceActionRequest);
             });
         }
     }
