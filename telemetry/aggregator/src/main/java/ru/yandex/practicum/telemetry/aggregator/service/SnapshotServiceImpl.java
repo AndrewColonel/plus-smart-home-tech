@@ -16,6 +16,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class SnapshotServiceImpl implements SnapshotService {
 
+    // набор снапшотов с ключом - хаб
     private final Map<String, SensorsSnapshotAvro> snapshots = new HashMap<>();
 
     @Override

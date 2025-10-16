@@ -4,16 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-import ru.yandex.practicum.telemetry.aggregator.kafkaclient.KafkaClient;
+import ru.yandex.practicum.telemetry.aggregator.config.KafkaConfig;
 
-import java.time.Duration;
 import java.util.*;
 
 
@@ -23,28 +25,47 @@ import java.util.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AggregationStarter {
+public class AggregationStarter implements Runnable {
 
-    private final KafkaClient kafkaClient;
-
-    private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
-    private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
+    @Value(value = "${aggregator.kafka.offset-fix-count}")
+    private int offSetFixCount;
 
     private final SnapshotService snapshotService;
+
+    private final Producer<String, SpecificRecordBase> producer;
+    private final KafkaConfig.ProducerConfig producerConfig;
+
+    private final Consumer<String, SpecificRecordBase> consumer;
+    private final KafkaConfig.ConsumerConfig consumerConfig;
+
+    @Autowired
+    public AggregationStarter(SnapshotService snapshotService, KafkaConfig kafkaConfig) {
+        this.snapshotService = snapshotService;
+
+        this.producerConfig = kafkaConfig.getProducerConfig();
+        this.consumerConfig = kafkaConfig.getConsumerConfig();
+
+        this.producer = new KafkaProducer<>(producerConfig.getProperties());
+        this.consumer = new KafkaConsumer<>(consumerConfig.getProperties());
+
+    }
+
+    private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
     /**
      * Метод для начала процесса агрегации данных.
      * Подписывается на топики для получения событий от датчиков,
      * формирует снимок их состояния и записывает в кафку.
      */
-    public void start() {
+    @Override
+    public void run() {
         // готовим консьюмер для получение данных SensorEventAvro из топика telemetry.sensors.v1
-        Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer();
-        String topicConsumer = kafkaClient.getTelemetrySensorTopic();
+//        Consumer<String, SpecificRecordBase> consumer = kafkaClient.getConsumer();
+        String topicConsumer = consumerConfig.getTopic();
 
         // готовим продьюсер для отправки подготовленных снапшотов SensorsSnapshotAvro в топик telemetry.snapshots.v1
-        Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
-        String topicProducer = kafkaClient.getTelemetrySnapshotsTopic();
+//        Producer<String, SpecificRecordBase> producer = kafkaClient.getProducer();
+        String topicProducer = producerConfig.getTopic();
 
         // регистрируем хук, в котором вызываем метод wakeup.
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
@@ -56,7 +77,7 @@ public class AggregationStarter {
             // Цикл обработки событий
             while (true) {
                 // реализация цикла опроса и обработка полученных данных
-                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
+                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(consumerConfig.getPollTimeout());
 
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
@@ -100,7 +121,7 @@ public class AggregationStarter {
                 new TopicPartition(record.topic(), record.partition()),
                 new OffsetAndMetadata(record.offset() + 1)
         );
-        if (count % 10 == 0) {
+        if (count % offSetFixCount == 0) {
             consumer.commitAsync(currentOffsets, (offsets, exception) -> {
                 if (Objects.nonNull(exception)) {
                     log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);
@@ -119,14 +140,15 @@ public class AggregationStarter {
         if (record.value() instanceof SensorEventAvro event) {
             Optional<SensorsSnapshotAvro> optionalSensorsSnapshotAvro = snapshotService.updateState(event);
             // если снапшот сформирован, то его надо отправить в брокер
-            if (optionalSensorsSnapshotAvro.isPresent()) {
-                ProducerRecord<String, SpecificRecordBase> producerRecord =
-                        new ProducerRecord<>(topicProducer, optionalSensorsSnapshotAvro.get());
-                log.info(">>> Снапшот {} для отправки в топик {}", optionalSensorsSnapshotAvro.get(), topicProducer);
-                producer.send(producerRecord);
-            } else {
-                log.info("<--- Изменений в состоянии телеметрии нет --->");
-            }
+            optionalSensorsSnapshotAvro.ifPresentOrElse(s -> {
+                        ProducerRecord<String, SpecificRecordBase> producerRecord =
+                                new ProducerRecord<>(topicProducer, s);
+                        log.info(">>> Снапшот {} для отправки в топик {}", s, topicProducer);
+                        producer.send(producerRecord);
+                    },
+                    () -> {
+                        log.info("<--- Изменений в состоянии телеметрии нет --->");
+                    });
         }
     }
 

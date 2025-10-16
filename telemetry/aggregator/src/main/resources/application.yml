@@ -1,22 +1,30 @@
 logging:
   level:
-    ru.practicum: trace
+    ru.yandex.practicum: TRACE
+    org:
+      springframework: WARN
 
-spring:
- kafka:
-   bootstrap-servers: localhost:9092
-   topics:
-    telemetry-hubs-topics: "telemetry.hubs.v1"
-    telemetry-sensors-topics: "telemetry.sensors.v1"
-    telemetry-snapshots-topics: "telemetry.snapshots.v1"
-   consumer:
-    client-id: "SomeConsumer"
-    group-id: "some.group.id-"
-    auto-offset-reset: "earliest"
-    auto-commit: false
-    key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
-    value-deserializer: "ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer"
-    max-poll-record-config: 100
-    fetch-max-bytes-config: 3072000
-    max-partition-fetch-bytes-config: 307200
+aggregator:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    offset-fix-count: 10
+    producerconfig:
+      properties:
+        bootstrap.servers: ${aggregator.kafka.bootstrap-servers}
+        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        value.serializer: ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer
+        linger.ms: 0
+      topic: "telemetry.snapshots.v1"
+
+    consumerconfig:
+      properties:
+        bootstrap.servers: ${aggregator.kafka.bootstrap-servers}
+        enable.auto.commit: false
+        client.id: "telemetry.aggregator.sensor.client.v1"
+        group.id: "telemetry.aggregator.sensor.v1"
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer
+      topic: "telemetry.sensors.v1"
+      poll-timeout: 100ms
+
 

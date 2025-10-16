@@ -45,6 +45,7 @@ protocol HubEventProtocol {
     		ConditionTypeAvro type;
     		ConditionOperationAvro operation;
     		union { null, int, boolean } value = null;
+    		//union { null, int  } value = null;
     }
 
     record DeviceActionAvro {

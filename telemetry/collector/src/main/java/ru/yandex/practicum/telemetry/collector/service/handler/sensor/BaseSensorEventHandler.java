@@ -30,7 +30,7 @@ public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> {
                 .setPayload(toAvro(event))
                 .build();
         Producer<String, SpecificRecordBase> producer = kafkaEventProducer.getProducer();
-        String topic = kafkaEventProducer.getTelemetrySensorTopic();
+        String topic = kafkaEventProducer.getSensorTopic();
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, sensorEventAvro);
         log.info("Объект Avro для отправки в брокер {} в топик {}", sensorEventAvro, topic);
 
