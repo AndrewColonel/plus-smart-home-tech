@@ -1,6 +1,6 @@
 logging:
   level:
-    ru.yandex.practicum.infra: TRACE
+    ru.yandex.practicum.infra.configserver: INFO
     org:
       springframework: INFO
 
@@ -15,6 +15,7 @@ spring:
         native:
           searchLocations:
             - classpath:config/telemetry/{application}
+            - classpath:config/infra/{application}
 
 server:
   port: 8888

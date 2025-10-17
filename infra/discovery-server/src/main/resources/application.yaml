@@ -1,6 +1,6 @@
 spring:
   application:
-    name: hub-router
+    name: discovery-server
   config:
     import: configserver:http://localhost:8888
   cloud:
@@ -9,10 +9,3 @@ spring:
       retry:
         useRandomPolicy: true
         max-interval: 6000
-
-
-
-
-#grpc:
-#  server:
-#    port: 9090
