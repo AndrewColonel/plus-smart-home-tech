@@ -28,7 +28,11 @@
             <artifactId>spring-retry</artifactId>
         </dependency>
 
-        <!--    блок зависиомстей сервера конфигураций    -->
+        <!--    блок зависиомстей сервера-реестра    -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
             <artifactId>avro-schemas</artifactId>

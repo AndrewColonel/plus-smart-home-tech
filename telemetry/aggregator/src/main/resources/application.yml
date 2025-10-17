@@ -9,3 +9,25 @@ spring:
       retry:
         useRandomPolicy: true
         max-interval: 6000
+
+eureka:
+  client:
+    serviceUrl:
+
+      #      зона обнаружения серсиса-реестра
+      defaultZone: http://localhost:8761/eureka/
+
+#       не регистрироваться в сервисе-реестре
+#      registerWithEureka: false
+
+#  instance:
+
+#    управление адресом этого сервиса
+#    preferIpAddress: false
+#    hostname: external.host
+#    hostname: localhost
+
+#    дополнительные свойства сервиса
+#    metadataMap:
+#      customParam: customValue
+#      anotherParam: anotherValue
