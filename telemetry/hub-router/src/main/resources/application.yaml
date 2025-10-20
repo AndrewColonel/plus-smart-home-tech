@@ -2,34 +2,24 @@ spring:
   application:
     name: hub-router
   config:
-    import: configserver:http://localhost:8888
+#    import: configserver:http://localhost:8888
+    import: "configserver:"
   cloud:
     config:
       fail-fast: true
       retry:
         useRandomPolicy: true
         max-interval: 6000
+      discovery:
+        enabled: true
+        serviceId: config-server
 
 eureka:
   client:
+    enable: true
+    registerWithEureka: true
+    fetchRegistry: true
     serviceUrl:
-
-      #      зона обнаружения серсиса-реестра
       defaultZone: http://localhost:8761/eureka/
-
-#       не регистрироваться в сервисе-реестре
-#      registerWithEureka: false
-
-#  instance:
-
-#    управление адресом этого сервиса
-#    preferIpAddress: false
-#    hostname: external.host
-#    hostname: localhost
-
-#    дополнительные свойства сервиса
-#    metadataMap:
-#      customParam: customValue
-#      anotherParam: anotherValue
 
 
