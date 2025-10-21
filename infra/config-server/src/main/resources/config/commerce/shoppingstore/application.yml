@@ -1,0 +1,10 @@
+logging:
+  level:
+    ru.yandex.practicum.commerce.shoppingstore: TRACE
+    org:
+      springframework: INFO
+      springframework.cloud.netflix.eureka: INFO
+      apache.kafka: INFO
+
+server:
+  port: 0
