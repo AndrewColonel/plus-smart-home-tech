@@ -12,7 +12,8 @@ logging:
       apache.kafka: INFO
 
 server:
-  port: 0
+#  port: 0
+  port: 12345
 
 spring:
   datasource:
@@ -24,7 +25,7 @@ spring:
     init:
       mode: always
   jpa:
-    #    show-sql: true
+    show-sql: true
     hibernate:
       ddl-auto: none
     properties:

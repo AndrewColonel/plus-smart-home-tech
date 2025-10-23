@@ -14,9 +14,9 @@ public class ProductMapper {
                 .productName(productDto.getProductName())
                 .description(productDto.getDescription())
                 .imageSrc(productDto.getImageSrc())
-                .quantityState(productDto.getQuantityState().name())
-                .productState(productDto.getProductState().name())
-//                .productCategory(productDto.getProductCategory().name())
+                .quantityState(productDto.getQuantityState())
+                .productState(productDto.getProductState())
+                .productCategory(productDto.getProductCategory())
                 .price(productDto.getPrice())
                 .build();
     }
@@ -27,9 +27,9 @@ public class ProductMapper {
                 .productName(product.getProductName())
                 .description(product.getDescription())
                 .imageSrc(product.getImageSrc())
-                .quantityState(QuantityState.valueOf(product.getQuantityState()))
-                .productState(ProductState.valueOf(product.getProductState()))
-//                .productCategory(ProductCategory.valueOf(product.getProductCategory()))
+                .quantityState(product.getQuantityState())
+                .productState(product.getProductState())
+                .productCategory(product.getProductCategory())
                 .price(product.getPrice())
                 .build();
     }
