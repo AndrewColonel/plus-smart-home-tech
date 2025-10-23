@@ -2,9 +2,33 @@ logging:
   level:
     ru.yandex.practicum.commerce.shoppingstore: TRACE
     org:
-      springframework: INFO
+      springframework:
+        orm:
+          jpa: INFO
+          jpa.JpaTransactionManager: INFO
+        transaction: INFO
+        transaction.interceptor: INFO
       springframework.cloud.netflix.eureka: INFO
       apache.kafka: INFO
 
 server:
   port: 0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:6432/shtcollector
+    driver-class-name: org.postgresql.Driver
+    username: sht
+    password: sht
+  sql:
+    init:
+      mode: always
+  jpa:
+    #    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+#        format_sql: true
+#        time_zone: UTC
+#        default_schema: public
