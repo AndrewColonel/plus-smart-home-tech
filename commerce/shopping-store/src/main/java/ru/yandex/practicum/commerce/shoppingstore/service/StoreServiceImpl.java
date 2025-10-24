@@ -34,6 +34,9 @@ public class StoreServiceImpl implements StoreService {
                 .toList();
     }
 
+    // TODO добавить логи
+
+
     // Создание нового товара в ассортименте
     @Override
     public ProductDto createProduct(ProductDto productDto) {

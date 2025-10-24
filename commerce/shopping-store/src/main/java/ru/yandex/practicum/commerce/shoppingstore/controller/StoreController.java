@@ -36,6 +36,8 @@ public class StoreController {
     }
 
 
+    // TODO добавить логи
+
     @PutMapping
     public ProductDto create(@Valid @RequestBody ProductDto productDto) {
         return service.createProduct(productDto);
