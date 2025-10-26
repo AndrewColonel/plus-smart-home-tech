@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shoppingstore.exception;
+package ru.yandex.practicum.commerce.shopping.store.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

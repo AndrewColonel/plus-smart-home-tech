@@ -1,9 +1,9 @@
-package ru.yandex.practicum.commerce.shoppingstore.dal;
+package ru.yandex.practicum.commerce.shopping.store.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import ru.yandex.practicum.commerce.shoppingstore.dal.dto.ProductDto;
-import ru.yandex.practicum.commerce.shoppingstore.dal.entity.Product;
+import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
+import ru.yandex.practicum.commerce.shopping.store.model.entity.Product;
 
 import java.util.Objects;
 import java.util.UUID;

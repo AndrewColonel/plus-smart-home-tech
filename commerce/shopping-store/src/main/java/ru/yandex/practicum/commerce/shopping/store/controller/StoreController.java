@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shoppingstore.controller;
+package ru.yandex.practicum.commerce.shopping.store.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,10 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.commerce.shoppingstore.dal.ProductCategory;
-import ru.yandex.practicum.commerce.shoppingstore.dal.dto.ProductDto;
-import ru.yandex.practicum.commerce.shoppingstore.dal.dto.SetProductQuantityRequest;
-import ru.yandex.practicum.commerce.shoppingstore.service.StoreService;
+import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
+import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
+import ru.yandex.practicum.commerce.shopping.store.dal.dto.SetProductQuantityRequest;
+import ru.yandex.practicum.commerce.shopping.store.service.StoreService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -58,8 +58,8 @@ public class StoreController {
 
     @PostMapping("/quantityState")
     public boolean setStatus(
-            //TODO - непонятно зачем в теле дулировать параметры
-//            @RequestBody SetProductQuantityRequest setProductQuantityRequest,
+            //TODO - по заданию в теле, на самом деле в тестах - в запросе
+//            @RequestBody SetProductQuantityRequest productQuantityRequest,
             @Valid @ModelAttribute SetProductQuantityRequest request) {
         return service.setStatusProduct(request);
     }

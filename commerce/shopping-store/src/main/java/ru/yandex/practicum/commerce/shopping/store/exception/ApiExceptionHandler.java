@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shoppingstore.exception;
+package ru.yandex.practicum.commerce.shopping.store.exception;
 
 //import jakarta.validation.ConstraintViolationException;
 //import org.springframework.dao.DataIntegrityViolationException;

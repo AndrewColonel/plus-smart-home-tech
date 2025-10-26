@@ -1,23 +1,23 @@
-package ru.yandex.practicum.commerce.shoppingstore.service;
+package ru.yandex.practicum.commerce.shopping.store.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.commerce.shoppingstore.dal.ProductCategory;
-import ru.yandex.practicum.commerce.shoppingstore.dal.ProductMapper;
-import ru.yandex.practicum.commerce.shoppingstore.dal.ProductState;
-import ru.yandex.practicum.commerce.shoppingstore.dal.dto.ProductDto;
-import ru.yandex.practicum.commerce.shoppingstore.dal.dto.SetProductQuantityRequest;
-import ru.yandex.practicum.commerce.shoppingstore.dal.entity.Product;
-import ru.yandex.practicum.commerce.shoppingstore.dal.repository.ProductReposiitory;
-import ru.yandex.practicum.commerce.shoppingstore.exception.NotFoundException;
+import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
+import ru.yandex.practicum.commerce.shopping.store.model.ProductMapper;
+import ru.yandex.practicum.commerce.shopping.store.model.ProductState;
+import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
+import ru.yandex.practicum.commerce.shopping.store.dal.dto.SetProductQuantityRequest;
+import ru.yandex.practicum.commerce.shopping.store.model.entity.Product;
+import ru.yandex.practicum.commerce.shopping.store.dal.repository.ProductReposiitory;
+import ru.yandex.practicum.commerce.shopping.store.exception.NotFoundException;
 
 import java.util.List;
 import java.util.UUID;
 
-import static ru.yandex.practicum.commerce.shoppingstore.dal.ProductMapper.toDto;
-import static ru.yandex.practicum.commerce.shoppingstore.dal.ProductMapper.toEntity;
+import static ru.yandex.practicum.commerce.shopping.store.model.ProductMapper.toDto;
+import static ru.yandex.practicum.commerce.shopping.store.model.ProductMapper.toEntity;
 
 @Slf4j
 @Service

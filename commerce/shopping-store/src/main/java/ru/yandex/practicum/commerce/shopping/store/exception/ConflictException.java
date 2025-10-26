@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shoppingstore.exception;
+package ru.yandex.practicum.commerce.shopping.store.exception;
 
 public class ConflictException extends RuntimeException {
     public ConflictException(String message) {

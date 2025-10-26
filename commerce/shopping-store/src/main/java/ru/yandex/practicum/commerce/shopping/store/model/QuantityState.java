@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shoppingstore.dal;
+package ru.yandex.practicum.commerce.shopping.store.model;
 
 import java.util.Optional;
 

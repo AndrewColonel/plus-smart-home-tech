@@ -1,10 +1,10 @@
-package ru.yandex.practicum.commerce.shoppingstore.dal.dto;
+package ru.yandex.practicum.commerce.shopping.store.dal.dto;
 
 
 import lombok.*;
-import ru.yandex.practicum.commerce.shoppingstore.dal.ProductCategory;
-import ru.yandex.practicum.commerce.shoppingstore.dal.ProductState;
-import ru.yandex.practicum.commerce.shoppingstore.dal.QuantityState;
+import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
+import ru.yandex.practicum.commerce.shopping.store.model.ProductState;
+import ru.yandex.practicum.commerce.shopping.store.model.QuantityState;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
