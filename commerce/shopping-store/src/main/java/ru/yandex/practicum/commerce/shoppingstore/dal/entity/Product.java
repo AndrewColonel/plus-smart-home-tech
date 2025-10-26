@@ -6,6 +6,7 @@ import ru.yandex.practicum.commerce.shoppingstore.dal.ProductCategory;
 import ru.yandex.practicum.commerce.shoppingstore.dal.ProductState;
 import ru.yandex.practicum.commerce.shoppingstore.dal.QuantityState;
 
+import java.util.UUID;
 
 @Entity
 @Table(name = "products")
@@ -15,26 +16,16 @@ import ru.yandex.practicum.commerce.shoppingstore.dal.QuantityState;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
+
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-    @Column(name = "product_Id")
-    private String productId;
+    @GeneratedValue
+    private UUID productId;
     @Column(name = "product_name", nullable = false)
     private String productName;
     @Column(name = "description", nullable = false)
     private String description;
     @Column(name = "image_src")
     private String imageSrc;
-    //    @ManyToOne
-//    @JoinColumn(name = "quantity_state_id")
-//    private String quantityState;
-//    @ManyToOne
-//    @JoinColumn(name = "product_state_id")
-//    private String productState;
-//    @ManyToOne
-//    @JoinColumn(name = "product_category_id")
-//    private String productCategory;
     @Enumerated(EnumType.STRING)
     @Column(name = "quantity_state", nullable = false)
     private QuantityState quantityState;
@@ -44,7 +35,6 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(name = "product_category", nullable = false)
     private ProductCategory productCategory;
-
     @Column(name = "price")
     private Double price;
 

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.shoppingstore.dal.ProductCategory;
 import ru.yandex.practicum.commerce.shoppingstore.dal.ProductMapper;
 import ru.yandex.practicum.commerce.shoppingstore.dal.ProductState;
-import ru.yandex.practicum.commerce.shoppingstore.dal.QuantityState;
 import ru.yandex.practicum.commerce.shoppingstore.dal.dto.ProductDto;
 import ru.yandex.practicum.commerce.shoppingstore.dal.dto.SetProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoppingstore.dal.entity.Product;
@@ -15,6 +14,7 @@ import ru.yandex.practicum.commerce.shoppingstore.dal.repository.ProductReposiit
 import ru.yandex.practicum.commerce.shoppingstore.exception.NotFoundException;
 
 import java.util.List;
+import java.util.UUID;
 
 import static ru.yandex.practicum.commerce.shoppingstore.dal.ProductMapper.toDto;
 import static ru.yandex.practicum.commerce.shoppingstore.dal.ProductMapper.toEntity;
@@ -36,7 +36,6 @@ public class StoreServiceImpl implements StoreService {
 
     // TODO добавить логи
 
-
     // Создание нового товара в ассортименте
     @Override
     public ProductDto createProduct(ProductDto productDto) {
@@ -47,13 +46,13 @@ public class StoreServiceImpl implements StoreService {
     // Обновление товара в ассортименте, например уточнение описания, характеристик и т.д.
     @Override
     public ProductDto updateProduct(ProductDto productDto) {
-        getProduct(productDto.getProductId());
+        getProduct(UUID.fromString(productDto.getProductId()));
         return toDto(reposiitory.save(toEntity(productDto)));
     }
 
     // Удалить товар из ассортимента магазина. Функция для менеджерского состава.
     @Override
-    public boolean removeProduct(String productId) {
+    public boolean removeProduct(UUID productId) {
         Product product = getProduct(productId);
         product.setProductState(ProductState.DEACTIVATE);
         return reposiitory.save(product).getProductState()
@@ -63,20 +62,20 @@ public class StoreServiceImpl implements StoreService {
     // Установка статуса по товару. API вызывается со стороны склада.
     @Override
     public boolean setStatusProduct(SetProductQuantityRequest request) {
-        Product product = getProduct(request.getProductId());
-        product.setQuantityState(QuantityState.valueOf(request.getQuantityState()));
-        return reposiitory.save(product).getQuantityState().name()
+        Product product = getProduct(UUID.fromString(request.getProductId()));
+        product.setQuantityState(request.getQuantityState());
+        return reposiitory.save(product).getQuantityState()
                 .equals(request.getQuantityState());
     }
 
     // Получить сведения по товару из БД.
     @Override
-    public ProductDto getProductById(String productId) {
+    public ProductDto getProductById(UUID productId) {
         return toDto(getProduct(productId));
     }
 
     // вспомогательный метод
-    public Product getProduct(String productId) {
+    public Product getProduct(UUID productId) {
         return reposiitory.findByProductId(productId).orElseThrow(
                 () -> new NotFoundException(String.format("Продукт с id %S не найден", productId)));
     }

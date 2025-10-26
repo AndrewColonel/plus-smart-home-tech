@@ -48,16 +48,16 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
-        ApiError apiError = new ApiError(
-                ex.getMessage(),
-                "Incorrectly made request.",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
-    }
+//
+//    @ExceptionHandler(IllegalArgumentException.class)
+//    public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
+//        ApiError apiError = new ApiError(
+//                ex.getMessage(),
+//                "Incorrectly made request.",
+//                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+//        );
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+//    }
 
     @ExceptionHandler(EntityNotExistsException.class)
     public ResponseEntity<ApiError> handleEntityNotExists(EntityNotExistsException ex) {
@@ -69,15 +69,15 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleAll(Exception ex) {
-        ApiError error = new ApiError(
-                "INTERNAL_SERVER_ERROR",
-                ex.getMessage(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        );
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiError> handleAll(Exception ex) {
+//        ApiError error = new ApiError(
+//                "INTERNAL_SERVER_ERROR",
+//                ex.getMessage(),
+//                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+//        );
+//        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

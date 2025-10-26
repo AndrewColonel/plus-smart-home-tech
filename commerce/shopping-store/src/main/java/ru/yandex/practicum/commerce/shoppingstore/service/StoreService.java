@@ -6,6 +6,7 @@ import ru.yandex.practicum.commerce.shoppingstore.dal.dto.ProductDto;
 import ru.yandex.practicum.commerce.shoppingstore.dal.dto.SetProductQuantityRequest;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface StoreService {
     // Получение списка товаров по типу в пагинированном виде
@@ -18,12 +19,12 @@ public interface StoreService {
     ProductDto updateProduct(ProductDto productDto);
 
     // Удалить товар из ассортимента магазина. Функция для менеджерского состава.
-    boolean removeProduct(String productId);
+    boolean removeProduct(UUID productId);
 
     // Установка статуса по товару. API вызывается со стороны склада.
     boolean setStatusProduct(SetProductQuantityRequest request);
 
     // Получить сведения по товару из БД.
-    ProductDto getProductById(String productId);
+    ProductDto getProductById(UUID productId);
 
 }
