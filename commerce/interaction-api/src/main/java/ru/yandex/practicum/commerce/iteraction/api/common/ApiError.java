@@ -10,11 +10,11 @@ import java.util.List;
 @Builder
 public class ApiError {
 
-    private CauseDto cause;
+    private ThrowableDto cause;
     private List<StackTraceElementDto> stackTrace;
     private HttpStatus httpStatus;
     private String userMessage;
     private String message;
-    private SuppressedDto suppressed;
+    private List<ThrowableDto> suppressed;
     private String localizedMessage;
 }

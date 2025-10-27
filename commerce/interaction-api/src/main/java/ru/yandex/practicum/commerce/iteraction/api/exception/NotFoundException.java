@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class NotFoundException extends BaseException {
 
-    public NotFoundException(String message, String userMessage, HttpStatus httpStatus) {
-        super(message, userMessage, httpStatus);
+    public NotFoundException(String message, String userMessage, HttpStatus httpStatus, Throwable cause) {
+        super(message, userMessage, httpStatus, cause);
 
     }
 }

@@ -15,6 +15,7 @@ import ru.yandex.practicum.commerce.shopping.store.dal.repository.ProductReposii
 
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static ru.yandex.practicum.commerce.shopping.store.model.ProductMapper.toDto;
@@ -76,7 +77,6 @@ public class StoreServiceImpl implements StoreService {
         return reposiitory.findByProductId(productId).orElseThrow(
                 () -> new NotFoundException(String.format("Продукт с id %S не найден", productId),
                         "Продукт не найден",
-                        HttpStatus.NOT_FOUND));
+                        HttpStatus.NOT_FOUND, new NoSuchElementException("Такого productId нет в базе")));
     }
-
 }

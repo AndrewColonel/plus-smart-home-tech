@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class SuppressedDto {
+public class ThrowableDto {
     private List<StackTraceElementDto> stackTrace;
     private String message;
     private String localizedMessage;

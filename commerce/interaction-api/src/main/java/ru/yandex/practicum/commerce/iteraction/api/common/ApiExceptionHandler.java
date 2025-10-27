@@ -16,29 +16,26 @@ public class ApiExceptionHandler {
     public <T extends BaseException> ResponseEntity<ApiError> handleNotFound(T ex) {
 
         ApiError error = ApiError.builder()
-                .cause(getCause(ex))
+
+                .cause(getThrowable(ex.getCause()))
                 .stackTrace(getStackTreces(ex))
                 .httpStatus(ex.getHttpStatus())
                 .userMessage(ex.getUserMessage())
                 .message(ex.getMessage())
-                .suppressed(getSupressed(ex))
+                .suppressed(Arrays.stream(ex.getSuppressed())
+                        .map(this::getThrowable)
+                        .toList())
                 .localizedMessage(ex.getLocalizedMessage())
                 .build();
 
         return new ResponseEntity<>(error, ex.getHttpStatus());
     }
 
-    private <T extends BaseException> CauseDto getCause(T ex) {
-        return CauseDto.builder()
-                .stackTrace(getStackTreces(ex))
-                .message(ex.getMessage())
-                .localizedMessage(ex.getLocalizedMessage())
-                .build();
-    }
-
-    private <T extends BaseException> SuppressedDto getSupressed(T ex) {
-        return SuppressedDto.builder()
-                .stackTrace(getStackTreces(ex))
+    private <T extends Throwable> ThrowableDto getThrowable(T ex) {
+        return ThrowableDto.builder()
+                .stackTrace(Arrays.stream(ex.getStackTrace())
+                        .map(StackTraceElementDto::toDto)
+                        .toList())
                 .message(ex.getMessage())
                 .localizedMessage(ex.getLocalizedMessage())
                 .build();

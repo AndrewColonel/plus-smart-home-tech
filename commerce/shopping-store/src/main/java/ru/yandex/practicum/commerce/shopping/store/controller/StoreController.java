@@ -37,6 +37,7 @@ public class StoreController {
         return dtos;
     }
 
+    @Loggable
     @PutMapping
     public ProductDto create(@Valid @RequestBody ProductDto productDto) {
         ProductDto dto = service.createProduct(productDto);
