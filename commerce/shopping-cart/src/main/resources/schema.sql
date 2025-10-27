@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS carts;
 
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS carts (
     product_Id UUID PRIMARY KEY,
     product_name VARCHAR NOT NULL,
     description VARCHAR NOT NULL,

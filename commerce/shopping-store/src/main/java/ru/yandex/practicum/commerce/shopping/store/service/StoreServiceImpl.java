@@ -1,9 +1,10 @@
 package ru.yandex.practicum.commerce.shopping.store.service;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.commerce.iteraction.api.exception.NotFoundException;
 import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
 import ru.yandex.practicum.commerce.shopping.store.model.ProductMapper;
 import ru.yandex.practicum.commerce.shopping.store.model.ProductState;
@@ -11,7 +12,7 @@ import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
 import ru.yandex.practicum.commerce.shopping.store.dal.dto.SetProductQuantityRequest;
 import ru.yandex.practicum.commerce.shopping.store.model.entity.Product;
 import ru.yandex.practicum.commerce.shopping.store.dal.repository.ProductReposiitory;
-import ru.yandex.practicum.commerce.shopping.store.exception.NotFoundException;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,6 @@ import java.util.UUID;
 import static ru.yandex.practicum.commerce.shopping.store.model.ProductMapper.toDto;
 import static ru.yandex.practicum.commerce.shopping.store.model.ProductMapper.toEntity;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class StoreServiceImpl implements StoreService {
@@ -34,12 +34,9 @@ public class StoreServiceImpl implements StoreService {
                 .toList();
     }
 
-    // TODO добавить логи
-
     // Создание нового товара в ассортименте
     @Override
     public ProductDto createProduct(ProductDto productDto) {
-        //TODO - механизм генерации productId?
         return toDto(reposiitory.save(toEntity(productDto)));
     }
 
@@ -77,7 +74,9 @@ public class StoreServiceImpl implements StoreService {
     // вспомогательный метод
     public Product getProduct(UUID productId) {
         return reposiitory.findByProductId(productId).orElseThrow(
-                () -> new NotFoundException(String.format("Продукт с id %S не найден", productId)));
+                () -> new NotFoundException(String.format("Продукт с id %S не найден", productId),
+                        "Продукт не найден",
+                        HttpStatus.NOT_FOUND));
     }
 
 }

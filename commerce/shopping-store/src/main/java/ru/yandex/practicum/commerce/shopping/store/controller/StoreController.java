@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import ru.yandex.practicum.commerce.shopping.store.common.logging.Loggable;
 import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
 import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
 import ru.yandex.practicum.commerce.shopping.store.dal.dto.SetProductQuantityRequest;
@@ -16,7 +18,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.UUID;
 
-
 @RestController
 @Slf4j
 @Validated
@@ -26,51 +27,52 @@ public class StoreController {
 
     private final StoreService service;
 
+    @Loggable
     @GetMapping
     public Collection<ProductDto> getAll(
-            //TODO - непонятно зачем в теле выдавать категорию
 //            @RequestBody ProductCategory productCategory,
             @NotBlank @RequestParam ProductCategory category,
             @PageableDefault(size = 20) Pageable page) {
-        log.debug(">>> StoreController: GET /api/v1/shopping-store");
-//        log.debug(">>> Запрос на просмотр устройств {}", categoryFromBody);
-//        log.warn("ИТОГ: Список пользователей {}", );
-        return service.getAllProducts(category, page);
+        Collection<ProductDto> dtos = service.getAllProducts(category, page);
+        return dtos;
     }
-
-
-    // TODO добавить логи
 
     @PutMapping
     public ProductDto create(@Valid @RequestBody ProductDto productDto) {
-        return service.createProduct(productDto);
+        ProductDto dto = service.createProduct(productDto);
+        return dto;
     }
 
+    @Loggable
     @PostMapping
     public ProductDto update(@Valid @RequestBody ProductDto productDto) {
-        return service.updateProduct(productDto);
+        ProductDto dto = service.updateProduct(productDto);
+        return dto;
     }
 
+    @Loggable
     @PostMapping("/removeProductFromStore")
     public boolean remove(@NotBlank @RequestBody UUID productId) {
-        return service.removeProduct(productId);
+        boolean removed = service.removeProduct(productId);
+        return removed;
     }
 
+    @Loggable
     @PostMapping("/quantityState")
     public boolean setStatus(
-            //TODO - по заданию в теле, на самом деле в тестах - в запросе
 //            @RequestBody SetProductQuantityRequest productQuantityRequest,
             @Valid @ModelAttribute SetProductQuantityRequest request) {
-        return service.setStatusProduct(request);
+        boolean statused = service.setStatusProduct(request);
+        return statused;
     }
 
-
+    @Loggable
     @GetMapping("/{productId}")
     public ProductDto getById(
-            //TODO - непонятно зачем в теле дулировать параметры
 //            @RequestBody UUID Id,
             @NotBlank @PathVariable("productId") UUID productId) {
-        return service.getProductById(productId);
+        ProductDto dto = service.getProductById(productId);
+        return dto;
     }
 
 }

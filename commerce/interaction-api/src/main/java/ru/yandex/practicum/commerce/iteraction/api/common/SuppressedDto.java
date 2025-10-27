@@ -1,0 +1,14 @@
+package ru.yandex.practicum.commerce.iteraction.api.common;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@Builder
+public class SuppressedDto {
+    private List<StackTraceElementDto> stackTrace;
+    private String message;
+    private String localizedMessage;
+}

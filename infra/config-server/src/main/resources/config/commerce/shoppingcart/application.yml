@@ -17,7 +17,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:6432/shtstore
+    url: jdbc:postgresql://localhost:6432/shtcart
     driver-class-name: org.postgresql.Driver
     username: sht
     password: sht

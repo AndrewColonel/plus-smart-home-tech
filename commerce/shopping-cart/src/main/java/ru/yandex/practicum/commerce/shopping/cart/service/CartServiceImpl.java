@@ -1,0 +1,9 @@
+package ru.yandex.practicum.commerce.shopping.cart.service;
+
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@AllArgsConstructor
+public class CartServiceImpl {
+}
