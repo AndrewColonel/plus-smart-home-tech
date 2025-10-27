@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shopping.store.common.logging;
+package ru.yandex.practicum.commerce.iteraction.api.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class LoggingAspect {
 
-    @Around("@annotation(ru.yandex.practicum.commerce.shopping.store.common.logging.Loggable)")
+    @Around("@annotation(ru.yandex.practicum.commerce.iteraction.api.logging.Loggable)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("Запрос в контроллер: {}", joinPoint.getSignature().getName());
 

@@ -7,7 +7,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import ru.yandex.practicum.commerce.shopping.store.common.logging.Loggable;
+import ru.yandex.practicum.commerce.iteraction.api.logging.Loggable;
 import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
 import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
 import ru.yandex.practicum.commerce.shopping.store.dal.dto.SetProductQuantityRequest;

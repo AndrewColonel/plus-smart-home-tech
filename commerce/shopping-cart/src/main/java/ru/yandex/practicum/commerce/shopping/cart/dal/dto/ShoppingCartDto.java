@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @Data
 @Builder
@@ -15,5 +17,7 @@ import javax.validation.constraints.NotBlank;
 public class ShoppingCartDto {
     @NotBlank
     private String shoppingCartId;
+    @NotNull
+    private Map<String, Integer> products;
 
 }
