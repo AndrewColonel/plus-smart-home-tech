@@ -1,6 +1,5 @@
 package ru.yandex.practicum.commerce.shopping.cart.dal.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
