@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS shopping_cart CASCADE;
 
 CREATE TABLE IF NOT EXISTS shopping_cart(
     cart_Id UUID PRIMARY KEY,
+    user_name VARCHAR NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

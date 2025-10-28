@@ -1,6 +1,6 @@
 logging:
   level:
-    ru.yandex.practicum.commerce.shoppingstore: TRACE
+    ru.yandex.practicum.commerce.shopping.store: TRACE
     org:
       springframework:
         orm:

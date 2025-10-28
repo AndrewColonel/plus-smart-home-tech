@@ -46,4 +46,11 @@ public class ApiExceptionHandler {
                 .map(StackTraceElementDto::toDto)
                 .toList();
     }
+
+
+    // TODO
+    @ExceptionHandler
+    public String handleRunTimeException(RuntimeException ex) {
+        return ex.getMessage();
+    }
 }

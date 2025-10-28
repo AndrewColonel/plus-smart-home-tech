@@ -33,29 +33,26 @@ public class StoreController {
 //            @RequestBody ProductCategory productCategory,
             @NotBlank @RequestParam ProductCategory category,
             @PageableDefault(size = 20) Pageable page) {
-        Collection<ProductDto> dtos = service.getAllProducts(category, page);
-        return dtos;
+        return service.getAllProducts(category, page);
+
     }
 
     @Loggable
     @PutMapping
     public ProductDto create(@Valid @RequestBody ProductDto productDto) {
-        ProductDto dto = service.createProduct(productDto);
-        return dto;
+        return service.createProduct(productDto);
     }
 
     @Loggable
     @PostMapping
     public ProductDto update(@Valid @RequestBody ProductDto productDto) {
-        ProductDto dto = service.updateProduct(productDto);
-        return dto;
+        return service.updateProduct(productDto);
     }
 
     @Loggable
     @PostMapping("/removeProductFromStore")
     public boolean remove(@NotBlank @RequestBody UUID productId) {
-        boolean removed = service.removeProduct(productId);
-        return removed;
+        return service.removeProduct(productId);
     }
 
     @Loggable
@@ -63,8 +60,7 @@ public class StoreController {
     public boolean setStatus(
 //            @RequestBody SetProductQuantityRequest productQuantityRequest,
             @Valid @ModelAttribute SetProductQuantityRequest request) {
-        boolean statused = service.setStatusProduct(request);
-        return statused;
+        return service.setStatusProduct(request);
     }
 
     @Loggable
@@ -72,8 +68,7 @@ public class StoreController {
     public ProductDto getById(
 //            @RequestBody UUID Id,
             @NotBlank @PathVariable("productId") UUID productId) {
-        ProductDto dto = service.getProductById(productId);
-        return dto;
+        return service.getProductById(productId);
     }
 
 }

@@ -14,11 +14,14 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShoppingCart {
+public class Cart {
 
     @Id
     @GeneratedValue
     private UUID cartId;
+
+    @Column(name = "user_name", nullable = false)
+    private String userName;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
