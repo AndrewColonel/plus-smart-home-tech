@@ -19,14 +19,16 @@ import static ru.yandex.practicum.commerce.shopping.cart.model.ShoppingCartMappe
 
 @Service
 @AllArgsConstructor
-public class CartServiceImpl {
+public class CartServiceImpl implements CartService {
 
     private final ShoppingCartRepository repository;
 
+    @Override
     public ShoppingCartDto getUserCart(String username) {
         return toDto(getCartByUser(username));
     }
 
+    @Override
     public ShoppingCartDto createUserCart(String username, Map<UUID, Integer> products) {
         Optional<UserCart> maybeUserCart = repository.findByUserName(username);
         // если корзина пользователя существет - обновим ее
@@ -51,12 +53,14 @@ public class CartServiceImpl {
                 .build()));
     }
 
+    @Override
     public void deactivateUserCart(String username) {
         UserCart userCart = getCartByUser(username);
         userCart.setCartState(CartState.DEACTIVATED);
         repository.save(userCart);
     }
 
+    @Override
     public ShoppingCartDto removeUserProducts(String username, List<UUID> productIds) {
         UserCart userCart = getCartByUser(username);
         // если статус корзины - активен, то можем удалять продукты
@@ -71,6 +75,7 @@ public class CartServiceImpl {
         return toDto(repository.save(userCart));
     }
 
+    @Override
     public ShoppingCartDto updateUserCart(String username, ChangeProductQuantityRequest request) {
         UserCart userCart = getCartByUser(username);
         // если статус корзины - активен, то можем обновить
@@ -105,4 +110,5 @@ public class CartServiceImpl {
                         "Пользователь не найден",
                         HttpStatus.UNAUTHORIZED, new NoSuchElementException("Такого пользователя нет в базе")));
     }
+
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.iteraction.api.logging.Loggable;
 import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ShoppingCartDto;
-import ru.yandex.practicum.commerce.shopping.cart.service.CartServiceImpl;
+import ru.yandex.practicum.commerce.shopping.cart.service.CartService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class CartController {
 
-    private final CartServiceImpl service;
+    private final CartService service;
 
     @Loggable
     @GetMapping
