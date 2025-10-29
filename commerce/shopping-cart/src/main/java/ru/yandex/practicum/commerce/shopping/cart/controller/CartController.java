@@ -35,10 +35,11 @@ public class CartController {
     @Loggable
     @PutMapping
     // Добавить товар в корзину.
-    public ShoppingCartDto create(@NotBlank @RequestParam String username,
-                                  @RequestBody Map<String, Integer> products) {
+    public ShoppingCartDto create(@NotBlank @RequestParam String username
+                                                                            ) {
+//        @RequestBody Map<String, Integer> products) {
         // 401 - Имя пользователя не должно быть пустым
-        return service.createCart(username, products);
+        return service.createCart(username);
     }
 
     @Loggable

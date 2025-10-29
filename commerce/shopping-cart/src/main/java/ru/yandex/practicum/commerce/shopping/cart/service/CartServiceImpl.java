@@ -9,6 +9,8 @@ import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.shopping.cart.dal.repository.ShoppingCartRepository;
 import ru.yandex.practicum.commerce.shopping.cart.model.entity.Cart;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -26,15 +28,14 @@ public class CartServiceImpl {
         return toDto(getCartByUser(username));
     }
 
-    public ShoppingCartDto createCart(String username, Map<String, Integer> products) {
+    public ShoppingCartDto createCart(String username) {
         return toDto(repository.save(Cart.builder()
                 .userName(username)
-                .products(products.entrySet().stream()
-                        .collect(Collectors.toMap(
-                                entry -> UUID.fromString(entry.getKey()),
-                                Map.Entry::getValue)))
-
+                .createdAt(LocalDateTime.now())
+                .products(new HashMap<>())
                 .build()));
+
+
     }
 
     public void deleteCart() {

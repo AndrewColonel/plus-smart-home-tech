@@ -1,5 +1,6 @@
 package ru.yandex.practicum.commerce.iteraction.api.common;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -47,10 +48,23 @@ public class ApiExceptionHandler {
                 .toList();
     }
 
-
-    // TODO
     @ExceptionHandler
-    public String handleRunTimeException(RuntimeException ex) {
-        return ex.getMessage();
+    public ResponseEntity<ApiError> handleRunTime(RuntimeException ex) {
+
+        ApiError error = ApiError.builder()
+
+//                .cause(getThrowable(ex.getCause()))
+//                .stackTrace(Arrays.stream(ex.getStackTrace())
+//                        .map(StackTraceElementDto::toDto)
+//                        .toList())
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .userMessage(ex.getUserMessage())
+                .message(ex.getMessage())
+                .suppressed(Arrays.stream(ex.getSuppressed())
+                        .map(this::getThrowable)
+                        .toList())
+//                .localizedMessage(ex.getLocalizedMessage())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

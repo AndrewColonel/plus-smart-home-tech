@@ -11,6 +11,7 @@ import ru.yandex.practicum.commerce.iteraction.api.logging.LoggingAspect;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @Import({ApiExceptionHandler.class, LoggingAspect.class})
+//@Import(LoggingAspect.class)
 public class ShoppingCart {
     public static void main(String[] args) {
         SpringApplication.run(ShoppingCart.class);

@@ -24,7 +24,7 @@ public class Cart {
     private String userName;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @ElementCollection
     @CollectionTable(
