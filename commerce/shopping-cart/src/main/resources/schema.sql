@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users(
     cart_Id UUID PRIMARY KEY,
     user_name VARCHAR NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    cart_state VARCHAR NOT NULL,
     UNIQUE(user_name)
 );
 

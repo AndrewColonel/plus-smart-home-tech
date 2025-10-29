@@ -35,36 +35,40 @@ public class CartController {
     @Loggable
     @PutMapping
     // Добавить товар в корзину.
+    // 401 - Имя пользователя не должно быть пустым
     public ShoppingCartDto create(@NotBlank @RequestParam String username,
                                   @RequestBody Map<UUID, Integer> products) {
-        // 401 - Имя пользователя не должно быть пустым
+
         return service.createUserCart(username, products);
     }
 
     @Loggable
     @DeleteMapping
     // Деактивация корзины товаров для пользователя.
-    public void delete(@NotBlank @RequestParam String username) {
-        // 401 - Имя пользователя не должно быть пустым
+    // 401 - Имя пользователя не должно быть пустым
+    public void deactivate(@NotBlank @RequestParam String username) {
+        service.deactivateUserCart(username);
     }
 
     @Loggable
     @PostMapping("/remove")
     // Удалить указанные товары из корзины пользователя.
+    // 400 - Нет искомых товаров в корзине
+    // 401 - Имя пользователя не должно быть пустым
     public ShoppingCartDto remove(@NotBlank @RequestParam String username,
                                   @NotBlank @RequestBody List<UUID> productIds) {
-        // 400 - Нет искомых товаров в корзине
-        // 401 - Имя пользователя не должно быть пустым
-        return null;
+
+        return service.removeUserProducts(username, productIds);
     }
 
     @Loggable
     @PostMapping("/change-quantity")
     // Изменить количество товаров в корзине.
+    // 400 - Нет искомых товаров в корзине
+    // 401 - Имя пользователя не должно быть пустым
     public ShoppingCartDto update(@NotBlank @RequestParam String username,
                                   @Valid @RequestBody ChangeProductQuantityRequest request) {
-        // 400 - Нет искомых товаров в корзине
-        // 401 - Имя пользователя не должно быть пустым
+
         return service.updateUserCart(username, request);
     }
 

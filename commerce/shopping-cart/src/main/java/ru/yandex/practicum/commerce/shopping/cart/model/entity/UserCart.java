@@ -2,6 +2,7 @@ package ru.yandex.practicum.commerce.shopping.cart.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.yandex.practicum.commerce.shopping.cart.model.CartState;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -25,6 +26,10 @@ public class UserCart {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cart_state", nullable = false)
+    private CartState cartState;
 
     @ElementCollection
     @CollectionTable(
