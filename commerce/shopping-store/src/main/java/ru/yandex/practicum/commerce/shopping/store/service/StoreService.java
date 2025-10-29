@@ -1,16 +1,18 @@
 package ru.yandex.practicum.commerce.shopping.store.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
 import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
 import ru.yandex.practicum.commerce.shopping.store.dal.dto.SetProductQuantityRequest;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface StoreService {
     // Получение списка товаров по типу в пагинированном виде
-    List<ProductDto> getAllProducts(ProductCategory productCategory, Pageable page);
+    Page<ProductDto> getAllProducts(ProductCategory productCategory, Pageable page);
+
+//    List<ProductDto> getAllProducts(ProductCategory productCategory, Pageable page);
 
     // Создание нового товара в ассортименте
     ProductDto createProduct(ProductDto productDto);

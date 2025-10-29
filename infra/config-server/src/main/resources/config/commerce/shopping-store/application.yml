@@ -16,6 +16,13 @@ server:
 #  port: 12345
 
 spring:
+  data:
+    web:
+      pageable:
+        sort-parameter: sort
+  jackson:
+    visibility:
+      field: ANY
   datasource:
     url: jdbc:postgresql://localhost:6432/shtstore
     driver-class-name: org.postgresql.Driver
