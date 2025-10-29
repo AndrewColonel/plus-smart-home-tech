@@ -1,6 +1,6 @@
 spring:
   application:
-    name: shoppingcart
+    name: shopping-cart
   config:
 #    import: configserver:http://localhost:8888
     import: "configserver:"

@@ -16,5 +16,5 @@ public class ChangeProductQuantityRequest {
     @NotBlank
     private String productId;
     @NotNull
-    private int newQuantity;
+    private Integer newQuantity;
 }

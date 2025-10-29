@@ -31,8 +31,8 @@ public class UserCart {
             name = "user_carts",
             joinColumns = @JoinColumn(name = "cart_id")
     )
-    @MapKeyColumn(name = "product_id")  // колонка для ключа (UUID)
-    @Column(name = "quantity")          // колонка для значения (Integer)
+    @MapKeyColumn(name = "product_id")  // ключ (UUID)
+    @Column(name = "quantity")          // значения (Integer)
     private Map<UUID, Integer> products = new HashMap<>();
 
 }

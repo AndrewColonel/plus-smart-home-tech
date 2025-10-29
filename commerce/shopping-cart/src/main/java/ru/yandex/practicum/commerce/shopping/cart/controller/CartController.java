@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/shopping-cart")
@@ -34,11 +35,10 @@ public class CartController {
     @Loggable
     @PutMapping
     // Добавить товар в корзину.
-    public ShoppingCartDto create(@NotBlank @RequestParam String username
-                                                                            ) {
-//        @RequestBody Map<String, Integer> products) {
+    public ShoppingCartDto create(@NotBlank @RequestParam String username,
+                                  @RequestBody Map<UUID, Integer> products) {
         // 401 - Имя пользователя не должно быть пустым
-        return service.createUserCart(username);
+        return service.createUserCart(username, products);
     }
 
     @Loggable
@@ -63,10 +63,9 @@ public class CartController {
     // Изменить количество товаров в корзине.
     public ShoppingCartDto update(@NotBlank @RequestParam String username,
                                   @Valid @RequestBody ChangeProductQuantityRequest request) {
-
-
+        // 400 - Нет искомых товаров в корзине
         // 401 - Имя пользователя не должно быть пустым
-        return null;
+        return service.updateUserCart(username, request);
     }
 
 }
