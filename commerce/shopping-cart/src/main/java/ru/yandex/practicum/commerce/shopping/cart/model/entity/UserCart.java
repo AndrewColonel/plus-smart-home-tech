@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Entity(name = "shopping_cart")
+@Entity(name = "users")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cart {
+public class UserCart {
 
     @Id
     @GeneratedValue
@@ -28,7 +28,7 @@ public class Cart {
 
     @ElementCollection
     @CollectionTable(
-            name = "cart_product",
+            name = "user_carts",
             joinColumns = @JoinColumn(name = "cart_id")
     )
     @MapKeyColumn(name = "product_id")  // колонка для ключа (UUID)

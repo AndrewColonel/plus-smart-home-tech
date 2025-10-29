@@ -3,7 +3,7 @@ package ru.yandex.practicum.commerce.shopping.cart.model;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ShoppingCartDto;
-import ru.yandex.practicum.commerce.shopping.cart.model.entity.Cart;
+import ru.yandex.practicum.commerce.shopping.cart.model.entity.UserCart;
 
 import java.util.Map;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ShoppingCartMapper {
 
-    public static ShoppingCartDto toDto(Cart entity) {
+    public static ShoppingCartDto toDto(UserCart entity) {
         return ShoppingCartDto.builder()
                 .shoppingCartId(entity.getCartId().toString())
                 .products(entity.getProducts().entrySet().stream()
@@ -23,8 +23,8 @@ public class ShoppingCartMapper {
                 .build();
     }
 
-    public static Cart toEntity(ShoppingCartDto dto) {
-        return Cart.builder()
+    public static UserCart toEntity(ShoppingCartDto dto) {
+        return UserCart.builder()
                 .cartId(UUID.fromString(dto.getShoppingCartId()))
                 .products(dto.getProducts().entrySet().stream()
                         .collect(Collectors.toMap(

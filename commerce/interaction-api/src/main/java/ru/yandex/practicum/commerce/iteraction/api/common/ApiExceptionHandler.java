@@ -15,9 +15,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler
     public <T extends BaseException> ResponseEntity<ApiError> handleNotFound(T ex) {
-
         ApiError error = ApiError.builder()
-
                 .cause(getThrowable(ex.getCause()))
                 .stackTrace(getStackTreces(ex))
                 .httpStatus(ex.getHttpStatus())
@@ -52,18 +50,11 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiError> handleRunTime(RuntimeException ex) {
 
         ApiError error = ApiError.builder()
-
-//                .cause(getThrowable(ex.getCause()))
-//                .stackTrace(Arrays.stream(ex.getStackTrace())
-//                        .map(StackTraceElementDto::toDto)
-//                        .toList())
                 .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .userMessage(ex.getUserMessage())
                 .message(ex.getMessage())
                 .suppressed(Arrays.stream(ex.getSuppressed())
                         .map(this::getThrowable)
                         .toList())
-//                .localizedMessage(ex.getLocalizedMessage())
                 .build();
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
