@@ -86,7 +86,8 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         // Ошибка, товар из корзины не находится в требуемом количестве на складе
         if (!deficitCartItems.isEmpty()) {
-            log.trace("Складе не хватет следующих позиций {}", deficitCartItems);
+            log.trace("для корзины {}, на складе не хватет следующих позиций {}",
+                    shoppingCartDto.getShoppingCartId(), deficitCartItems);
         }
         // если дошли до этого момента - у нас есть товары для корзины, раситаем  параметры для доставки
         boolean fragile = false;

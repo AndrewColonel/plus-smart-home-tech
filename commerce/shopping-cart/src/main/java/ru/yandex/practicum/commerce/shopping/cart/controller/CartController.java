@@ -3,6 +3,7 @@ package ru.yandex.practicum.commerce.shopping.cart.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.iteraction.api.logging.Loggable;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.shopping.cart.service.CartService;
@@ -56,8 +57,8 @@ public class CartController {
     @PostMapping("/change-quantity")
     // Изменить количество товаров в корзине.
     public ShoppingCartDto update(@NotBlank @RequestParam String username,
-                                  @Valid @RequestBody ShoppingCartDto shoppingCartDto) {
-        return service.updateUserCart(username, shoppingCartDto);
+                                  @Valid @RequestBody ChangeProductQuantityRequest request) {
+        return service.updateUserCart(username, request);
     }
 
 }

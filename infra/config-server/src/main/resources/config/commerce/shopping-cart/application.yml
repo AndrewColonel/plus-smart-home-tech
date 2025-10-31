@@ -9,7 +9,7 @@ logging:
         transaction: INFO
         transaction.interceptor: INFO
       springframework.cloud.netflix.eureka: INFO
-      springframework.web.client.RestTemplate: DEBUG
+      springframework.web.client.RestTemplate: WARN
       apache.kafka: INFO
     feign.Logger: WARN
 

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoAuthorizedUserException;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.feignclient.WarehouseClient;
@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static ru.yandex.practicum.commerce.shopping.cart.model.ShoppingCartMapper.toDto;
-import static ru.yandex.practicum.commerce.shopping.cart.model.ShoppingCartMapper.toEntity;
 
 @Service
 @AllArgsConstructor
@@ -78,13 +77,13 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public ShoppingCartDto updateUserCart(String username, ShoppingCartDto shoppingCartDto) {
+    public ShoppingCartDto updateUserCart(String username, ChangeProductQuantityRequest request) {
         UserCart userCart = getCartByUser(username);
         // если статус корзины - активен, то можем обновить
         if (userCart.getCartState().equals(CartState.DEACTIVATED)) {
             return toDto(userCart);
         }
-        userCart.setProducts(toEntity(shoppingCartDto).getProducts());
+        userCart.setProducts(request.getProducts());
         // проверим склад с помощью feign-client
         client.check(toDto(userCart));
 
