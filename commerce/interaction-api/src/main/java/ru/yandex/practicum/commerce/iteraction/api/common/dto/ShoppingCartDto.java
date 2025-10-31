@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shopping.cart.dal.dto;
+package ru.yandex.practicum.commerce.iteraction.api.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

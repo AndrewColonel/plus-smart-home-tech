@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS users(
 CREATE TABLE IF NOT EXISTS user_carts(
     cart_id UUID NOT NULL REFERENCES users(cart_Id) ON DELETE CASCADE,
     product_id UUID NOT NULL,
-    quantity BIGINT NOT NULL CHECK (quantity > 0),
+    quantity BIGINT NOT NULL CHECK (quantity >= 0),
     PRIMARY KEY (cart_id, product_id)
 );

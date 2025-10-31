@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoAuthorizedUserException;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoProductsInCartException;
 import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ChangeProductQuantityRequest;
-import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ShoppingCartDto;
+import ru.yandex.practicum.commerce.iteraction.api.common.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.shopping.cart.dal.repository.ShoppingCartRepository;
 import ru.yandex.practicum.commerce.shopping.cart.model.CartState;
 import ru.yandex.practicum.commerce.shopping.cart.model.entity.UserCart;
@@ -88,9 +88,12 @@ public class CartServiceImpl implements CartService {
         Integer requestNewQuantity = request.getNewQuantity();
 
         if (cartProducts.containsKey(requestProductId)) {
-            cartProducts.compute(requestProductId,
-                    (k, oldQuantity) ->
-                            (oldQuantity == null) ? requestNewQuantity : requestNewQuantity + oldQuantity);
+            // если количество товара в корзине просто замещается
+            cartProducts.put(requestProductId, requestNewQuantity);
+            // Если количество из запроса суммируется с корзиной
+//            cartProducts.compute(requestProductId,
+//                    (k, oldQuantity) ->
+//                            (oldQuantity == null) ? requestNewQuantity : requestNewQuantity + oldQuantity);
 
         } else {
             throw new NoProductsInCartException(

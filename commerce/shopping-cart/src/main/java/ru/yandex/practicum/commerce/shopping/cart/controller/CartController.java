@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.iteraction.api.logging.Loggable;
 import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ChangeProductQuantityRequest;
-import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ShoppingCartDto;
+import ru.yandex.practicum.commerce.iteraction.api.common.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.shopping.cart.service.CartService;
 
 import javax.validation.Valid;

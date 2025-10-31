@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shopping.store;
+package ru.yandex.practicum.commerce.warehouse;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,9 +10,8 @@ import ru.yandex.practicum.commerce.iteraction.api.logging.LoggingAspect;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @Import({ApiExceptionHandler.class, LoggingAspect.class})
-public class ShoppingStore {
+public class WareHouse {
     public static void main(String[] args) {
-        SpringApplication.run(ShoppingStore.class);
-
+        SpringApplication.run(WareHouse.class);
     }
 }

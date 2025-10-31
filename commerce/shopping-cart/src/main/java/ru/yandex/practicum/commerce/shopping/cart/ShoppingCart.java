@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Import;
-import ru.yandex.practicum.commerce.iteraction.api.common.ApiExceptionHandler;
+import ru.yandex.practicum.commerce.iteraction.api.common.apierror.ApiExceptionHandler;
 import ru.yandex.practicum.commerce.iteraction.api.logging.LoggingAspect;
 
 @SpringBootApplication
