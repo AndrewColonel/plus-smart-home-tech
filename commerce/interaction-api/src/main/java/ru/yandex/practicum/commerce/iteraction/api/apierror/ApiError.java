@@ -1,10 +1,10 @@
-package ru.yandex.practicum.commerce.iteraction.api.common.apierror;
+package ru.yandex.practicum.commerce.iteraction.api.apierror;
 
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
-import ru.yandex.practicum.commerce.iteraction.api.common.dto.StackTraceElementDto;
-import ru.yandex.practicum.commerce.iteraction.api.common.dto.ThrowableDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.StackTraceElementDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.ThrowableDto;
 
 import java.util.List;
 

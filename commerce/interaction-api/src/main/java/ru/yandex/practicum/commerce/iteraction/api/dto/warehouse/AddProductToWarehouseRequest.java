@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shopping.cart.dal.dto;
+package ru.yandex.practicum.commerce.iteraction.api.dto.warehouse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,9 +12,9 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangeProductQuantityRequest {
+public class AddProductToWarehouseRequest {
     @NotBlank
     private String productId;
     @NotNull
-    private Integer newQuantity;
+    private Integer quantity;
 }

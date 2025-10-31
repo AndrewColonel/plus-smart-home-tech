@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoAuthorizedUserException;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoProductsInCartException;
-import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ChangeProductQuantityRequest;
-import ru.yandex.practicum.commerce.iteraction.api.common.dto.ShoppingCartDto;
-import ru.yandex.practicum.commerce.shopping.cart.dal.repository.ShoppingCartRepository;
+import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
+import ru.yandex.practicum.commerce.shopping.cart.repository.ShoppingCartRepository;
 import ru.yandex.practicum.commerce.shopping.cart.model.CartState;
 import ru.yandex.practicum.commerce.shopping.cart.model.entity.UserCart;
 

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.commerce.shopping.store.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -9,9 +8,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import ru.yandex.practicum.commerce.iteraction.api.logging.Loggable;
-import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
-import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
-import ru.yandex.practicum.commerce.shopping.store.dal.dto.SetProductQuantityRequest;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductCategory;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.SetProductQuantityRequest;
 import ru.yandex.practicum.commerce.shopping.store.service.StoreService;
 
 import javax.validation.Valid;
@@ -19,7 +18,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @RestController
-@Slf4j
 @Validated
 @RequestMapping("/api/v1/shopping-store")
 @AllArgsConstructor

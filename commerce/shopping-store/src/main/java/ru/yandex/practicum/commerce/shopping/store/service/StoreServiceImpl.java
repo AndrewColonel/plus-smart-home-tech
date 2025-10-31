@@ -6,13 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NotFoundException;
-import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductCategory;
 import ru.yandex.practicum.commerce.shopping.store.model.ProductMapper;
-import ru.yandex.practicum.commerce.shopping.store.model.ProductState;
-import ru.yandex.practicum.commerce.shopping.store.dal.dto.ProductDto;
-import ru.yandex.practicum.commerce.shopping.store.dal.dto.SetProductQuantityRequest;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductState;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.SetProductQuantityRequest;
 import ru.yandex.practicum.commerce.shopping.store.model.entity.Product;
-import ru.yandex.practicum.commerce.shopping.store.dal.repository.ProductReposiitory;
+import ru.yandex.practicum.commerce.shopping.store.repository.ProductReposiitory;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;

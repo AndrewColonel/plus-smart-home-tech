@@ -1,7 +1,6 @@
-package ru.yandex.practicum.commerce.shopping.store.dal.dto;
+package ru.yandex.practicum.commerce.iteraction.api.dto.store;
 
 import lombok.Data;
-import ru.yandex.practicum.commerce.shopping.store.model.QuantityState;
 
 import javax.validation.constraints.NotBlank;
 

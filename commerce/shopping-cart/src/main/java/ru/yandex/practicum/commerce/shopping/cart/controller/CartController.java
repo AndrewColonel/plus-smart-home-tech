@@ -1,12 +1,11 @@
 package ru.yandex.practicum.commerce.shopping.cart.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.iteraction.api.logging.Loggable;
-import ru.yandex.practicum.commerce.shopping.cart.dal.dto.ChangeProductQuantityRequest;
-import ru.yandex.practicum.commerce.iteraction.api.common.dto.ShoppingCartDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.shopping.cart.service.CartService;
 
 import javax.validation.Valid;
@@ -19,7 +18,6 @@ import java.util.Map;
 @RequestMapping("/api/v1/shopping-cart")
 @AllArgsConstructor
 @Validated
-@Slf4j
 public class CartController {
 
     private final CartService service;

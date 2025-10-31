@@ -2,9 +2,9 @@ package ru.yandex.practicum.commerce.shopping.store.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.yandex.practicum.commerce.shopping.store.model.ProductCategory;
-import ru.yandex.practicum.commerce.shopping.store.model.ProductState;
-import ru.yandex.practicum.commerce.shopping.store.model.QuantityState;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductCategory;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductState;
+import ru.yandex.practicum.commerce.iteraction.api.dto.store.QuantityState;
 
 import java.util.UUID;
 

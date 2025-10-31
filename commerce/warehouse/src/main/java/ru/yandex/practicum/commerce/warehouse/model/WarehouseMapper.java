@@ -2,8 +2,8 @@ package ru.yandex.practicum.commerce.warehouse.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import ru.yandex.practicum.commerce.warehouse.dal.dto.DimensionDto;
-import ru.yandex.practicum.commerce.warehouse.dal.dto.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.DimensionDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.warehouse.model.entity.Dimension;
 import ru.yandex.practicum.commerce.warehouse.model.entity.WarehouseItem;
 

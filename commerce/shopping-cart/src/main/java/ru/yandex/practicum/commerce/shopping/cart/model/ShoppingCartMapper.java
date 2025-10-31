@@ -2,7 +2,7 @@ package ru.yandex.practicum.commerce.shopping.cart.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import ru.yandex.practicum.commerce.iteraction.api.common.dto.ShoppingCartDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.shopping.cart.model.entity.UserCart;
 
 import java.util.Map;
