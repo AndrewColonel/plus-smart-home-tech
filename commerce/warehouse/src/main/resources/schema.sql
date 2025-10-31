@@ -11,10 +11,3 @@ CREATE TABLE IF NOT EXISTS warehouse_items(
     weight DECIMAL(6, 2) NOT NULL,
     quantity INTEGER NOT NULL CHECK (quantity >= 0)
  );
-
---CREATE TABLE IF NOT EXISTS dimension(
---    product_id UUID PRIMARY KEY REFERENCES warehouse_items(product_id) ON DELETE CASCADE,
---    width DECIMAL(5, 2) NOT NULL CHECK (width > 0),
---    height DECIMAL(5, 2) NOT NULL CHECK (height > 0),
---    depth DECIMAL(5, 2) NOT NULL CHECK (depth > 0)
---);
