@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoSpecifiedProductInWarehouseException;
+import ru.yandex.practicum.commerce.iteraction.api.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.iteraction.api.exception.SpecifiedProductAlreadyInWarehouseException;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddProductToWarehouseRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddressDto;
@@ -88,6 +89,15 @@ public class WarehouseServiceImpl implements WarehouseService {
         if (!deficitCartItems.isEmpty()) {
             log.trace("для корзины {}, на складе не хватет следующих позиций {}",
                     shoppingCartDto.getShoppingCartId(), deficitCartItems);
+
+
+            throw new ProductInShoppingCartLowQuantityInWarehouse(
+                    String.format("Товаров id %S из корзины нет на складе ребуемом количестве", deficitCartItems.keySet()),
+                    "товар из корзины не находится в требуемом количестве на складе",
+                    HttpStatus.BAD_REQUEST, new NoSuchElementException("Нет информации о товаре на складе")
+            );
+
+
         }
         // если дошли до этого момента - у нас есть товары для корзины, раситаем  параметры для доставки
         boolean fragile = false;

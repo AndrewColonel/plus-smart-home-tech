@@ -1,6 +1,8 @@
 package ru.yandex.practicum.commerce.shopping.cart.service;
 
+import feign.FeignException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import static ru.yandex.practicum.commerce.shopping.cart.model.ShoppingCartMappe
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CartServiceImpl implements CartService {
 
     private final ShoppingCartRepository repository;
@@ -84,9 +87,16 @@ public class CartServiceImpl implements CartService {
             return toDto(userCart);
         }
         userCart.setProducts(request.getProducts());
-        // проверим склад с помощью feign-client
-        client.check(toDto(userCart));
 
+        // проверим склад с помощью feign-client
+        try {
+            client.check(toDto(userCart));
+        } catch (FeignException e) {
+            if (e.status() == 400) {
+                log.trace("для корзины {}, на складе не хватет товаров",
+                        request.getShoppingCartId());
+            }
+        }
         return toDto(repository.save(userCart));
     }
 
