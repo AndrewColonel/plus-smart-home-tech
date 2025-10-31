@@ -2,11 +2,11 @@ package ru.yandex.practicum.commerce.warehouse.service;
 
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoSpecifiedProductInWarehouseException;
-import ru.yandex.practicum.commerce.iteraction.api.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.iteraction.api.exception.SpecifiedProductAlreadyInWarehouseException;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddProductToWarehouseRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddressDto;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository repository;
@@ -42,7 +43,6 @@ public class WarehouseServiceImpl implements WarehouseService {
                     "товар с таким описанием уже зарегистрирован на складе",
                     HttpStatus.BAD_REQUEST, new DuplicateRequestException("Товар уже в базе"));
         }
-
 
         repository.save(WarehouseMapper.toEntity(request));
     }
@@ -86,11 +86,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         // Ошибка, товар из корзины не находится в требуемом количестве на складе
         if (!deficitCartItems.isEmpty()) {
-            throw new ProductInShoppingCartLowQuantityInWarehouse(
-                    String.format("Товаров id %S из корзины нет на складе ребуемом количестве", deficitCartItems.keySet()),
-                    "товар из корзины не находится в требуемом количестве на складе",
-                    HttpStatus.BAD_REQUEST, new NoSuchElementException("Нет информации о товаре на складе")
-            );
+            log.trace("Складе не хватет следующих позиций {}", deficitCartItems);
         }
         // если дошли до этого момента - у нас есть товары для корзины, раситаем  параметры для доставки
         boolean fragile = false;

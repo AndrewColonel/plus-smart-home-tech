@@ -14,15 +14,15 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWar
 @FeignClient(name = "warehouse")
 public interface WarehouseClient {
 
-    @PutMapping
+    @PutMapping("/api/v1/warehouse")
     void create(@RequestBody NewProductInWarehouseRequest request);
 
     @PostMapping("/api/v1/warehouse/check")
     BookingProductsDto check(@RequestBody ShoppingCartDto shoppingCartDto);
 
-    @PostMapping("/add")
+    @PostMapping("/api/v1/warehouse/add")
     void add(@RequestBody AddProductToWarehouseRequest request);
 
-    @GetMapping("/address")
+    @GetMapping("/api/v1/warehouse/address")
     AddressDto getAddress();
 }

@@ -48,16 +48,16 @@ public class ApiExceptionHandler {
                 .toList();
     }
 
-//    @ExceptionHandler
-//    public ResponseEntity<ApiError> handleRunTime(RuntimeException ex) {
-//
-//        ApiError error = ApiError.builder()
-//                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .message(ex.getMessage())
-//                .suppressed(Arrays.stream(ex.getSuppressed())
-//                        .map(this::getThrowable)
-//                        .toList())
-//                .build();
-//        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler
+    public ResponseEntity<ApiError> handleRunTime(RuntimeException ex) {
+
+        ApiError error = ApiError.builder()
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message(ex.getMessage())
+                .suppressed(Arrays.stream(ex.getSuppressed())
+                        .map(this::getThrowable)
+                        .toList())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

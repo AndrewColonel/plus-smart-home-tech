@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import java.util.Map;
 
 @Data
 @Builder
@@ -15,8 +16,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class ChangeProductQuantityRequest {
     @NotBlank
+    private String shoppingCartId;
+    @NotBlank
+    private String username;
     @NotNull
-    private String productId;
-    @NotNull
-    private Integer newQuantity;
+    private Map<String, Integer> products;
+
 }

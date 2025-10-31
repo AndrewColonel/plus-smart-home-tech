@@ -13,21 +13,21 @@ import java.util.UUID;
 
 @FeignClient(name = "shopping-cart")
 public interface CartClient {
-    @GetMapping
+    @GetMapping("/api/v1/shopping-cart")
     ShoppingCartDto get(@RequestParam String username);
 
-    @PutMapping
+    @PutMapping("/api/v1/shopping-cart")
     ShoppingCartDto create(@RequestParam String username,
                            @RequestBody Map<UUID, Integer> products);
 
-    @DeleteMapping
+    @DeleteMapping("/api/v1/shopping-cart")
     void deactivate(@RequestParam String username);
 
-    @PostMapping("/remove")
+    @PostMapping("/api/v1/shopping-cart/remove")
     ShoppingCartDto remove(@NotBlank @RequestParam String username,
                            @NotBlank @RequestBody List<UUID> productIds);
 
-    @PostMapping("/change-quantity")
+    @PostMapping("/api/v1/shopping-cart/change-quantity")
     ShoppingCartDto update(@NotBlank @RequestParam String username,
                            @Valid @RequestBody ChangeProductQuantityRequest request);
 

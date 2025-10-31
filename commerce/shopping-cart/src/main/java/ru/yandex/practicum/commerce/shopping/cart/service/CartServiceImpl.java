@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoAuthorizedUserException;
-import ru.yandex.practicum.commerce.iteraction.api.exception.NoProductsInCartException;
-import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.feignclient.WarehouseClient;
 import ru.yandex.practicum.commerce.shopping.cart.repository.ShoppingCartRepository;
@@ -18,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static ru.yandex.practicum.commerce.shopping.cart.model.ShoppingCartMapper.toDto;
+import static ru.yandex.practicum.commerce.shopping.cart.model.ShoppingCartMapper.toEntity;
 
 @Service
 @AllArgsConstructor
@@ -45,7 +44,6 @@ public class CartServiceImpl implements CartService {
             }
             userCart.setProducts(products);
             return toDto(repository.save(userCart));
-
 
         }
         // корзины еще не было, создаем с активным статусом и временем создания
@@ -80,40 +78,16 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public ShoppingCartDto updateUserCart(String username, ChangeProductQuantityRequest request) {
+    public ShoppingCartDto updateUserCart(String username, ShoppingCartDto shoppingCartDto) {
         UserCart userCart = getCartByUser(username);
         // если статус корзины - активен, то можем обновить
         if (userCart.getCartState().equals(CartState.DEACTIVATED)) {
             return toDto(userCart);
         }
+        userCart.setProducts(toEntity(shoppingCartDto).getProducts());
         // проверим склад с помощью feign-client
-//        BookingProductsDto bookingProductsDto = client.check();
+        client.check(toDto(userCart));
 
-        System.out.println("_____________________");
-        System.out.println(userCart);
-        System.out.println(request);
-
-
-        Map<UUID, Integer> cartProducts = userCart.getProducts();
-
-        UUID requestProductId = UUID.fromString(request.getProductId());
-        Integer requestNewQuantity = request.getNewQuantity();
-
-        if (cartProducts.containsKey(requestProductId)) {
-            // если количество товара в корзине просто замещается
-            cartProducts.put(requestProductId, requestNewQuantity);
-            // Если количество из запроса суммируется с корзиной
-//            cartProducts.compute(requestProductId,
-//                    (k, oldQuantity) ->
-//                            (oldQuantity == null) ? requestNewQuantity : requestNewQuantity + oldQuantity);
-
-        } else {
-            throw new NoProductsInCartException(
-                    String.format("Пролукт с id %s не найден", requestProductId),
-                    "Продукт не найден",
-                    HttpStatus.BAD_REQUEST, new NoSuchElementException("Такого продукта нет в базе"));
-            // cartProducts.put(requestProductId, requestNewQuantity);
-        }
         return toDto(repository.save(userCart));
     }
 

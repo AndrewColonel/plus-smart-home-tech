@@ -1,6 +1,5 @@
 package ru.yandex.practicum.commerce.shopping.cart.service;
 
-import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 
 import java.util.List;
@@ -17,6 +16,6 @@ public interface CartService {
 
     ShoppingCartDto removeUserProducts(String username, List<UUID> productIds);
 
-    ShoppingCartDto updateUserCart(String username, ChangeProductQuantityRequest request);
+    ShoppingCartDto updateUserCart(String username, ShoppingCartDto shoppingCartDto);
 
 }
