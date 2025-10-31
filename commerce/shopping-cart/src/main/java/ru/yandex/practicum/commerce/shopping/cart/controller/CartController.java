@@ -10,6 +10,7 @@ import ru.yandex.practicum.commerce.shopping.cart.service.CartService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class CartController {
     @Loggable
     @GetMapping
     // Получить актуальную корзину для авторизованного пользователя.
-    public ShoppingCartDto get(@NotBlank @RequestParam String username) {
+    public ShoppingCartDto get(@NotNull @NotBlank @RequestParam String username) {
         // 401 - Имя пользователя не должно быть пустым
         return service.getUserCart(username);
     }
@@ -34,7 +35,7 @@ public class CartController {
     @PutMapping
     // Добавить товар в корзину.
     // 401 - Имя пользователя не должно быть пустым
-    public ShoppingCartDto create(@NotBlank @RequestParam String username,
+    public ShoppingCartDto create(@NotNull  @NotBlank @RequestParam String username,
                                   @RequestBody Map<UUID, Integer> products) {
 
         return service.createUserCart(username, products);
@@ -44,7 +45,7 @@ public class CartController {
     @DeleteMapping
     // Деактивация корзины товаров для пользователя.
     // 401 - Имя пользователя не должно быть пустым
-    public void deactivate(@NotBlank @RequestParam String username) {
+    public void deactivate(@NotNull  @NotBlank @RequestParam String username) {
         service.deactivateUserCart(username);
     }
 
@@ -53,7 +54,7 @@ public class CartController {
     // Удалить указанные товары из корзины пользователя.
     // 400 - Нет искомых товаров в корзине
     // 401 - Имя пользователя не должно быть пустым
-    public ShoppingCartDto remove(@NotBlank @RequestParam String username,
+    public ShoppingCartDto remove(@NotNull @NotBlank @RequestParam String username,
                                   @NotBlank @RequestBody List<UUID> productIds) {
 
         return service.removeUserProducts(username, productIds);
@@ -64,7 +65,7 @@ public class CartController {
     // Изменить количество товаров в корзине.
     // 400 - Нет искомых товаров в корзине
     // 401 - Имя пользователя не должно быть пустым
-    public ShoppingCartDto update(@NotBlank @RequestParam String username,
+    public ShoppingCartDto update(@NotNull @NotBlank @RequestParam String username,
                                   @Valid @RequestBody ChangeProductQuantityRequest request) {
 
         return service.updateUserCart(username, request);

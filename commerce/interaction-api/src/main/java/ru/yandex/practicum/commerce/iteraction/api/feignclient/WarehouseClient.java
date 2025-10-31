@@ -17,7 +17,7 @@ public interface WarehouseClient {
     @PutMapping
     void create(@RequestBody NewProductInWarehouseRequest request);
 
-    @PostMapping("/check")
+    @PostMapping("/api/v1/warehouse/check")
     BookingProductsDto check(@RequestBody ShoppingCartDto shoppingCartDto);
 
     @PostMapping("/add")

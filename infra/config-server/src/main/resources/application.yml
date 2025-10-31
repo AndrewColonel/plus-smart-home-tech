@@ -22,6 +22,13 @@ spring:
 server:
   port: 0
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
 eureka:
   client:
     enable: true

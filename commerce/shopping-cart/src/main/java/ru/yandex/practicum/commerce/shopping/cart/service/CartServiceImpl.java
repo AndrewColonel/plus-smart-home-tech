@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoAuthorizedUserException;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoProductsInCartException;
 import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
+import ru.yandex.practicum.commerce.iteraction.api.feignclient.WarehouseClient;
 import ru.yandex.practicum.commerce.shopping.cart.repository.ShoppingCartRepository;
 import ru.yandex.practicum.commerce.shopping.cart.model.CartState;
 import ru.yandex.practicum.commerce.shopping.cart.model.entity.UserCart;
@@ -22,6 +24,8 @@ import static ru.yandex.practicum.commerce.shopping.cart.model.ShoppingCartMappe
 public class CartServiceImpl implements CartService {
 
     private final ShoppingCartRepository repository;
+
+    private final WarehouseClient client;
 
     @Override
     public ShoppingCartDto getUserCart(String username) {
@@ -82,6 +86,14 @@ public class CartServiceImpl implements CartService {
         if (userCart.getCartState().equals(CartState.DEACTIVATED)) {
             return toDto(userCart);
         }
+        // проверим склад с помощью feign-client
+//        BookingProductsDto bookingProductsDto = client.check();
+
+        System.out.println("_____________________");
+        System.out.println(userCart);
+        System.out.println(request);
+
+
         Map<UUID, Integer> cartProducts = userCart.getProducts();
 
         UUID requestProductId = UUID.fromString(request.getProductId());

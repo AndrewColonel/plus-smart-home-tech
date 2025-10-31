@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChangeProductQuantityRequest {
     @NotBlank
+    @NotNull
     private String productId;
     @NotNull
     private Integer newQuantity;
