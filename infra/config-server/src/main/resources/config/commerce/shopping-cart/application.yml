@@ -35,3 +35,19 @@ spring:
 #        format_sql: true
 #        time_zone: UTC
 #        default_schema: public
+  cloud:
+    circuitbreaker:
+      enabled: true
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 50
+      failureRateThreshold: 50
+  instances:
+    WarehouseClient:
+      slidingWindowSize: 10
+      waitDurationInOpenState: 10000 # 10 секунд в миллисекундах
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: COUNT_BASED
+      minimumNumberOfCalls: 5
+      automaticTransitionFromOpenToHalfOpenEnabled: true
