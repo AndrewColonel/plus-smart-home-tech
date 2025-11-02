@@ -24,7 +24,7 @@ spring:
     visibility:
       field: ANY
   datasource:
-    url: jdbc:postgresql://localhost:6432/shtstore
+    url: jdbc:postgresql://localhost:5432/shtstore
     driver-class-name: org.postgresql.Driver
     username: sht
     password: sht
