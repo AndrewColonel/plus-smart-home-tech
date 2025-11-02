@@ -23,11 +23,12 @@ spring:
   jackson:
     visibility:
       field: ANY
+
   datasource:
     url: jdbc:postgresql://localhost:5432/commerce_shopping_store
     driver-class-name: org.postgresql.Driver
-  username: postgres
-  password: password
+    username: postgres
+    password: password
   sql:
     init:
       mode: always

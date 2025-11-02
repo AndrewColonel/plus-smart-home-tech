@@ -18,6 +18,7 @@ server:
 #  port: 12345
 
 spring:
+
   datasource:
     url: jdbc:postgresql://localhost:5432/commerce_shopping_cart
     driver-class-name: org.postgresql.Driver
