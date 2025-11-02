@@ -20,7 +20,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/warehouse
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: postgres
+    password: password
   sql:
     init:
       mode: always
