@@ -26,8 +26,8 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/shtstore
     driver-class-name: org.postgresql.Driver
-    username: sht
-    password: sht
+  username: postgres
+  password: password
   sql:
     init:
       mode: always
