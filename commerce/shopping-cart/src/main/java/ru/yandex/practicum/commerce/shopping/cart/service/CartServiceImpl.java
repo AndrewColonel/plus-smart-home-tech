@@ -86,6 +86,12 @@ public class CartServiceImpl implements CartService {
         if (userCart.getCartState().equals(CartState.DEACTIVATED)) {
             return toDto(userCart);
         }
+
+        System.out.println(userCart.getProducts());
+
+
+//        userCart.setProducts(request.getProducts());
+
         userCart.getProducts().put(request.getProductId(), request.getNewQuantity());
 
         // проверим склад с помощью feign-client
@@ -93,8 +99,8 @@ public class CartServiceImpl implements CartService {
             client.check(toDto(userCart));
         } catch (FeignException e) {
             if (e.status() == 400) {
-                log.trace("для корзины {}, на складе не хватет товаров",
-                        userCart.getProducts());
+                log.trace("для корзины {}, на складе не хватет товаров {}",
+                        userCart.getCartId(), userCart.getProducts());
             }
         }
         return toDto(repository.save(userCart));
