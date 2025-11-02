@@ -19,7 +19,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/shtcart
+    url: jdbc:postgresql://localhost:5432/commerce_shopping_cart
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: password
