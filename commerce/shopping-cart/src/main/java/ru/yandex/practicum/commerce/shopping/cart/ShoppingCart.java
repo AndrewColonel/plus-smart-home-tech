@@ -6,12 +6,14 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
 import ru.yandex.practicum.commerce.iteraction.api.apierror.ApiExceptionHandler;
+import ru.yandex.practicum.commerce.iteraction.api.feignclient.WarehouseClientFallBackFactory;
 import ru.yandex.practicum.commerce.iteraction.api.logging.LoggingAspect;
 import ru.yandex.practicum.commerce.iteraction.api.feignclient.WarehouseClient;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-@Import({ApiExceptionHandler.class, LoggingAspect.class})
+@Import({ApiExceptionHandler.class, LoggingAspect.class,
+        WarehouseClientFallBackFactory.class})
 @EnableFeignClients(clients = WarehouseClient.class)
 public class ShoppingCart {
     public static void main(String[] args) {

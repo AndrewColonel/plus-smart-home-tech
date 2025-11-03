@@ -22,7 +22,7 @@ public class ChangeProductQuantityRequest {
 //    private String username;
 //    @NotNull
 //    private Map<UUID, Integer> products;
-
+//
     @NotBlank
     @NotNull
     private UUID productId;

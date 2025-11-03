@@ -11,7 +11,7 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
 
-@FeignClient(name = "warehouse", fallback = WarehouseClientFallBack.class,
+@FeignClient(name = "warehouse",
         fallbackFactory = WarehouseClientFallBackFactory.class)
 public interface WarehouseClient {
 

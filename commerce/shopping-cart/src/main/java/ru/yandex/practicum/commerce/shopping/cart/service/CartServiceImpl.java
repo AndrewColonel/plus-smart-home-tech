@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
+import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoAuthorizedUserException;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.feignclient.WarehouseClient;
@@ -87,22 +88,24 @@ public class CartServiceImpl implements CartService {
             return toDto(userCart);
         }
 
-        System.out.println(userCart.getProducts());
-
 
 //        userCart.setProducts(request.getProducts());
 
         userCart.getProducts().put(request.getProductId(), request.getNewQuantity());
 
         // проверим склад с помощью feign-client
-        try {
-            client.check(toDto(userCart));
-        } catch (FeignException e) {
-            if (e.status() == 400) {
-                log.trace("для корзины {}, на складе не хватет товаров {}",
-                        userCart.getCartId(), userCart.getProducts());
+
+            try {
+
+                BookingProductsDto bookingProductsDto = client.check(toDto(userCart));
+                log.info("Общие сведения по корзине {} о доставке {}", userCart.getCartId(), bookingProductsDto);
+
+            } catch (FeignException e) {
+                if (e.status() == 400) {
+                    log.warn("для корзины {}, на складе не хватет товаров {}",
+                            userCart.getCartId(), userCart.getProducts());
+                }
             }
-        }
         return toDto(repository.save(userCart));
     }
 

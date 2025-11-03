@@ -33,3 +33,12 @@ spring:
 #        format_sql: true
 #        time_zone: UTC
 #        default_schema: public
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

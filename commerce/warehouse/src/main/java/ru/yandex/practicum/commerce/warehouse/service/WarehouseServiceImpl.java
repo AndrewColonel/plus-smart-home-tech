@@ -90,7 +90,6 @@ public class WarehouseServiceImpl implements WarehouseService {
             log.trace("для корзины {}, на складе не хватет следующих позиций {}",
                     shoppingCartDto.getShoppingCartId(), deficitCartItems);
 
-
             throw new ProductInShoppingCartLowQuantityInWarehouse(
                     String.format("Товаров id %S из корзины нет на складе ребуемом количестве", deficitCartItems.keySet()),
                     "товар из корзины не находится в требуемом количестве на складе",

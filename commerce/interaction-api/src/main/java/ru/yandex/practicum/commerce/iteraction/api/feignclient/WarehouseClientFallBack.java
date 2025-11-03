@@ -20,7 +20,11 @@ public class WarehouseClientFallBack implements WarehouseClient{
     @Override
     public BookingProductsDto check(ShoppingCartDto shoppingCartDto) {
         log.warn("Fallback response: сервис check временно недоступен");
-        return null;
+        return BookingProductsDto.builder()
+                .deliveryvolume(0.0)
+                .deliveryweight(0.0)
+                .fragile(false)
+                .build();
     }
 
     @Override
@@ -33,7 +37,4 @@ public class WarehouseClientFallBack implements WarehouseClient{
         log.warn("Fallback response: сервис getAddress временно недоступен");
         return null;
     }
-
-
-
 }
