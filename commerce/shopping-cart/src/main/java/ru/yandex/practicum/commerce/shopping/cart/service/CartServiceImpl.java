@@ -88,13 +88,9 @@ public class CartServiceImpl implements CartService {
             return toDto(userCart);
         }
 
-
-//        userCart.setProducts(request.getProducts());
-
         userCart.getProducts().put(request.getProductId(), request.getNewQuantity());
 
         // проверим склад с помощью feign-client
-
             try {
 
                 BookingProductsDto bookingProductsDto = client.check(toDto(userCart));

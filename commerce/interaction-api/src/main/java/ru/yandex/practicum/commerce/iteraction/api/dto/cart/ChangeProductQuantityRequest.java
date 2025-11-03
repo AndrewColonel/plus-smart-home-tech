@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -16,13 +15,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChangeProductQuantityRequest {
-//    @NotBlank
-//    private UUID shoppingCartId;
-//    @NotBlank
-//    private String username;
-//    @NotNull
-//    private Map<UUID, Integer> products;
-//
     @NotBlank
     @NotNull
     private UUID productId;

@@ -147,5 +147,4 @@ public class WarehouseServiceImpl implements WarehouseService {
     private Optional<WarehouseItem> getWarehouseItem(String productId) {
         return repository.findByProductId(UUID.fromString(productId));
     }
-
 }
