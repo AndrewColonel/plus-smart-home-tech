@@ -50,6 +50,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public BookingProductsDto checkShoppingCart(ShoppingCartDto shoppingCartDto) {
+        log.info("Проверка достаточного количества товаров для корзины {}", shoppingCartDto.getShoppingCartId());
         // Список id продуктов из корзины
         List<UUID> productIds = shoppingCartDto.getProducts().keySet().stream()
                 .map(UUID::fromString)
