@@ -1,0 +1,23 @@
+logging:
+  level:
+    ru.yandex.practicum.telemetry.collector: TRACE
+    org:
+      springframework: INFO
+      springframework.cloud.netflix.eureka: INFO
+      apache.kafka: INFO
+
+grpc:
+  server:
+    port: 59091
+
+collector:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    producerconfig:
+      properties:
+        bootstrap.servers: ${collector.kafka.bootstrap-servers}
+        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        value.serializer: ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer
+        linger.ms: 0
+      hubtopic: "telemetry.hubs.v1"
+      sensortopic: "telemetry.sensors.v1"

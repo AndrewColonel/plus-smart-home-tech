@@ -92,6 +92,7 @@ public class AggregationStarter implements Runnable {
 //                snapshots.clear();
             }
         } catch (WakeupException ignored) {
+            log.warn("Вызван метод wakeup, poll будет прерван");
             // игнорируем - закрываем консьюмер и продюсер в блоке finally
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от датчиков", e);

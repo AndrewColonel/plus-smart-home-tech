@@ -1,64 +1,26 @@
-grpc:
-  client:
-    hub-router:
-      address: 'static://localhost:59090'
-#      address: 'static://localhost:9090'
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
-
-logging:
-  level:
-    ru.yandex.practicum: DEBUG
-    org:
-      springframework:
-        orm:
-          jpa: INFO
-          jpa.JpaTransactionManager: INFO
-        transaction: INFO
-        transaction.interceptor: INFO
-
-analyzer:
-  kafka:
-    bootstrap-servers: "localhost:9092"
-    offset-fix-count: 10
-    hubconsumer:
-      properties:
-        bootstrap.servers: ${analyzer.kafka.bootstrap-servers}
-        enable.auto.commit: false
-        client.id: "telemetry.analyser.hub.client.v1"
-        group.id: "telemetry.analyser.hub.v1"
-        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        value.deserializer: ru.yandex.practicum.kafka.deserializer.HubEventDeserializer
-      topic: "telemetry.hubs.v1"
-      poll-timeout: 200ms
-
-    snapshotconsumer:
-      properties:
-        bootstrap.servers: ${analyzer.kafka.bootstrap-servers}
-        enable.auto.commit: false
-        client.id: "telemetry.analyser.snapshot.client.v1"
-        group.id: "telemetry.analyser.snapshot.v1"
-        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        value.deserializer: ru.yandex.practicum.kafka.deserializer.SensorsSnapshotDeserializer
-      topic: "telemetry.snapshots.v1"
-      poll-timeout: 200ms
-
 spring:
- datasource:
-   url: jdbc:postgresql://localhost:6432/sht
-   driver-class-name: org.postgresql.Driver
-   username: sht
-   password: sht
- sql:
-   init:
-    mode: always
- jpa:
-   #    show-sql: true
-   hibernate:
-    ddl-auto: none
-   properties:
-    hibernate:
-#        format_sql: true
-#        time_zone: UTC
-#        default_schema: public
+  application:
+    name: analyzer
+  config:
+#    import: configserver:http://localhost:8888
+    import: "configserver:"
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
+      discovery:
+        enabled: true
+        serviceId: config-server
+
+eureka:
+  client:
+    enable: true
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+
+

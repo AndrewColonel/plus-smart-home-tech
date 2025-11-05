@@ -1,0 +1,12 @@
+logging:
+  level:
+    ru.yandex.practicum.telemetry.hubrouter: TRACE
+    org:
+      springframework: INFO
+      springframework.cloud.netflix.eureka: INFO
+      apache.kafka: INFO
+
+
+grpc:
+  server:
+    port: 9090

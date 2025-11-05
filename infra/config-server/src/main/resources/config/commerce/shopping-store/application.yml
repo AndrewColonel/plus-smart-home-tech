@@ -1,0 +1,52 @@
+logging:
+  level:
+    ru.yandex.practicum.commerce.shopping.store: TRACE
+    org:
+      springframework:
+        orm:
+          jpa: INFO
+          jpa.JpaTransactionManager: INFO
+        transaction: INFO
+        transaction.interceptor: INFO
+      springframework.cloud.netflix.eureka: INFO
+      apache.kafka: INFO
+
+server:
+  port: 0
+#  port: 12345
+
+spring:
+  data:
+    web:
+      pageable:
+        sort-parameter: sort
+  jackson:
+    visibility:
+      field: ANY
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/commerce_shopping_store
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: password
+  sql:
+    init:
+      mode: always
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+#        format_sql: true
+#        time_zone: UTC
+#        default_schema: public
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
