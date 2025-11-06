@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import ru.yandex.practicum.commerce.iteraction.api.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
-import ru.yandex.practicum.commerce.iteraction.api.exception.NoAuthorizedUserException;
+import ru.yandex.practicum.commerce.iteraction.api.exception.NotAuthorizedUserException;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
-import ru.yandex.practicum.commerce.iteraction.api.feignclient.WarehouseClient;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
 import ru.yandex.practicum.commerce.shopping.cart.repository.ShoppingCartRepository;
 import ru.yandex.practicum.commerce.shopping.cart.model.CartState;
 import ru.yandex.practicum.commerce.shopping.cart.model.entity.UserCart;
@@ -108,7 +108,7 @@ public class CartServiceImpl implements CartService {
     // вспомогаительные методы
     private UserCart getCartByUser(String username) {
         return repository.findByUserName(username).orElseThrow(
-                () -> new NoAuthorizedUserException(
+                () -> new NotAuthorizedUserException(
                         String.format("Пользователь %s не найден", username),
                         "Пользователь не найден",
                         HttpStatus.UNAUTHORIZED, new NoSuchElementException("Такого пользователя нет в базе")));

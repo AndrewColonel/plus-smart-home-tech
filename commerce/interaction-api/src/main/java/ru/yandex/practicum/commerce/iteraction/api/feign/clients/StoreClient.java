@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.iteraction.api.feignclient;
+package ru.yandex.practicum.commerce.iteraction.api.feign.clients;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;

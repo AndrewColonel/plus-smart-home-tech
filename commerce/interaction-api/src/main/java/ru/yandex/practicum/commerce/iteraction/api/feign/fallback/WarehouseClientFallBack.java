@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.iteraction.api.feignclient;
+package ru.yandex.practicum.commerce.iteraction.api.feign.fallback;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -7,10 +7,11 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddProductToWar
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
 
 @Component
 @Slf4j
-public class WarehouseClientFallBack implements WarehouseClient{
+public class WarehouseClientFallBack implements WarehouseClient {
 
     @Override
     public void create(NewProductInWarehouseRequest request) {

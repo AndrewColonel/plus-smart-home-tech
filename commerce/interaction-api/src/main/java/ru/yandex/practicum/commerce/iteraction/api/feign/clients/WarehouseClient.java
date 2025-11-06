@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.iteraction.api.feignclient;
+package ru.yandex.practicum.commerce.iteraction.api.feign.clients;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +10,7 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddProductToWar
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.iteraction.api.feign.fallback.WarehouseClientFallBackFactory;
 
 @FeignClient(name = "warehouse",
         fallbackFactory = WarehouseClientFallBackFactory.class)
