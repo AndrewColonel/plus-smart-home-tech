@@ -14,7 +14,7 @@ import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient
 public class WarehouseClientFallBack implements WarehouseClient {
 
     @Override
-    public void create(NewProductInWarehouseRequest request) {
+    public void createItem(NewProductInWarehouseRequest request) {
       log.warn("Fallback response: сервис create временно недоступен");
     }
 

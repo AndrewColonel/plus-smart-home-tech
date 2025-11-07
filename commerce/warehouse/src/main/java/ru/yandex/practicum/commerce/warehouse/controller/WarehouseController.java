@@ -24,7 +24,7 @@ public class WarehouseController {
     @Loggable
     @PutMapping
     // Добавить новый товар на склад.
-    public void create(@Valid @RequestBody NewProductInWarehouseRequest request) {
+    public void createItem(@Valid @RequestBody NewProductInWarehouseRequest request) {
         service.createWarehouseItem(request);
     }
 

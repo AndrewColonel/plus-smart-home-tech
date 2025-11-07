@@ -17,7 +17,7 @@ import ru.yandex.practicum.commerce.iteraction.api.feign.fallback.WarehouseClien
 public interface WarehouseClient {
 
     @PutMapping("/api/v1/warehouse")
-    void create(@RequestBody NewProductInWarehouseRequest request);
+    void createItem(@RequestBody NewProductInWarehouseRequest request);
 
     @PostMapping("/api/v1/warehouse/check")
     BookingProductsDto check(@RequestBody ShoppingCartDto shoppingCartDto);
