@@ -18,6 +18,8 @@ public class Payment {
     @Id
     @GeneratedValue
     private UUID paymentId;
+    @Column(name = "total_payment")
+    private Double totalPayment;
     @Column(name = "delivery_total")
     private Double deliveryTotal;
     @Column(name = "fee_total")

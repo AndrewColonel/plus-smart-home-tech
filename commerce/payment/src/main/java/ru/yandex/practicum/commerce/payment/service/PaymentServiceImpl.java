@@ -1,26 +1,54 @@
 package ru.yandex.practicum.commerce.payment.service;
 
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.payment.PaymentDto;
+import ru.yandex.practicum.commerce.payment.repository.PaymentRepository;
 
 import java.util.UUID;
 
-public interface PaymentService {
+@Service
+@AllArgsConstructor
+public class PaymentServiceImpl implements PaymentService {
+
+    private final PaymentRepository repository;
+
     // 200 Сформированная оплата заказа (переход в платежный шлюз)
     // 400 Недостаточно информации в заказе для расчёта
-    PaymentDto getOrderPayment(OrderDto orderDto);
+    @Override
+    public PaymentDto getOrderPayment(OrderDto orderDto) {
+
+        return null;
+    }
 
     // 200 Полная стоимость заказа
     // 400 Недостаточно информации в заказе для расчёта
-    Double getOrderTotalCost(OrderDto orderDto);
+    @Override
+    public Double getOrderTotalCost(OrderDto orderDto) {
+
+        return null;
+    }
 
     // 404 Заказ не найден
-    void getOrderRefund(UUID paymentId);
+    @Override
+    public void getOrderRefund(UUID paymentId) {
+
+    }
 
     // 200 Расчёт стоимости товаров в заказе
     // 400 Недостаточно информации в заказе для расчёта
-    Double getOrderProductCost(OrderDto orderDto);
+    @Override
+    public Double getOrderProductCost(OrderDto orderDto) {
+
+        return null;
+    }
 
     // 404 Заказ не найден
-    void getOrderFailedRefund(UUID paymentId);
+    @Override
+    public void getOrderFailedRefund(UUID paymentId) {
+
+    }
+
+
 }
