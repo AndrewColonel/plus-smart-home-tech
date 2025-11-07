@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddressDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 
 import javax.validation.constraints.NotNull;
 

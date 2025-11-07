@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddProductToWarehouseRequest;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddressDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.iteraction.api.feign.fallback.WarehouseClientFallBackFactory;
