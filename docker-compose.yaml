@@ -51,6 +51,27 @@ services:
     networks:
       - sht
 
+  # postgres
+  postgres-psht:
+    image: postgres:16.1
+    container_name: postgres-psht
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pg-init-scripts:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_MULTIPLE_DATABASES=commerce_warehouse, commerce_shopping_store,
+        commerce_shopping_cart, commerce_payment, commerce_order, commerce_delivery
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q"]
+      timeout: 10s
+      interval: 5s
+      retries: 5
+    networks:
+      - sht
 
   # gateway
   gateway:
@@ -71,39 +92,137 @@ services:
     networks:
       - sht
 
+  # delivery Service (динамический порт)
+  delivery:
+    build:
+      context: ./commerce/delivery
+      dockerfile: Dockerfile
+    container_name: delivery
+    environment:
+      - eureka.instance.hostname=discovery-server
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-psht:5432/commerce_warehouse
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    restart: on-failure
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      postgres-psht:
+        condition: service_healthy
+    networks:
+      - sht
 
-#  # Warehouse Service (динамический порт)
-#  warehouse-service:
-#    image: warehouse
-#    container_name: warehouse-service
-#    # Порт НЕ пробрасывается на хост — работает только внутри сети
-#    volumes:
-#      - ./warehouse/target/warehouse-service.jar:/app.jar
-#    command: java -jar /app.jar
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#      - CONFIG_SERVER_HOST=config-server
-#      - EUREKA_HOST=eureka-server
-#    depends_on:
-#      - config-server
-#    networks:
-#      - app-network
-#
-#  # Order Service (динамический порт)
-#  order-service:
-#    image: order
-#    container_name: order-service
-#    volumes:
-#      - ./order/target/order-service.jar:/app.jar
-#    command: java -jar /app.jar
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#      - CONFIG_SERVER_HOST=config-server
-#      - EUREKA_HOST=eureka-server
-#    depends_on:
-#      - config-server
-#    networks:
-#      - app-network
+  # Order Service (динамический порт)
+  order:
+    build:
+      context: ./commerce/order
+      dockerfile: Dockerfile
+    container_name: order
+    environment:
+      - eureka.instance.hostname=discovery-server
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-psht:5432/commerce_warehouse
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    restart: on-failure
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      postgres-psht:
+        condition: service_healthy
+    networks:
+      - sht
+
+  # payment Service (динамический порт)
+  payment:
+    build:
+      context: ./commerce/payment
+      dockerfile: Dockerfile
+    container_name: payment
+    environment:
+      - eureka.instance.hostname=discovery-server
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-psht:5432/commerce_warehouse
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    restart: on-failure
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      postgres-psht:
+        condition: service_healthy
+    networks:
+      - sht
+
+  # shoping-cart Service (динамический порт)
+  shopping-cart:
+    build:
+      context: ./commerce/shopping-cart
+      dockerfile: Dockerfile
+    container_name: shopping-cart
+    environment:
+      - eureka.instance.hostname=discovery-server
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-psht:5432/commerce_warehouse
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    restart: on-failure
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      postgres-psht:
+        condition: service_healthy
+    networks:
+      - sht
+
+  # shoping-store Service (динамический порт)
+  shopping-store:
+    build:
+      context: ./commerce/shopping-store
+      dockerfile: Dockerfile
+    container_name: shopping-store
+    environment:
+      - eureka.instance.hostname=discovery-server
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-psht:5432/commerce_warehouse
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    restart: on-failure
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      postgres-psht:
+        condition: service_healthy
+    networks:
+      - sht
+
+  # Warehouse Service (динамический порт)
+  warehouse:
+    build:
+      context: ./commerce/warehouse
+      dockerfile: Dockerfile
+    container_name: warehouse
+    environment:
+      - eureka.instance.hostname=discovery-server
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-psht:5432/commerce_warehouse
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    restart: on-failure
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      postgres-psht:
+        condition: service_healthy
+    networks:
+      - sht
 
 networks:
   sht:
