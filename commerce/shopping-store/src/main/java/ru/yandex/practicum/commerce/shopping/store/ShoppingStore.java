@@ -9,12 +9,9 @@ import ru.yandex.practicum.commerce.iteraction.api.apierror.ApiExceptionHandler;
 import ru.yandex.practicum.commerce.iteraction.api.logging.LoggingAspect;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan
 @Import({ApiExceptionHandler.class, LoggingAspect.class})
-@EnableFeignClients
 public class ShoppingStore {
     public static void main(String[] args) {
         SpringApplication.run(ShoppingStore.class);
-
     }
 }

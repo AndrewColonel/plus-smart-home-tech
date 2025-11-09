@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.CreateNewOrderRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.ProductReturnRequest;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.DeliveryClient;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.PaymentClient;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
 import ru.yandex.practicum.commerce.order.repository.OrderRepository;
 
 import java.util.UUID;
@@ -16,6 +19,10 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository repository;
+
+    private final DeliveryClient deliveryClient;
+    private final PaymentClient paymentClient;
+    private final WarehouseClient warehouseClient;
 
     // 200 Список всех заказов пользователя (Точка улучшения и развития - пагинированный вывод)
     // 401 Имя пользователя не должно быть пустым

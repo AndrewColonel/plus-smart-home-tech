@@ -5,12 +5,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.payment.PaymentDto;
+import ru.yandex.practicum.commerce.iteraction.api.feign.fallback.PaymentClientFallBack;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
-@FeignClient(name = "payment")
+@FeignClient(name = "payment", fallback = PaymentClientFallBack.class)
 public interface PaymentClient {
     // Формирование оплаты для заказа (переход в платежный шлюз).
      @PostMapping("/api/v1/payment")

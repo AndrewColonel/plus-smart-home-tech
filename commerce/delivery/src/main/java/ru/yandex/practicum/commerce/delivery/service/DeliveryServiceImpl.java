@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.delivery.repository.DeliveryRepository;
 import ru.yandex.practicum.commerce.iteraction.api.dto.delivery.DeliveryDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.OrderClient;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
 
 import java.util.UUID;
 
@@ -13,6 +15,9 @@ import java.util.UUID;
 public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository repository;
+
+    private final OrderClient orderClient;
+    private final WarehouseClient warehouseClient;
 
     // 200 Указанная заявка с присвоенным идентификатором
     @Override

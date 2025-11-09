@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.payment.PaymentDto;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.OrderClient;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.StoreClient;
 import ru.yandex.practicum.commerce.payment.repository.PaymentRepository;
 
 import java.util.UUID;
@@ -13,6 +15,9 @@ import java.util.UUID;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository repository;
+
+    private final StoreClient storeClient;
+    private final OrderClient orderClient;
 
     // 200 Сформированная оплата заказа (переход в платежный шлюз)
     // 400 Недостаточно информации в заказе для расчёта

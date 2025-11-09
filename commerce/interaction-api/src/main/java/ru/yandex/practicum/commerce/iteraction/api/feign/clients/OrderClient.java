@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.CreateNewOrderRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.ProductReturnRequest;
+import ru.yandex.practicum.commerce.iteraction.api.feign.fallback.OrderClientFallBack;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
-@FeignClient(name = "order")
+@FeignClient(name = "order", fallback = OrderClientFallBack.class)
 public interface OrderClient {
     // Получить заказы пользователя.
     @GetMapping("/api/v1/order")

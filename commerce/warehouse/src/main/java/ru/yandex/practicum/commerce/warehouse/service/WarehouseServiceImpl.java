@@ -13,6 +13,7 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddProductToWar
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.StoreClient;
 import ru.yandex.practicum.commerce.warehouse.repository.WarehouseRepository;
 import ru.yandex.practicum.commerce.warehouse.model.WarehouseMapper;
 import ru.yandex.practicum.commerce.warehouse.model.entity.WarehouseItem;
@@ -28,6 +29,8 @@ import java.util.stream.Collectors;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository repository;
+
+    private final StoreClient storeClient;
 
     private static final String[] ADDRESSES =
             new String[]{"ADDRESS_1", "ADDRESS_2"};

@@ -27,7 +27,7 @@ public class CartServiceImpl implements CartService {
 
     private final ShoppingCartRepository repository;
 
-    private final WarehouseClient client;
+    private final WarehouseClient warehouseClient;
 
     @Override
     public ShoppingCartDto getUserCart(String username) {
@@ -93,7 +93,7 @@ public class CartServiceImpl implements CartService {
         // проверим склад с помощью feign-client
             try {
 
-                BookingProductsDto bookingProductsDto = client.check(toDto(userCart));
+                BookingProductsDto bookingProductsDto = warehouseClient.check(toDto(userCart));
                 log.info("Общие сведения по корзине {} о доставке {}", userCart.getCartId(), bookingProductsDto);
 
             } catch (FeignException e) {

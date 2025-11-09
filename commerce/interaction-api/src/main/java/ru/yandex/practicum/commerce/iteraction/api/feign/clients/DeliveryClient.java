@@ -6,12 +6,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.commerce.iteraction.api.dto.delivery.DeliveryDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
+import ru.yandex.practicum.commerce.iteraction.api.feign.fallback.DeliveryClientFallBack;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
-@FeignClient(name = "delivery")
+@FeignClient(name = "delivery", fallback = DeliveryClientFallBack.class)
 public interface DeliveryClient {
 
     // Создать новую доставку в БД.

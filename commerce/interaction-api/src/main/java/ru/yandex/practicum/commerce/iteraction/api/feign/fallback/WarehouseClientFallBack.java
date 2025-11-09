@@ -15,12 +15,12 @@ public class WarehouseClientFallBack implements WarehouseClient {
 
     @Override
     public void createItem(NewProductInWarehouseRequest request) {
-      log.warn("Fallback response: сервис create временно недоступен");
+      log.warn("Fallback WarehouseClient response: сервис createItem временно недоступен");
     }
 
     @Override
     public BookingProductsDto check(ShoppingCartDto shoppingCartDto) {
-        log.warn("Fallback response: сервис check временно недоступен");
+        log.warn("Fallback WarehouseClient response: сервис check временно недоступен");
         return BookingProductsDto.builder()
                 .deliveryvolume(0.0)
                 .deliveryweight(0.0)
@@ -30,12 +30,12 @@ public class WarehouseClientFallBack implements WarehouseClient {
 
     @Override
     public void add(AddProductToWarehouseRequest request) {
-        log.warn("Fallback response: сервис add временно недоступен");
+        log.warn("Fallback WarehouseClient response: сервис add временно недоступен");
     }
 
     @Override
     public AddressDto getAddress() {
-        log.warn("Fallback response: сервис getAddress временно недоступен");
+        log.warn("Fallback WarehouseClient response: сервис getAddress временно недоступен");
         return null;
     }
 }
