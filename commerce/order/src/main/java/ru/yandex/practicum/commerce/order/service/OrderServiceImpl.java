@@ -1,21 +1,28 @@
 package ru.yandex.practicum.commerce.order.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.CreateNewOrderRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderState;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.ProductReturnRequest;
+import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.DeliveryClient;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.PaymentClient;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
+import ru.yandex.practicum.commerce.order.model.entity.Order;
 import ru.yandex.practicum.commerce.order.repository.OrderRepository;
 
 import java.util.UUID;
 
+import static ru.yandex.practicum.commerce.order.model.OrderMapper.toDto;
+
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository repository;
@@ -36,6 +43,27 @@ public class OrderServiceImpl implements OrderService {
     // 400 Нет заказываемого товара на складе
     @Override
     public OrderDto createOrder(CreateNewOrderRequest request) {
+
+//        BookingProductsDto bookingProductsDto = warehouseClient.check(request.getShoppingCart());
+//        log.info("Общие сведения по корзине {} о доставке {}",
+//                request.getShoppingCart().getShoppingCartId(), bookingProductsDto);
+//
+//        Order order = Order.builder()
+//                .shoppingCartId(UUID.fromString(request.getShoppingCart().getShoppingCartId()))
+//                .products(request.getShoppingCart().getProducts())
+//                .paymentId()
+//                .deliveryId()
+//                .state(OrderState.NEW)
+//                .deliveryWeight()
+//                .deliveryWeight()
+//                .deliveryVolume()
+//                .fragile()
+//                .totalPrice()
+//                .deliveryPrice()
+//                .productPrice()
+//
+//                .build();
+//        return toDto(repository.save(order));
 
         return null;
     }

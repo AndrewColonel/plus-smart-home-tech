@@ -19,7 +19,7 @@ public class PaymentMapper {
 
     public static Payment toEntity(PaymentDto paymentDto) {
         return Payment.builder()
-//                .paymentId(paymentDto.getPaymentId())
+                .paymentId(paymentDto.getPaymentId())
                 .totalPayment(paymentDto.getTotalPayment())
                 .deliveryTotal(paymentDto.getDeliveryTotal())
                 .feeTotal(paymentDto.getFeeTotal())

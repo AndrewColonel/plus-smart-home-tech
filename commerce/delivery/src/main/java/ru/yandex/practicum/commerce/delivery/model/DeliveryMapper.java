@@ -22,7 +22,7 @@ public class DeliveryMapper {
 
     public static Delivery toEntity(DeliveryDto deliveryDto) {
         return Delivery.builder()
-//                .deliveryId(deliveryDto.getDeliveryId())
+                .deliveryId(deliveryDto.getDeliveryId())
                 .fromAddress(toEntity(deliveryDto.getFromAddress()))
                 .toAddress(toEntity(deliveryDto.getToAddress()))
                 .orderId(deliveryDto.getOrderId())

@@ -28,7 +28,7 @@ public class OrderMapper {
 
     public static Order toEntity(OrderDto orderDto) {
         return Order.builder()
-//            .orderId(orderDto.getOrderId())
+                .orderId(orderDto.getOrderId())
                 .shoppingCartId(orderDto.getShoppingCartId())
                 .products(orderDto.getProducts())
                 .paymentId(orderDto.getPaymentId())
