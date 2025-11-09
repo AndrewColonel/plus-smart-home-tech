@@ -3,11 +3,12 @@ package ru.yandex.practicum.commerce.iteraction.api.feign.fallback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddProductToWarehouseRequest;
+import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.*;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
+
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -37,5 +38,21 @@ public class WarehouseClientFallBack implements WarehouseClient {
     public AddressDto getAddress() {
         log.warn("Fallback WarehouseClient response: сервис getAddress временно недоступен");
         return null;
+    }
+
+    @Override
+    public void shippedToDelivery(ShippedToDeliveryRequest request) {
+        log.warn("Fallback WarehouseClient response: сервис shippedToDelivery временно недоступен");
+    }
+
+    @Override
+    public void returnProducts(Map<UUID, Integer> products) {
+        log.warn("Fallback WarehouseClient response: сервис returnProducts временно недоступен");
+    }
+
+    @Override
+    public BookingProductsDto assemblyProducts(AssemblyProductsForOrderRequest request) {
+        log.warn("Fallback WarehouseClient response: сервис assemblyProducts временно недоступен");
+        return new BookingProductsDto();
     }
 }

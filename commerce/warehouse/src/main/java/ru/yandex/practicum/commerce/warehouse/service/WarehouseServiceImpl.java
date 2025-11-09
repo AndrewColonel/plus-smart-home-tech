@@ -6,13 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
+import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.*;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.commerce.iteraction.api.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.iteraction.api.exception.SpecifiedProductAlreadyInWarehouseException;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.AddProductToWarehouseRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.StoreClient;
 import ru.yandex.practicum.commerce.warehouse.repository.WarehouseRepository;
 import ru.yandex.practicum.commerce.warehouse.model.WarehouseMapper;
@@ -145,6 +143,24 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .house(CURRENT_ADDRESS)
                 .flat(CURRENT_ADDRESS)
                 .build();
+    }
+
+    @Override
+    public void shippedToDeliveryOrder(ShippedToDeliveryRequest request) {
+
+
+    }
+
+    @Override
+    public void returnProductsOrder(Map<UUID, Integer> products) {
+
+
+    }
+
+    @Override
+    public BookingProductsDto assemblyProductsOrder(AssemblyProductsForOrderRequest request) {
+
+        return null;
     }
 
     // вспомогательный метод
