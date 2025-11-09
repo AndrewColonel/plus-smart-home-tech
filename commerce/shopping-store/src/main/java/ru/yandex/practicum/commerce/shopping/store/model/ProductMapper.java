@@ -6,7 +6,6 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductDto;
 import ru.yandex.practicum.commerce.shopping.store.model.entity.Product;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductMapper {
@@ -14,7 +13,7 @@ public class ProductMapper {
     public static Product toEntity(ProductDto productDto) {
         return Product.builder()
                 .productId(Objects.nonNull(productDto.getProductId())
-                        ? UUID.fromString(productDto.getProductId()) : null)
+                        ? productDto.getProductId() : null)
                 .productName(productDto.getProductName())
                 .description(productDto.getDescription())
                 .imageSrc(productDto.getImageSrc())
@@ -27,7 +26,7 @@ public class ProductMapper {
 
     public static ProductDto toDto(Product product) {
         return ProductDto.builder()
-                .productId(product.getProductId().toString())
+                .productId(product.getProductId())
                 .productName(product.getProductName())
                 .description(product.getDescription())
                 .imageSrc(product.getImageSrc())

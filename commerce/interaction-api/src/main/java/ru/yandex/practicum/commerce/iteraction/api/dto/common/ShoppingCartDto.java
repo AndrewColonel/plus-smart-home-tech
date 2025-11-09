@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ShoppingCartDto {
     @NotBlank
-    private String shoppingCartId;
+    private UUID shoppingCartId;
     @NotNull
     private Map<UUID, Integer> products;
 

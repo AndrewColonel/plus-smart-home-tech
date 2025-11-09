@@ -53,21 +53,19 @@ public class WarehouseServiceImpl implements WarehouseService {
     public BookingProductsDto checkShoppingCart(ShoppingCartDto shoppingCartDto) {
         log.info("Проверка достаточного количества товаров для корзины {}", shoppingCartDto.getShoppingCartId());
         // Список id продуктов из корзины
-        List<UUID> productIds = shoppingCartDto.getProducts().keySet().stream()
-                .map(UUID::fromString)
-                .toList();
+        List<UUID> productIds = shoppingCartDto.getProducts().keySet().stream().toList();
         // мапа соответсвующих корзине позиций на складе
-        Map<String, WarehouseItem> warehouseItems = repository.findByProductIdIn(productIds).stream()
+        Map<UUID, WarehouseItem> warehouseItems = repository.findByProductIdIn(productIds).stream()
                 .collect(Collectors.toMap(
-                        worehouseItem -> worehouseItem.getProductId().toString(),
+                        WarehouseItem::getProductId,
                         Function.identity()));
 
         // список и мапа для сбора подходящих позиций корзины и склада
         List<WarehouseItem> checkedWarehouseItems = new ArrayList<>();
-        Map<String, Integer> deficitCartItems = new HashMap<>();
+        Map<UUID, Integer> deficitCartItems = new HashMap<>();
 
         // сравним номенклатуру склада и позиции из корзины
-        for (Map.Entry<String, Integer> cartItem : shoppingCartDto.getProducts().entrySet()) {
+        for (Map.Entry<UUID, Integer> cartItem : shoppingCartDto.getProducts().entrySet()) {
             // если товар из корзины содержится на склада
             if (warehouseItems.containsKey(cartItem.getKey())) {
                 WarehouseItem warehouseItem = warehouseItems.get(cartItem.getKey());
@@ -164,7 +162,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     // вспомогательный метод
-    private Optional<WarehouseItem> getWarehouseItem(String productId) {
-        return repository.findByProductId(UUID.fromString(productId));
+    private Optional<WarehouseItem> getWarehouseItem(UUID productId) {
+        return repository.findByProductId(productId);
     }
 }

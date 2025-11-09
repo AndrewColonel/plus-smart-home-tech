@@ -7,13 +7,11 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWar
 import ru.yandex.practicum.commerce.warehouse.model.entity.Dimension;
 import ru.yandex.practicum.commerce.warehouse.model.entity.WarehouseItem;
 
-import java.util.UUID;
-
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class WarehouseMapper {
     public static WarehouseItem toEntity(NewProductInWarehouseRequest request) {
         return WarehouseItem.builder()
-                .productId(UUID.fromString(request.getProductId()))
+                .productId(request.getProductId())
                 .fragile(request.getFragile())
                 .dimension(toEntity(request.getDimension()))
                 .weight(request.getWeight())

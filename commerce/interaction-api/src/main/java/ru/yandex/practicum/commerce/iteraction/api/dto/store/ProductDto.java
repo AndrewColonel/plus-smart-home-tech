@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -12,7 +13,7 @@ import javax.validation.constraints.Positive;
 @AllArgsConstructor
 public class ProductDto {
     // Товар, продаваемый в интернет-магазине
-    private String productId;
+    private UUID productId;
     @NotBlank
     private String productName;
     @NotBlank
