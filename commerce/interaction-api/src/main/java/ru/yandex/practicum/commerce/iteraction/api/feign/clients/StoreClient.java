@@ -8,13 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductCategory;
 import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.store.SetProductQuantityRequest;
-import ru.yandex.practicum.commerce.iteraction.api.feign.fallback.StoreClentFallBack;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
-@FeignClient(name = "shopping-store", fallback = StoreClentFallBack.class)
+@FeignClient(name = "shopping-store")
 public interface StoreClient {
 
     @GetMapping("/api/v1/shopping-store")

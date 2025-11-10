@@ -33,6 +33,10 @@ public class WarehouseServiceImpl implements WarehouseService {
     private static final String[] ADDRESSES =
             new String[]{"ADDRESS_1", "ADDRESS_2"};
 
+    private enum WarehouseItemState {RETURN, ASEMBLY, CHECK}
+
+    ;
+
     private static final String CURRENT_ADDRESS =
             ADDRESSES[Random.from(new SecureRandom()).nextInt(0, ADDRESSES.length)];
 
@@ -51,28 +55,11 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public BookingProductsDto checkShoppingCart(ShoppingCartDto shoppingCartDto) {
-        log.info("Проверка достаточного количества товаров для корзины {}", shoppingCartDto.getShoppingCartId());
-        List<WarehouseItem> checkedWarehouseItems = getCheckedProductsFromWarehouse(shoppingCartDto);
-        // на складе есть товары для корзины, расчитаем предварительные  параметры для доставки
-        boolean fragile = false;
-        double deliveryweight = 0.0;
-        double deliveryvolume = 0.0;
-        for (WarehouseItem warehouseItem : checkedWarehouseItems) {
-            deliveryweight = deliveryweight + warehouseItem.getWeight();
-            deliveryvolume = deliveryvolume
-                    + (warehouseItem.getDimension().getDepth()
-                    * warehouseItem.getDimension().getHeight()
-                    * warehouseItem.getDimension().getWidth());
-            if (warehouseItem.getFragile().equals(true)) {
-                // если один из товаров будет fragile-true, вся посылка будет такая же
-                fragile = true;
-            }
-        }
-        return BookingProductsDto.builder()
-                .deliveryvolume(deliveryvolume)
-                .deliveryweight(deliveryweight)
-                .fragile(fragile)
-                .build();
+        log.info("Проверка достаточного количества товаров для корзины {}",
+                shoppingCartDto.getShoppingCartId());
+        return getCheckedProductsFromWarehouse(shoppingCartDto.getProducts(),
+                WarehouseItemState.CHECK);
+
     }
 
     @Override
@@ -105,14 +92,16 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public void returnProductsOrder(Map<UUID, Integer> products) {
-
-
+        log.info("jpdhfn товаров {} на склад", products);
+        getCheckedProductsFromWarehouse(products,
+                WarehouseItemState.RETURN);
     }
 
     @Override
     public BookingProductsDto assemblyProductsOrder(AssemblyProductsForOrderRequest request) {
-
-        return null;
+        log.info("Сборка товаров {} для заказа {}", request.getProducts(), request.getOrderId());
+        return getCheckedProductsFromWarehouse(request.getProducts(),
+                WarehouseItemState.ASEMBLY);
     }
 
     // вспомогательный метод
@@ -120,9 +109,10 @@ public class WarehouseServiceImpl implements WarehouseService {
         return repository.findByProductId(productId);
     }
 
-    private List<WarehouseItem> getCheckedProductsFromWarehouse(ShoppingCartDto shoppingCartDto) {
+    private BookingProductsDto getCheckedProductsFromWarehouse(Map<UUID, Integer> products, WarehouseItemState state) {
+
         // Список id продуктов из корзины
-        List<UUID> productIds = shoppingCartDto.getProducts().keySet().stream().toList();
+        List<UUID> productIds = products.keySet().stream().toList();
         // мапа соответсвующих корзине позиций на складе
         Map<UUID, WarehouseItem> warehouseItems = repository.findByProductIdIn(productIds).stream()
                 .collect(Collectors.toMap(
@@ -132,20 +122,24 @@ public class WarehouseServiceImpl implements WarehouseService {
         List<WarehouseItem> checkedWarehouseItems = new ArrayList<>();
         Map<UUID, Integer> deficitCartItems = new HashMap<>();
         // сравним номенклатуру склада и позиции из корзины
-        for (Map.Entry<UUID, Integer> cartItem : shoppingCartDto.getProducts().entrySet()) {
+        for (Map.Entry<UUID, Integer> cartItem : products.entrySet()) {
             // если товар из корзины содержится на склада
             if (warehouseItems.containsKey(cartItem.getKey())) {
                 WarehouseItem warehouseItem = warehouseItems.get(cartItem.getKey());
-                // если количество данного товара на склада достаточно для корзины
-                if (warehouseItem.getQuantity() >= cartItem.getValue()) {
-                    // записываем этот товар в требуемом количестве в подготовленный список
-                    warehouseItem.setQuantity(cartItem.getValue());
-                    checkedWarehouseItems.add(warehouseItem);
-                } else {
-                    // если товара нет на складе в необходимомо количестве,
-                    // добавим его в соотвествкющую мапу с указанием недостающего кол-ва единиц тоавара
-                    deficitCartItems.put(cartItem.getKey(), cartItem.getValue() - warehouseItem.getQuantity());
+
+                if (Objects.nonNull(warehouseItem)) {
+                    // если количество данного товара на склада достаточно для корзины
+                    if (warehouseItem.getQuantity() >= cartItem.getValue()) {
+                        // записываем этот товар в требуемом количестве в подготовленный список
+                        warehouseItem.setQuantity(cartItem.getValue());
+                        checkedWarehouseItems.add(warehouseItem);
+                    } else {
+                        // если товара нет на складе в необходимомо количестве,
+                        // добавим его в соотвествкющую мапу с указанием недостающего кол-ва единиц тоавара
+                        deficitCartItems.put(cartItem.getKey(), cartItem.getValue() - warehouseItem.getQuantity());
+                    }
                 }
+
             } else {
                 // если товара нет на складе вообще, добавим его в соотвествкющую мапу
                 deficitCartItems.entrySet().add(cartItem);
@@ -154,15 +148,61 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         // Ошибка, товар из корзины не находится в требуемом количестве на складе
         if (!deficitCartItems.isEmpty()) {
-            log.trace("для корзины {}, на складе не хватет следующих позиций {}",
-                    shoppingCartDto.getShoppingCartId(), deficitCartItems);
+            log.trace("На складе не хватет следующих позиций {}", deficitCartItems);
             throw new ProductInShoppingCartLowQuantityInWarehouse(
                     String.format("Товаров id %S из корзины нет на складе ребуемом количестве", deficitCartItems.keySet()),
                     "товар из корзины не находится в требуемом количестве на складе",
                     HttpStatus.BAD_REQUEST, new NoSuchElementException("Нет информации о товаре на складе")
             );
         }
-        return checkedWarehouseItems;
+
+        // расчет остатка склада после сбора заказа или возврата товара на склад
+        switch (state) {
+            case ASEMBLY -> {
+                for (WarehouseItem checkedItem : checkedWarehouseItems) {
+                    // warehouseItems точно содержит не NULL объект warehouseItem из списка проверенных товаров
+                    WarehouseItem warehouseItem = warehouseItems.get(checkedItem.getProductId());
+                    warehouseItem.setQuantity(warehouseItem.getQuantity() - checkedItem.getQuantity());
+                }
+                repository.saveAll(warehouseItems.values().stream().toList());
+                log.trace("Выполнен расчет остатков склада после сбора заказа на следующие позиции {}",
+                        products);
+            }
+            case RETURN -> {
+                for (WarehouseItem checkedItem : checkedWarehouseItems) {
+                    // warehouseItems точно содержит не NULL объект warehouseItem из списка проверенных товаров
+                    WarehouseItem warehouseItem = warehouseItems.get(checkedItem.getProductId());
+                    warehouseItem.setQuantity(warehouseItem.getQuantity() + checkedItem.getQuantity());
+                }
+                repository.saveAll(warehouseItems.values().stream().toList());
+                log.trace("Выполнен расчет остатков склада после возврата заказа со следующими товарами{}",
+                        products);
+            }
+            case CHECK -> {
+                log.trace("Выполнена проверка остатков склада для товаров {}",
+                        productIds);
+            }
+        }
+        // на складе есть товары для корзины, расчитаем предварительные  параметры для доставки
+        boolean fragile = false;
+        double deliveryweight = 0.0;
+        double deliveryvolume = 0.0;
+        for (WarehouseItem warehouseItem : checkedWarehouseItems) {
+            deliveryweight = deliveryweight + warehouseItem.getWeight();
+            deliveryvolume = deliveryvolume
+                    + (warehouseItem.getDimension().getDepth()
+                    * warehouseItem.getDimension().getHeight()
+                    * warehouseItem.getDimension().getWidth());
+            if (warehouseItem.getFragile().equals(true)) {
+                // если один из товаров будет fragile-true, вся посылка будет такая же
+                fragile = true;
+            }
+        }
+        return BookingProductsDto.builder()
+                .deliveryvolume(deliveryvolume)
+                .deliveryweight(deliveryweight)
+                .fragile(fragile)
+                .build();
     }
 
 }

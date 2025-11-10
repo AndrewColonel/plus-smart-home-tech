@@ -6,16 +6,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.CreateNewOrderRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderState;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.ProductReturnRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoOrderFoundException;
-import ru.yandex.practicum.commerce.iteraction.api.exception.NotAuthorizedUserException;
+import ru.yandex.practicum.commerce.iteraction.api.feign.clients.CartClient;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.DeliveryClient;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.PaymentClient;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
+import ru.yandex.practicum.commerce.order.model.OrderMapper;
 import ru.yandex.practicum.commerce.order.model.entity.Order;
 import ru.yandex.practicum.commerce.order.repository.OrderRepository;
 
@@ -34,13 +36,15 @@ public class OrderServiceImpl implements OrderService {
     private final DeliveryClient deliveryClient;
     private final PaymentClient paymentClient;
     private final WarehouseClient warehouseClient;
+    private final CartClient cartClient;
 
     // 200 Список всех заказов пользователя (Точка улучшения и развития - пагинированный вывод)
     // 401 Имя пользователя не должно быть пустым
     @Override
     public Page<OrderDto> getAllUserOrders(String username, Pageable page) {
-
-        return null;
+        ShoppingCartDto shoppingCartDto = cartClient.get(username);
+        return repository.findAllByShoppingCartId(shoppingCartDto.getShoppingCartId(), page)
+                .map(OrderMapper::toDto);
     }
 
     // 200 Оформленный заказ пользователя
@@ -55,17 +59,10 @@ public class OrderServiceImpl implements OrderService {
         Order order = Order.builder()
                 .shoppingCartId(request.getShoppingCart().getShoppingCartId())
                 .products(request.getShoppingCart().getProducts())
-                .paymentId()
-                .deliveryId()
                 .state(OrderState.NEW)
-                .deliveryWeight()
-                .deliveryWeight()
-                .deliveryVolume()
-                .fragile()
-                .totalPrice()
-                .deliveryPrice()
-                .productPrice()
-
+                .deliveryWeight(bookingProductsDto.getDeliveryweight())
+                .deliveryVolume(bookingProductsDto.getDeliveryvolume())
+                .fragile(bookingProductsDto.getFragile())
                 .build();
         return toDto(repository.save(order));
     }
@@ -76,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto returnOrderRequest(ProductReturnRequest request) {
         getOrderById(request.getOrderId());
 
-        return  null;
+        return null;
     }
 
     // 200 Заказ пользователя после оплаты
