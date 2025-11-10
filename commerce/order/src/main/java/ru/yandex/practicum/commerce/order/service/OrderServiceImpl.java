@@ -4,18 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.CreateNewOrderRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderState;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.ProductReturnRequest;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.BookingProductsDto;
+import ru.yandex.practicum.commerce.iteraction.api.exception.NoOrderFoundException;
+import ru.yandex.practicum.commerce.iteraction.api.exception.NotAuthorizedUserException;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.DeliveryClient;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.PaymentClient;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
 import ru.yandex.practicum.commerce.order.model.entity.Order;
 import ru.yandex.practicum.commerce.order.repository.OrderRepository;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static ru.yandex.practicum.commerce.order.model.OrderMapper.toDto;
@@ -44,34 +48,33 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto createOrder(CreateNewOrderRequest request) {
 
-//        BookingProductsDto bookingProductsDto = warehouseClient.check(request.getShoppingCart());
-//        log.info("Общие сведения по корзине {} о доставке {}",
-//                request.getShoppingCart().getShoppingCartId(), bookingProductsDto);
-//
-//        Order order = Order.builder()
-//                .shoppingCartId(UUID.fromString(request.getShoppingCart().getShoppingCartId()))
-//                .products(request.getShoppingCart().getProducts())
-//                .paymentId()
-//                .deliveryId()
-//                .state(OrderState.NEW)
-//                .deliveryWeight()
-//                .deliveryWeight()
-//                .deliveryVolume()
-//                .fragile()
-//                .totalPrice()
-//                .deliveryPrice()
-//                .productPrice()
-//
-//                .build();
-//        return toDto(repository.save(order));
+        BookingProductsDto bookingProductsDto = warehouseClient.check(request.getShoppingCart());
+        log.info("Общие сведения по корзине {} о доставке {}",
+                request.getShoppingCart().getShoppingCartId(), bookingProductsDto);
 
-        return null;
+        Order order = Order.builder()
+                .shoppingCartId(request.getShoppingCart().getShoppingCartId())
+                .products(request.getShoppingCart().getProducts())
+                .paymentId()
+                .deliveryId()
+                .state(OrderState.NEW)
+                .deliveryWeight()
+                .deliveryWeight()
+                .deliveryVolume()
+                .fragile()
+                .totalPrice()
+                .deliveryPrice()
+                .productPrice()
+
+                .build();
+        return toDto(repository.save(order));
     }
 
     // 200 Заказ пользователя после сборки
     // 400 Не найден заказ
     @Override
     public OrderDto returnOrderRequest(ProductReturnRequest request) {
+        getOrderById(request.getOrderId());
 
         return  null;
     }
@@ -80,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderPaymentRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
     }
@@ -88,6 +92,7 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderPaymentFailedRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
     }
@@ -96,6 +101,7 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderDeliveryRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
     }
@@ -104,6 +110,7 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderDeliveryFailedRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
     }
@@ -112,6 +119,7 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderComplitedRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
     }
@@ -120,6 +128,7 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderCalculatedTotalRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
     }
@@ -128,6 +137,7 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderCalculatedDeliveryRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
     }
@@ -136,6 +146,7 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderAssemblyRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
     }
@@ -144,8 +155,18 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto orderAssemblyFailedRequest(UUID orderId) {
+        getOrderById(orderId);
 
         return null;
+    }
+
+    // вспомогаительные методы
+    private Order getOrderById(UUID orderId) {
+        return repository.findById(orderId).orElseThrow(
+                () -> new NoOrderFoundException(
+                        String.format("Заказ %s не найден", orderId),
+                        "Заказ не найден",
+                        HttpStatus.BAD_REQUEST, new NoSuchElementException("Такого Заказа нет в базе")));
     }
 
 }

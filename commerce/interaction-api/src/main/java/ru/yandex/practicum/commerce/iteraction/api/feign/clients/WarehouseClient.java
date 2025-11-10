@@ -8,16 +8,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.*;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
-import ru.yandex.practicum.commerce.iteraction.api.feign.fallback.WarehouseClientFallBackFactory;
-import ru.yandex.practicum.commerce.iteraction.api.logging.Loggable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.UUID;
 
-@FeignClient(name = "warehouse",
-        fallbackFactory = WarehouseClientFallBackFactory.class)
+@FeignClient(name = "warehouse"
+//        ,fallbackFactory = WarehouseClientFallBackFactory.class
+)
 public interface WarehouseClient {
 
     @PutMapping("/api/v1/warehouse")

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.commerce.iteraction.api.dto.order;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

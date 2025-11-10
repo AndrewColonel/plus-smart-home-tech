@@ -52,53 +52,8 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public BookingProductsDto checkShoppingCart(ShoppingCartDto shoppingCartDto) {
         log.info("Проверка достаточного количества товаров для корзины {}", shoppingCartDto.getShoppingCartId());
-        // Список id продуктов из корзины
-        List<UUID> productIds = shoppingCartDto.getProducts().keySet().stream().toList();
-        // мапа соответсвующих корзине позиций на складе
-        Map<UUID, WarehouseItem> warehouseItems = repository.findByProductIdIn(productIds).stream()
-                .collect(Collectors.toMap(
-                        WarehouseItem::getProductId,
-                        Function.identity()));
-
-        // список и мапа для сбора подходящих позиций корзины и склада
-        List<WarehouseItem> checkedWarehouseItems = new ArrayList<>();
-        Map<UUID, Integer> deficitCartItems = new HashMap<>();
-
-        // сравним номенклатуру склада и позиции из корзины
-        for (Map.Entry<UUID, Integer> cartItem : shoppingCartDto.getProducts().entrySet()) {
-            // если товар из корзины содержится на склада
-            if (warehouseItems.containsKey(cartItem.getKey())) {
-                WarehouseItem warehouseItem = warehouseItems.get(cartItem.getKey());
-                // если количество данного товара на склада достаточно для корзины
-                if (warehouseItem.getQuantity() >= cartItem.getValue()) {
-                    // записываем этот товар в требуемом количестве в подготовленный список
-                    warehouseItem.setQuantity(cartItem.getValue());
-                    checkedWarehouseItems.add(warehouseItem);
-                } else {
-                    // если товара нет на складе в необходимомо количестве,
-                    // добавим его в соотвествкющую мапу с указанием недостающего кол-ва единиц тоавара
-                    deficitCartItems.put(cartItem.getKey(), cartItem.getValue() - warehouseItem.getQuantity());
-                }
-            } else {
-                // если товара нет на складе вообще, добавим его в соотвествкющую мапу
-                deficitCartItems.entrySet().add(cartItem);
-            }
-        }
-
-        // Ошибка, товар из корзины не находится в требуемом количестве на складе
-        if (!deficitCartItems.isEmpty()) {
-            log.trace("для корзины {}, на складе не хватет следующих позиций {}",
-                    shoppingCartDto.getShoppingCartId(), deficitCartItems);
-
-            throw new ProductInShoppingCartLowQuantityInWarehouse(
-                    String.format("Товаров id %S из корзины нет на складе ребуемом количестве", deficitCartItems.keySet()),
-                    "товар из корзины не находится в требуемом количестве на складе",
-                    HttpStatus.BAD_REQUEST, new NoSuchElementException("Нет информации о товаре на складе")
-            );
-
-
-        }
-        // если дошли до этого момента - у нас есть товары для корзины, раситаем  параметры для доставки
+        List<WarehouseItem> checkedWarehouseItems = getCheckedProductsFromWarehouse(shoppingCartDto);
+        // на складе есть товары для корзины, расчитаем предварительные  параметры для доставки
         boolean fragile = false;
         double deliveryweight = 0.0;
         double deliveryvolume = 0.0;
@@ -113,7 +68,6 @@ public class WarehouseServiceImpl implements WarehouseService {
                 fragile = true;
             }
         }
-
         return BookingProductsDto.builder()
                 .deliveryvolume(deliveryvolume)
                 .deliveryweight(deliveryweight)
@@ -165,4 +119,50 @@ public class WarehouseServiceImpl implements WarehouseService {
     private Optional<WarehouseItem> getWarehouseItem(UUID productId) {
         return repository.findByProductId(productId);
     }
+
+    private List<WarehouseItem> getCheckedProductsFromWarehouse(ShoppingCartDto shoppingCartDto) {
+        // Список id продуктов из корзины
+        List<UUID> productIds = shoppingCartDto.getProducts().keySet().stream().toList();
+        // мапа соответсвующих корзине позиций на складе
+        Map<UUID, WarehouseItem> warehouseItems = repository.findByProductIdIn(productIds).stream()
+                .collect(Collectors.toMap(
+                        WarehouseItem::getProductId,
+                        Function.identity()));
+        // список и мапа для сбора подходящих позиций корзины и склада
+        List<WarehouseItem> checkedWarehouseItems = new ArrayList<>();
+        Map<UUID, Integer> deficitCartItems = new HashMap<>();
+        // сравним номенклатуру склада и позиции из корзины
+        for (Map.Entry<UUID, Integer> cartItem : shoppingCartDto.getProducts().entrySet()) {
+            // если товар из корзины содержится на склада
+            if (warehouseItems.containsKey(cartItem.getKey())) {
+                WarehouseItem warehouseItem = warehouseItems.get(cartItem.getKey());
+                // если количество данного товара на склада достаточно для корзины
+                if (warehouseItem.getQuantity() >= cartItem.getValue()) {
+                    // записываем этот товар в требуемом количестве в подготовленный список
+                    warehouseItem.setQuantity(cartItem.getValue());
+                    checkedWarehouseItems.add(warehouseItem);
+                } else {
+                    // если товара нет на складе в необходимомо количестве,
+                    // добавим его в соотвествкющую мапу с указанием недостающего кол-ва единиц тоавара
+                    deficitCartItems.put(cartItem.getKey(), cartItem.getValue() - warehouseItem.getQuantity());
+                }
+            } else {
+                // если товара нет на складе вообще, добавим его в соотвествкющую мапу
+                deficitCartItems.entrySet().add(cartItem);
+            }
+        }
+
+        // Ошибка, товар из корзины не находится в требуемом количестве на складе
+        if (!deficitCartItems.isEmpty()) {
+            log.trace("для корзины {}, на складе не хватет следующих позиций {}",
+                    shoppingCartDto.getShoppingCartId(), deficitCartItems);
+            throw new ProductInShoppingCartLowQuantityInWarehouse(
+                    String.format("Товаров id %S из корзины нет на складе ребуемом количестве", deficitCartItems.keySet()),
+                    "товар из корзины не находится в требуемом количестве на складе",
+                    HttpStatus.BAD_REQUEST, new NoSuchElementException("Нет информации о товаре на складе")
+            );
+        }
+        return checkedWarehouseItems;
+    }
+
 }
