@@ -7,11 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.*;
+import ru.yandex.practicum.commerce.iteraction.api.exception.NoOrderFoundException;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.commerce.iteraction.api.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.iteraction.api.exception.SpecifiedProductAlreadyInWarehouseException;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.StoreClient;
+import ru.yandex.practicum.commerce.warehouse.model.entity.OrderBooking;
+import ru.yandex.practicum.commerce.warehouse.repository.OrderedItemsRepository;
 import ru.yandex.practicum.commerce.warehouse.repository.WarehouseRepository;
 import ru.yandex.practicum.commerce.warehouse.model.WarehouseMapper;
 import ru.yandex.practicum.commerce.warehouse.model.entity.WarehouseItem;
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository repository;
+    private final OrderedItemsRepository orderedItemsRepository;
 
     private final StoreClient storeClient;
 
@@ -34,8 +38,6 @@ public class WarehouseServiceImpl implements WarehouseService {
             new String[]{"ADDRESS_1", "ADDRESS_2"};
 
     private enum WarehouseItemState {RETURN, ASEMBLY, CHECK}
-
-    ;
 
     private static final String CURRENT_ADDRESS =
             ADDRESSES[Random.from(new SecureRandom()).nextInt(0, ADDRESSES.length)];
@@ -57,8 +59,8 @@ public class WarehouseServiceImpl implements WarehouseService {
     public BookingProductsDto checkShoppingCart(ShoppingCartDto shoppingCartDto) {
         log.info("Проверка достаточного количества товаров для корзины {}",
                 shoppingCartDto.getShoppingCartId());
-        return getCheckedProductsFromWarehouse(shoppingCartDto.getProducts(),
-                WarehouseItemState.CHECK);
+        return warehouseProcessor(shoppingCartDto.getProducts(),
+                WarehouseItemState.CHECK, null);
 
     }
 
@@ -86,22 +88,29 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public void shippedToDeliveryOrder(ShippedToDeliveryRequest request) {
-
+        OrderBooking booking = orderedItemsRepository.findByOrderId(request.getOrderId()).orElseThrow(
+                () -> new NoOrderFoundException(
+                        String.format(" Заказа с id %S нет в таблице квукИщщлштпы", request.getOrderId()),
+                        "Нельзя обновить информацию о заказе",
+                        HttpStatus.BAD_REQUEST, new NoSuchElementException("Нет информации о заказе на складе"))
+        );
+        booking.setDeliveryId(request.getDeliveryId());
+        orderedItemsRepository.save(booking);
 
     }
 
     @Override
     public void returnProductsOrder(Map<UUID, Integer> products) {
-        log.info("jpdhfn товаров {} на склад", products);
-        getCheckedProductsFromWarehouse(products,
-                WarehouseItemState.RETURN);
+        log.info("Возврат товаров {} на склад", products);
+        warehouseProcessor(products,
+                WarehouseItemState.RETURN, null);
     }
 
     @Override
     public BookingProductsDto assemblyProductsOrder(AssemblyProductsForOrderRequest request) {
         log.info("Сборка товаров {} для заказа {}", request.getProducts(), request.getOrderId());
-        return getCheckedProductsFromWarehouse(request.getProducts(),
-                WarehouseItemState.ASEMBLY);
+        return warehouseProcessor(request.getProducts(),
+                WarehouseItemState.ASEMBLY, request.getOrderId());
     }
 
     // вспомогательный метод
@@ -109,7 +118,8 @@ public class WarehouseServiceImpl implements WarehouseService {
         return repository.findByProductId(productId);
     }
 
-    private BookingProductsDto getCheckedProductsFromWarehouse(Map<UUID, Integer> products, WarehouseItemState state) {
+    private BookingProductsDto warehouseProcessor(Map<UUID, Integer> products,
+                                                  WarehouseItemState state, UUID uuid) {
 
         // Список id продуктов из корзины
         List<UUID> productIds = products.keySet().stream().toList();
@@ -161,8 +171,19 @@ public class WarehouseServiceImpl implements WarehouseService {
             case ASEMBLY -> {
                 for (WarehouseItem checkedItem : checkedWarehouseItems) {
                     // warehouseItems точно содержит не NULL объект warehouseItem из списка проверенных товаров
+                    // уменьшаем количество товара на складе
                     WarehouseItem warehouseItem = warehouseItems.get(checkedItem.getProductId());
                     warehouseItem.setQuantity(warehouseItem.getQuantity() - checkedItem.getQuantity());
+
+                    // формируем заказ OrderBooking - перекладываю checkedItem в таблицу заказа
+                    if (Objects.nonNull(uuid)) {
+                        orderedItemsRepository.save(OrderBooking.builder()
+                                .orderId(uuid)
+                                .productId(checkedItem.getProductId())
+                                .quantity(checkedItem.getQuantity())
+                                .build());
+                    }
+
                 }
                 repository.saveAll(warehouseItems.values().stream().toList());
                 log.trace("Выполнен расчет остатков склада после сбора заказа на следующие позиции {}",
