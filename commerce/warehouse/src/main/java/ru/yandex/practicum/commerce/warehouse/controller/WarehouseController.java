@@ -62,7 +62,7 @@ public class WarehouseController {
     @Loggable
     @PostMapping("/return")
     // Принять возврат товаров на склад.
-    public void returnProducts(@NotNull Map<UUID, Integer> products) {
+    public void returnProducts(@Valid @RequestBody Map<UUID, Integer> products) {
         service.returnProductsOrder(products);
     }
 
