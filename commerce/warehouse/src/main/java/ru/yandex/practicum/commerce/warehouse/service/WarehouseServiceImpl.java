@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.*;
-import ru.yandex.practicum.commerce.iteraction.api.exception.NoOrderFoundException;
 import ru.yandex.practicum.commerce.iteraction.api.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.commerce.iteraction.api.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.iteraction.api.exception.SpecifiedProductAlreadyInWarehouseException;
@@ -45,13 +44,11 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public void createWarehouseItem(NewProductInWarehouseRequest request) {
         // Ошибка, товар с таким описанием уже зарегистрирован на складе
-        if (getWarehouseItem(request.getProductId()).isPresent()) {
-            throw new SpecifiedProductAlreadyInWarehouseException(
-                    String.format("Товар с id %S уже зарегистрирован на складе", request.getProductId()),
-                    "товар с таким описанием уже зарегистрирован на складе",
-                    HttpStatus.BAD_REQUEST, new DuplicateRequestException("Товар уже в базе"));
-        }
-
+        WarehouseItem item = getWarehouseItem(request.getProductId()).orElseThrow(
+                () -> new SpecifiedProductAlreadyInWarehouseException(
+                        String.format("Товар с id %S уже зарегистрирован на складе", request.getProductId()),
+                        "товар с таким описанием уже зарегистрирован на складе",
+                        HttpStatus.BAD_REQUEST, new DuplicateRequestException("Товар уже в базе")));
         repository.save(WarehouseMapper.toEntity(request));
     }
 
@@ -88,15 +85,13 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public void shippedToDeliveryOrder(ShippedToDeliveryRequest request) {
-        OrderBooking booking = orderedItemsRepository.findByOrderId(request.getOrderId()).orElseThrow(
-                () -> new NoOrderFoundException(
-                        String.format(" Заказа с id %S нет в таблице квукИщщлштпы", request.getOrderId()),
-                        "Нельзя обновить информацию о заказе",
-                        HttpStatus.BAD_REQUEST, new NoSuchElementException("Нет информации о заказе на складе"))
-        );
-        booking.setDeliveryId(request.getDeliveryId());
-        orderedItemsRepository.save(booking);
-
+        List<OrderBooking> booking = orderedItemsRepository.findByOrderId(request.getOrderId());
+        if (!booking.isEmpty()) {
+            for (OrderBooking orderBooking : booking) {
+                orderBooking.setDeliveryId(request.getDeliveryId());
+            }
+            orderedItemsRepository.saveAll(booking);
+        }
     }
 
     @Override
@@ -129,34 +124,32 @@ public class WarehouseServiceImpl implements WarehouseService {
                         WarehouseItem::getProductId,
                         Function.identity()));
         // список и мапа для сбора подходящих позиций корзины и склада
-        List<WarehouseItem> checkedWarehouseItems = new ArrayList<>();
+        Map<UUID, Integer> checkedWarehouseItems = new HashMap<>();
         Map<UUID, Integer> deficitCartItems = new HashMap<>();
         // сравним номенклатуру склада и позиции из корзины
-        for (Map.Entry<UUID, Integer> cartItem : products.entrySet()) {
+        for (Map.Entry<UUID, Integer> requestItem : products.entrySet()) {
             // если товар из корзины содержится на склада
-            if (warehouseItems.containsKey(cartItem.getKey())) {
-                WarehouseItem warehouseItem = warehouseItems.get(cartItem.getKey());
+            if (warehouseItems.containsKey(requestItem.getKey())) {
+                WarehouseItem warehouseItem = warehouseItems.get(requestItem.getKey());
 
                 if (Objects.nonNull(warehouseItem)) {
                     // если количество данного товара на склада достаточно для корзины
-                    if (warehouseItem.getQuantity() >= cartItem.getValue()) {
-                        // записываем этот товар в требуемом количестве в подготовленный список
-                        warehouseItem.setQuantity(cartItem.getValue());
-                        checkedWarehouseItems.add(warehouseItem);
+                    if (warehouseItem.getQuantity() >= requestItem.getValue()) {
+                        // записываем эту позицию склада в подготовленную мапу "проверенных позиций"
+                        checkedWarehouseItems.put(warehouseItem.getProductId(), requestItem.getValue());
                     } else {
                         // если товара нет на складе в необходимомо количестве,
                         // добавим его в соотвествкющую мапу с указанием недостающего кол-ва единиц тоавара
-                        deficitCartItems.put(cartItem.getKey(), cartItem.getValue() - warehouseItem.getQuantity());
+                        deficitCartItems.put(requestItem.getKey(), requestItem.getValue() - warehouseItem.getQuantity());
                     }
                 }
-
             } else {
                 // если товара нет на складе вообще, добавим его в соотвествкющую мапу
-                deficitCartItems.entrySet().add(cartItem);
+                deficitCartItems.entrySet().add(requestItem);
             }
         }
 
-        // Ошибка, товар из корзины не находится в требуемом количестве на складе
+        // Ошибка, товар для корзины или заказа  не находится в требуемом количестве на складе
         if (!deficitCartItems.isEmpty()) {
             log.trace("На складе не хватет следующих позиций {}", deficitCartItems);
             throw new ProductInShoppingCartLowQuantityInWarehouse(
@@ -166,31 +159,55 @@ public class WarehouseServiceImpl implements WarehouseService {
             );
         }
 
+
+        // на складе есть товары для корзины или заказа, расчитаем предварительные  параметры для доставки
+        // преобразую мапу в список проверенных  WarehouseItemдля дальнейших расчетов
+        List<WarehouseItem> checkedWarehouseItemList = warehouseItems.values().stream()
+                .filter(warehouseItem -> checkedWarehouseItems.containsKey(warehouseItem.getProductId()))
+                .toList();
+
+
         // расчет остатка склада после сбора заказа или возврата товара на склад
         switch (state) {
             case ASEMBLY -> {
-                for (WarehouseItem checkedItem : checkedWarehouseItems) {
+                for (WarehouseItem checkedItem : checkedWarehouseItemList) {
                     // warehouseItems точно содержит не NULL объект warehouseItem из списка проверенных товаров
                     // уменьшаем количество товара на складе
-                    WarehouseItem warehouseItem = warehouseItems.get(checkedItem.getProductId());
-                    warehouseItem.setQuantity(warehouseItem.getQuantity() - checkedItem.getQuantity());
+
+                    Integer newQuantity = checkedItem.getQuantity() - products.get(checkedItem.getProductId());
+
+                    System.out.println("----------------------");
+                    System.out.println("Товар: " + checkedItem.getProductId());
+                    System.out.println("Было на складе: " + checkedItem.getQuantity());
+                    System.out.println("Забрали для заказа: " + products.get(checkedItem.getProductId()));
+                    System.out.println("Остаток на складе: " + newQuantity);
+                    System.out.println("----------------------");
+
+                    checkedItem.setQuantity(newQuantity);
 
                     // формируем заказ OrderBooking - перекладываю checkedItem в таблицу заказа
                     if (Objects.nonNull(uuid)) {
-                        orderedItemsRepository.save(OrderBooking.builder()
-                                .orderId(uuid)
-                                .productId(checkedItem.getProductId())
-                                .quantity(checkedItem.getQuantity())
-                                .build());
+                        Optional<OrderBooking> bookingItem = orderedItemsRepository.findByProductId(uuid);
+                        if (bookingItem.isPresent()) {
+                            bookingItem.get().setQuantity(products.get(checkedItem.getProductId()));
+                            orderedItemsRepository.save(bookingItem.get());
+                        } else {
+                            orderedItemsRepository.save(OrderBooking.builder()
+                                    .orderId(uuid)
+                                    .productId(checkedItem.getProductId())
+                                    .quantity(products.get(checkedItem.getProductId()))
+                                    .build());
+                        }
+
                     }
 
                 }
                 repository.saveAll(warehouseItems.values().stream().toList());
-                log.trace("Выполнен расчет остатков склада после сбора заказа на следующие позиции {}",
+                log.trace("Выполнен расчет остатков склада после сбора заказа по следующим позициям {}",
                         products);
             }
             case RETURN -> {
-                for (WarehouseItem checkedItem : checkedWarehouseItems) {
+                for (WarehouseItem checkedItem : checkedWarehouseItemList) {
                     // warehouseItems точно содержит не NULL объект warehouseItem из списка проверенных товаров
                     WarehouseItem warehouseItem = warehouseItems.get(checkedItem.getProductId());
                     warehouseItem.setQuantity(warehouseItem.getQuantity() + checkedItem.getQuantity());
@@ -204,11 +221,12 @@ public class WarehouseServiceImpl implements WarehouseService {
                         productIds);
             }
         }
-        // на складе есть товары для корзины, расчитаем предварительные  параметры для доставки
+
+
         boolean fragile = false;
         double deliveryweight = 0.0;
         double deliveryvolume = 0.0;
-        for (WarehouseItem warehouseItem : checkedWarehouseItems) {
+        for (WarehouseItem warehouseItem : checkedWarehouseItemList) {
             deliveryweight = deliveryweight + warehouseItem.getWeight();
             deliveryvolume = deliveryvolume
                     + (warehouseItem.getDimension().getDepth()
