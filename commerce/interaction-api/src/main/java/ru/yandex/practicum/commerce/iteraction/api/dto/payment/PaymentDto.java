@@ -14,7 +14,8 @@ import java.util.UUID;
 public class PaymentDto {
 
     private UUID paymentId;
-    private Double totalPayment;
-    private Double deliveryTotal;
-    private Double feeTotal;
+    private Double totalPayment; // стоимость товаров
+    private Double deliveryTotal; // стоимость доставки;
+    private Double feeTotal; // общая стоимость
+    private PaymentState paymentState;
 }

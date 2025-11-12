@@ -9,6 +9,7 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.store.SetProductQuantityRequest;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.StoreClient;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -48,5 +49,11 @@ public class StoreClentFallBack implements StoreClient {
     public ProductDto getById(UUID productId) {
         log.warn("Fallback StoreClient response: сервис getById временно недоступен");
         return new ProductDto();
+    }
+
+    @Override
+    public List<ProductDto> getList(List<UUID> productIds) {
+        log.warn("Fallback StoreClient response: сервис getList временно недоступен");
+        return List.of();
     }
 }

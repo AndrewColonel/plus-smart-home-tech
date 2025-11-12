@@ -11,6 +11,8 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.store.SetProductQuantityR
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.UUID;
 
 @FeignClient(name = "shopping-store")
@@ -37,4 +39,7 @@ public interface StoreClient {
     @GetMapping("/api/v1/shopping-store/{productId}")
     ProductDto getById(
             @NotBlank @PathVariable("productId") UUID productId);
+
+    @GetMapping("/api/v1/shopping-store/products")
+    List<ProductDto> getList(@NotNull @RequestBody List<UUID> productIds);
 }

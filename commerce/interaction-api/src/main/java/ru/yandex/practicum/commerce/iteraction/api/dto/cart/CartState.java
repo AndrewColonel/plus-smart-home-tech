@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shopping.cart.model;
+package ru.yandex.practicum.commerce.iteraction.api.dto.cart;
 
 import java.util.Optional;
 

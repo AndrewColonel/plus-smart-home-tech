@@ -14,6 +14,7 @@ public class PaymentMapper {
                 .totalPayment(payment.getTotalPayment())
                 .deliveryTotal(payment.getDeliveryTotal())
                 .feeTotal(payment.getFeeTotal())
+                .paymentState(payment.getPaymentState())
                 .build();
     }
 
@@ -23,6 +24,7 @@ public class PaymentMapper {
                 .totalPayment(paymentDto.getTotalPayment())
                 .deliveryTotal(paymentDto.getDeliveryTotal())
                 .feeTotal(paymentDto.getFeeTotal())
+                .paymentState(paymentDto.getPaymentState())
                 .build();
     }
 

@@ -2,7 +2,7 @@ package ru.yandex.practicum.commerce.shopping.cart.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.yandex.practicum.commerce.shopping.cart.model.CartState;
+import ru.yandex.practicum.commerce.iteraction.api.dto.cart.CartState;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

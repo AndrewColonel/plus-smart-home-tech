@@ -12,7 +12,7 @@ import ru.yandex.practicum.commerce.iteraction.api.exception.NotAuthorizedUserEx
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.ShoppingCartDto;
 import ru.yandex.practicum.commerce.iteraction.api.feign.clients.WarehouseClient;
 import ru.yandex.practicum.commerce.shopping.cart.repository.ShoppingCartRepository;
-import ru.yandex.practicum.commerce.shopping.cart.model.CartState;
+import ru.yandex.practicum.commerce.iteraction.api.dto.cart.CartState;
 import ru.yandex.practicum.commerce.shopping.cart.model.entity.UserCart;
 
 import java.time.LocalDateTime;
