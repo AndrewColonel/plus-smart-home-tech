@@ -32,7 +32,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     private static final String[] ADDRESSES =
             new String[]{"ADDRESS_1", "ADDRESS_2"};
 
-    private enum WarehouseItemState {RETURN, ASEMBLY, CHECK}
+    private enum WarehouseItemState {ASEMBLY, CHECK}
 
     private static final String CURRENT_ADDRESS =
             ADDRESSES[Random.from(new SecureRandom()).nextInt(0, ADDRESSES.length)];
@@ -81,6 +81,8 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    // Вызывается из сервиса доставки.
+    // обновить информацию о собранном заказе в базе данных склада: добавить в него идентификатор доставки
     public void shippedToDeliveryOrder(ShippedToDeliveryRequest request) {
         OrderBooking orderBooking = getOrderBooking(request.getOrderId()).orElseThrow(
                 () -> new NoOrderBookingFoundException(
