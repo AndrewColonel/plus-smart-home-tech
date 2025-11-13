@@ -6,9 +6,7 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.common.Address;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.DimensionDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
-import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.OrderBookingDto;
 import ru.yandex.practicum.commerce.warehouse.model.entity.Dimension;
-import ru.yandex.practicum.commerce.warehouse.model.entity.OrderBooking;
 import ru.yandex.practicum.commerce.warehouse.model.entity.WarehouseItem;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -51,24 +49,6 @@ public class WarehouseMapper {
                 .build();
     }
 
-    public OrderBooking toEntity(OrderBookingDto orderBookingDto) {
-        return OrderBooking.builder()
-                .booking_id(orderBookingDto.getBooking_id())
-                .orderId(orderBookingDto.getOrderId())
-                .deliveryId(orderBookingDto.getDeliveryId())
-                .warehouseAddress(orderBookingDto.getWarehouseAddress())
-                .state(orderBookingDto.getState())
-                .build();
-    }
 
-    public OrderBookingDto toDto(OrderBooking orderBooking) {
-        return OrderBookingDto.builder()
-                .booking_id(orderBooking.getBooking_id())
-                .orderId(orderBooking.getOrderId())
-                .deliveryId(orderBooking.getDeliveryId())
-                .warehouseAddress(orderBooking.getWarehouseAddress())
-                .state(orderBooking.getState())
-                .build();
-    }
 
 }

@@ -29,9 +29,6 @@ public class OrderBooking {
     @Embedded
     private Address warehouseAddress;
 
-    @Column(name = "order_booking_state")
-    private OrderBookingState state;
-
     @ElementCollection
     @CollectionTable(
             name = "order_booking",

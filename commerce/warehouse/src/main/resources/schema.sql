@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS booking(
     street VARCHAR,
     house VARCHAR,
     flat VARCHAR,
-    order_booking_state VARCHAR NOT NULL,
     UNIQUE(order_id, delivery_id)
 );
 

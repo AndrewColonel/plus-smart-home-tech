@@ -94,7 +94,6 @@ public class WarehouseServiceImpl implements WarehouseService {
                         HttpStatus.BAD_REQUEST, new NoSuchElementException("Такого Заказа нет в базе")));
 
         orderBooking.setDeliveryId(request.getDeliveryId());
-        orderBooking.setState(OrderBookingState.SHIPPED_TO_DELIVERY);
         orderBookingRepository.save(orderBooking);
     }
 
@@ -205,7 +204,6 @@ public class WarehouseServiceImpl implements WarehouseService {
                                 .orderId(orderId)
                                 .products(checkedWarehouseItems)
                                 .warehouseAddress(toEntity(getWarehouseAddress()))
-                                .state(OrderBookingState.CREATED)
                                 .build());
                     }
                 }
