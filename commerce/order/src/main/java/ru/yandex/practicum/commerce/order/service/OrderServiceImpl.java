@@ -73,9 +73,10 @@ public class OrderServiceImpl implements OrderService {
     // 400 Не найден заказ
     @Override
     public OrderDto returnOrderRequest(ProductReturnRequest request) {
-        getOrderById(request.getOrderId());
-
-        return null;
+        Order order = getOrderById(request.getOrderId());
+        warehouseClient.returnProducts(request.getProducts());
+        order.setState(OrderState.PRODUCT_RETURNED);
+        return toDto(repository.save(order));
     }
 
     // 200 Заказ пользователя после оплаты

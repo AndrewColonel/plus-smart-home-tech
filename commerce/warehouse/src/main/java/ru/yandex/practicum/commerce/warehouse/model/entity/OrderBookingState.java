@@ -5,7 +5,7 @@ import java.util.Optional;
 public enum OrderBookingState {
 
     CREATED,
-    FAILED,
+    SHIPPED_TO_DELIVERY,
     CANCELLED;
 
     public static Optional<OrderBookingState> from (String state) {
