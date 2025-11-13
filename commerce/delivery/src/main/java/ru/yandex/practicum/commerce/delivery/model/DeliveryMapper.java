@@ -2,7 +2,7 @@ package ru.yandex.practicum.commerce.delivery.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import ru.yandex.practicum.commerce.delivery.model.entity.Address;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.Address;
 import ru.yandex.practicum.commerce.delivery.model.entity.Delivery;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.delivery.DeliveryDto;

@@ -11,6 +11,7 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.*;
 import ru.yandex.practicum.commerce.iteraction.api.exception.*;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.warehouse.model.entity.OrderBooking;
+import ru.yandex.practicum.commerce.warehouse.model.entity.OrderBookingState;
 import ru.yandex.practicum.commerce.warehouse.repository.OrderBookingRepository;
 import ru.yandex.practicum.commerce.warehouse.repository.WarehouseRepository;
 import ru.yandex.practicum.commerce.warehouse.model.WarehouseMapper;
@@ -20,6 +21,8 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static ru.yandex.practicum.commerce.warehouse.model.WarehouseMapper.toEntity;
 
 @Service
 @AllArgsConstructor
@@ -46,7 +49,7 @@ public class WarehouseServiceImpl implements WarehouseService {
                     "товар с таким описанием уже зарегистрирован на складе",
                     HttpStatus.BAD_REQUEST, new DuplicateRequestException("Товар уже в базе"));
         }
-        warehouseRepository.save(WarehouseMapper.toEntity(request));
+        warehouseRepository.save(toEntity(request));
     }
 
     @Override
@@ -200,6 +203,8 @@ public class WarehouseServiceImpl implements WarehouseService {
                         orderBookingRepository.save(OrderBooking.builder()
                                 .orderId(orderId)
                                 .products(checkedWarehouseItems)
+                                .warehouseAddress(toEntity(getWarehouseAddress()))
+                                .state(OrderBookingState.CREATED)
                                 .build());
                     }
                 }

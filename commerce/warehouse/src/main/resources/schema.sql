@@ -17,6 +17,13 @@ CREATE TABLE IF NOT EXISTS booking(
     booking_id UUID PRIMARY KEY,
     order_id UUID,
     delivery_id UUID,
+    -- warehouse_from_address --
+    country VARCHAR,
+    city VARCHAR,
+    street VARCHAR,
+    house VARCHAR,
+    flat VARCHAR,
+    order_booking_state VARCHAR NOT NULL,
     UNIQUE(order_id, delivery_id)
 );
 

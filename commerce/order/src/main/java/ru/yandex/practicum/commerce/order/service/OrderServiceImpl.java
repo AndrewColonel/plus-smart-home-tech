@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static ru.yandex.practicum.commerce.order.model.OrderMapper.toDto;
+import static ru.yandex.practicum.commerce.order.model.OrderMapper.toEntity;
 
 @Service
 @AllArgsConstructor
@@ -47,11 +48,11 @@ public class OrderServiceImpl implements OrderService {
                 .map(OrderMapper::toDto);
     }
 
-    // 200 Оформленный заказ пользователя
+    // 200 Созданный заказ пользователя
     // 400 Нет заказываемого товара на складе
     @Override
     public OrderDto createOrder(CreateNewOrderRequest request) {
-
+        // создание заказа - проверка товаров по номеру корзины
         BookingProductsDto bookingProductsDto = warehouseClient.check(request.getShoppingCart());
         log.info("Общие сведения по корзине {} о доставке {}",
                 request.getShoppingCart().getShoppingCartId(), bookingProductsDto);
@@ -63,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
                 .deliveryWeight(bookingProductsDto.getDeliveryweight())
                 .deliveryVolume(bookingProductsDto.getDeliveryvolume())
                 .fragile(bookingProductsDto.getFragile())
+                .deliveryAddress(toEntity(request.getDeliveryAddress()))
                 .build();
         return toDto(repository.save(order));
     }
@@ -162,8 +164,8 @@ public class OrderServiceImpl implements OrderService {
         return repository.findById(orderId).orElseThrow(
                 () -> new NoOrderFoundException(
                         String.format("Заказ %s не найден", orderId),
-                        "Заказ не найден",
-                        HttpStatus.BAD_REQUEST, new NoSuchElementException("Такого Заказа нет в базе")));
+                        "400 Не найден заказ",
+                        HttpStatus.NOT_FOUND, new NoSuchElementException("Такого Заказа нет в базе")));
     }
 
 }

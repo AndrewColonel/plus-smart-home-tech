@@ -2,6 +2,8 @@ package ru.yandex.practicum.commerce.order.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.Address;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.order.model.entity.Order;
 
@@ -22,6 +24,7 @@ public class OrderMapper {
                 .totalPrice(order.getTotalPrice())
                 .deliveryPrice(order.getDeliveryPrice())
                 .productPrice(order.getProductPrice())
+//                .deliveryAddress(toDto(order.getDeliveryAddress()))
                 .build();
     }
 
@@ -40,7 +43,30 @@ public class OrderMapper {
                 .totalPrice(orderDto.getTotalPrice())
                 .deliveryPrice(orderDto.getDeliveryPrice())
                 .productPrice(orderDto.getProductPrice())
+//                .deliveryAddress(toEntity(orderDto.getDeliveryAddress()))
                 .build();
     }
+
+
+    private static AddressDto toDto(Address address) {
+        return AddressDto.builder()
+                .country(address.getCountry())
+                .city(address.getCity())
+                .street(address.getStreet())
+                .house(address.getHouse())
+                .flat(address.getFlat())
+                .build();
+    }
+
+    public static Address toEntity(AddressDto addressDto) {
+        return Address.builder()
+                .country(addressDto.getCountry())
+                .city(addressDto.getCity())
+                .street(addressDto.getStreet())
+                .house(addressDto.getHouse())
+                .flat(addressDto.getFlat())
+                .build();
+    }
+
 
 }

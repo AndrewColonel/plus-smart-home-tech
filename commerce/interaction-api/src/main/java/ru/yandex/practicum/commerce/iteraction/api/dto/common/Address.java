@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.delivery.model.entity;
+package ru.yandex.practicum.commerce.iteraction.api.dto.common;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

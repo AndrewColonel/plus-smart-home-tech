@@ -2,6 +2,7 @@ package ru.yandex.practicum.commerce.delivery.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.Address;
 import ru.yandex.practicum.commerce.iteraction.api.dto.delivery.DeliveryState;
 
 import java.util.UUID;

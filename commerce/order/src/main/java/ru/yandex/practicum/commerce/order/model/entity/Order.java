@@ -2,6 +2,7 @@ package ru.yandex.practicum.commerce.order.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.Address;
 import ru.yandex.practicum.commerce.iteraction.api.dto.order.OrderState;
 
 import java.util.Map;
@@ -48,6 +49,9 @@ public class Order {
     private Double deliveryPrice;
     @Column(name = "product_price")
     private Double productPrice;
+
+    @Embedded
+    private Address deliveryAddress;
 
 
 }

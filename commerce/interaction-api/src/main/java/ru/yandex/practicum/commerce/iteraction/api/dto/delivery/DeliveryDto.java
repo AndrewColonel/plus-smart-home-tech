@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeliveryDto {
-    @NotBlank
+
     private UUID deliveryId;
     @NotNull
     private AddressDto fromAddress;

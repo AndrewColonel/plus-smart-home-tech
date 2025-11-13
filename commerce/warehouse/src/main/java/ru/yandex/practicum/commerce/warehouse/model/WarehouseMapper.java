@@ -2,6 +2,8 @@ package ru.yandex.practicum.commerce.warehouse.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.Address;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.DimensionDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.warehouse.model.entity.Dimension;
@@ -26,5 +28,26 @@ public class WarehouseMapper {
                 .depth(dimensionDto.getDepth())
                 .build();
     }
+
+    public static AddressDto toDto(Address address) {
+        return AddressDto.builder()
+                .country(address.getCountry())
+                .city(address.getCity())
+                .street(address.getStreet())
+                .house(address.getHouse())
+                .flat(address.getFlat())
+                .build();
+    }
+
+    public static Address toEntity(AddressDto addressDto) {
+        return Address.builder()
+                .country(addressDto.getCountry())
+                .city(addressDto.getCity())
+                .street(addressDto.getStreet())
+                .house(addressDto.getHouse())
+                .flat(addressDto.getFlat())
+                .build();
+    }
+
 
 }
