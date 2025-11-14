@@ -1,9 +1,6 @@
 package ru.yandex.practicum.commerce.iteraction.api.dto.payment;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -11,11 +8,12 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class PaymentDto {
 
     private UUID paymentId;
-    private Double totalPayment; // стоимость товаров
+    private Double totalPayment; // общая стоимость товаров
     private Double deliveryTotal; // стоимость доставки;
-    private Double feeTotal; // общая стоимость
+    private Double feeTotal; // общая стоимость (товар+ налог + доставка)
     private PaymentState paymentState;
 }

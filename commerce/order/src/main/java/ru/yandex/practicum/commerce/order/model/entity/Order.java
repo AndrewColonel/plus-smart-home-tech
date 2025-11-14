@@ -14,6 +14,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Order {
     @Id
     @GeneratedValue
@@ -51,7 +52,22 @@ public class Order {
     private Double productPrice;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "country", column = @Column(name = "from_country")),
+            @AttributeOverride(name = "city", column = @Column(name =  "from_city")),
+            @AttributeOverride(name = "street", column = @Column(name =  "from_street")),
+            @AttributeOverride(name = "house", column = @Column(name =  "from_house")),
+            @AttributeOverride(name = "flat", column = @Column(name =  "from_flat"))
+    })
+    private Address fromWarehouseAddress;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "country", column = @Column(name =  "to_country")),
+            @AttributeOverride(name = "city", column = @Column(name =  "to_city")),
+            @AttributeOverride(name = "street", column = @Column(name =  "to_street")),
+            @AttributeOverride(name = "house", column = @Column(name =  "to_house")),
+            @AttributeOverride(name = "flat", column = @Column(name =  "to_flat"))
+    })
     private Address deliveryAddress;
-
 
 }

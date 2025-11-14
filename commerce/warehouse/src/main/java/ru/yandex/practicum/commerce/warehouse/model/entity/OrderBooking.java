@@ -2,7 +2,6 @@ package ru.yandex.practicum.commerce.warehouse.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.Address;
 
 import java.util.HashMap;
@@ -25,9 +24,6 @@ public class OrderBooking {
 
     @Column(name = "delivery_id")
     private UUID deliveryId;
-
-    @Embedded
-    private Address warehouseAddress;
 
     @ElementCollection
     @CollectionTable(

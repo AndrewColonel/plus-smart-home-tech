@@ -1,9 +1,7 @@
 package ru.yandex.practicum.commerce.iteraction.api.dto.warehouse;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,6 +9,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class BookingProductsDto {
 
     @NotNull
@@ -19,5 +18,7 @@ public class BookingProductsDto {
     private Double deliveryvolume;
     @NotNull
     private Boolean fragile;
+
+    private AddressDto fromAddress;
 
 }

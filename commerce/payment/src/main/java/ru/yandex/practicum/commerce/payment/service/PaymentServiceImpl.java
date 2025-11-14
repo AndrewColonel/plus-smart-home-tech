@@ -31,46 +31,59 @@ public class PaymentServiceImpl implements PaymentService {
     // 400 Недостаточно информации в заказе для расчёта
     @Override
     public PaymentDto getOrderPayment(OrderDto orderDto) {
-        notEnoughInfoCheck(orderDto);
-
-        return toDto(repository.save(Payment.builder()
+        Payment payment = Payment.builder()
                 .orderId(orderDto.getOrderId())
-                .deliveryId(orderDto.getDeliveryId())
-                .totalPayment(getOrderProductCost(orderDto))
-                .deliveryTotal(orderDto.getDeliveryPrice())
-                .feeTotal(getOrderTotalCost(orderDto))
                 .paymentState(PaymentState.PENDING)
-                .build()));
+                .build();
+        return toDto(repository.save(payment));
     }
 
     // 200 Полная стоимость заказа
     // 400 Недостаточно информации в заказе для расчёта
     @Override
     public Double getOrderTotalCost(OrderDto orderDto) {
-        notEnoughInfoCheck(orderDto);
+        // в ордере есть инфа о стоимости доставки и входе в платежную систему
+        // в базе платежей есть расчет стоимости товаров
+        // существует запись платежа - paymentId
+        orderHavePaymentId(orderDto);
+        Payment payment = getPaymentById(orderDto.getPaymentId());
+        if (Objects.isNull(orderDto.getDeliveryPrice())
+                && Objects.isNull(payment.getTotalPayment())) {
+            throw new NotEnoughInfoInOrderToCalculateException(
+                    String.format("В заказе с id %S нет данных о стоиомсти доставки," +
+                                    " а также в платеже %s нет данных о полной стоимости товаров в заказе ", orderDto.getOrderId(),
+                            payment.getPaymentId()),
+                    "Недостаточно информации в заказе для расчёта",
+                    HttpStatus.BAD_REQUEST, new NoSuchElementException("данных по оплате доставки нет в базе"));
+
+        }
         // От суммы стоимости всех товаров нужно взять 10% — это будет НДС
-        double productCostAndTax = getOrderProductCost(orderDto) * 1.1;
-        // плюс стоимость доставки
-        return productCostAndTax + orderDto.getDeliveryPrice();
+        // стоимость товары + налог
+        double totalPayment = payment.getTotalPayment() * 1.1;
+        // Полная стоиомтсь = товары + налог + доставка
+        double feeTotal = totalPayment + orderDto.getDeliveryPrice();
+        payment.setDeliveryTotal(orderDto.getDeliveryPrice());
+        payment.setFeeTotal(feeTotal);
+        repository.save(payment);
+        return feeTotal;
     }
 
-    // 404 Заказ не найден
-    @Override
-    public void getOrderRefund(UUID paymentId) {
-        // найти и проверить, что идентификатор оплаты существует
-        Payment payment = getPaymentById(paymentId);
-        // изменить статус на SUCCESS;
-        payment.setPaymentState(PaymentState.SUCCESS);
-        repository.save(payment);
-        // вызвать изменение в сервисе заказов — статус оплачен.
-        orderClient.orderPayment(payment.getOrderId());
-    }
 
     // 200 Расчёт стоимости товаров в заказе
     // 400 Недостаточно информации в заказе для расчёта
     @Override
     public Double getOrderProductCost(OrderDto orderDto) {
-        notEnoughInfoCheck(orderDto);
+        // в ордере есть инфа о товарах и входе в платежную систему
+        // существует запись платежа - paymentId
+        orderHavePaymentId(orderDto);
+        Payment payment = getPaymentById(orderDto.getPaymentId());
+        if (orderDto.getProducts().isEmpty()) {
+            throw new NotEnoughInfoInOrderToCalculateException(
+                    String.format("В заказе с id %S нет информации по списку продуктов", orderDto.getOrderId()),
+                    "Недостаточно информации в заказе для расчёта",
+                    HttpStatus.BAD_REQUEST, new NoSuchElementException("Такого Заказа нет в базе"));
+        }
+
         Map<UUID, Integer> products = orderDto.getProducts();
         List<ProductDto> productDtoList = storeClient.getList(
                 products.keySet().stream().toList());
@@ -82,7 +95,21 @@ public class PaymentServiceImpl implements PaymentService {
                         + productDto.getPrice() * products.get(productDto.getProductId());
             }
         }
+
+        payment.setTotalPayment(productCost);
+        repository.save(payment);
         return productCost;
+    }
+
+    // 404 Заказ не найден
+    @Override
+    public void getOrderRefund(UUID paymentId) {
+        // найти и проверить, что идентификатор оплаты существует
+        Payment payment = getPaymentById(paymentId);
+        // изменить статус на SUCCESS;
+        payment.setPaymentState(PaymentState.SUCCESS);
+     orderClient.orderCompleted(payment.getOrderId());
+        repository.save(payment);
     }
 
     // 404 Заказ не найден
@@ -92,24 +119,17 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = getPaymentById(paymentId);
         // изменить статус на FAILED;
         payment.setPaymentState(PaymentState.FAILED);
-        repository.save(payment);
-        // вызвать изменение в сервисе заказов — статус не оплачен.
         orderClient.orderPaymentFailed(payment.getOrderId());
+        repository.save(payment);
     }
 
     // вспомогательные методы
-    private void notEnoughInfoCheck(OrderDto orderDto) {
-        if (Objects.isNull(orderDto.getDeliveryPrice())) {
+    private void orderHavePaymentId(OrderDto orderDto) {
+        if (Objects.isNull(orderDto.getPaymentId())) {
             throw new NotEnoughInfoInOrderToCalculateException(
-                    String.format("В заказе с id %S нет данных о стоимости доставки", orderDto.getOrderId()),
+                    String.format("В заказе с id %S нет данных о переходе в платежный шлюз", orderDto.getOrderId()),
                     "Недостаточно информации в заказе для расчёта",
                     HttpStatus.BAD_REQUEST, new NoSuchElementException("данных по оплате доставки нет в базе"));
-        }
-        if (orderDto.getProducts().isEmpty()) {
-            throw new NotEnoughInfoInOrderToCalculateException(
-                    String.format("В заказе с id %S нет информации по списку продуктов", orderDto.getOrderId()),
-                    "Недостаточно информации в заказе для расчёта",
-                    HttpStatus.BAD_REQUEST, new NoSuchElementException("Такого Заказа нет в базе"));
         }
     }
 

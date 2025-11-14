@@ -48,6 +48,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         // системы доставки, подтверждающего успешную доставку заказа со склада.
         Delivery delivery = getDeliveryById(deliveryId);
         delivery.setDeliveryState(DeliveryState.DELIVERED);
+        orderClient.orderCompleted(delivery.getOrderId());
         repository.save(delivery);
     }
 
@@ -75,6 +76,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         // статус заказа в системе на «Неудачная доставка»
         Delivery delivery = getDeliveryById(deliveryId);
         delivery.setDeliveryState(DeliveryState.FAILED);
+        orderClient.orderDeliveryFailed(delivery.getOrderId());
         repository.save(delivery);
     }
 

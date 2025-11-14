@@ -48,7 +48,7 @@ public class OrderMapper {
     }
 
 
-    private static AddressDto toDto(Address address) {
+    public static AddressDto toDto(Address address) {
         return AddressDto.builder()
                 .country(address.getCountry())
                 .city(address.getCity())

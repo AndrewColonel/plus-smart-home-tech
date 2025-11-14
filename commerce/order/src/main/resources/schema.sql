@@ -13,12 +13,18 @@ CREATE TABLE IF NOT EXISTS orders(
     total_price DECIMAL(6, 2) CHECK (total_price > 0),
     delivery_price DECIMAL(6, 2) CHECK (delivery_price > 0),
     product_price DECIMAL(6, 2) CHECK (product_price > 0),
+    -- delivery_from_warehouse_address --
+    from_country VARCHAR,
+    from_city VARCHAR,
+    from_street VARCHAR,
+    from_house VARCHAR,
+    from_flat VARCHAR,
     -- delivery_to_address --
-    country VARCHAR,
-    city VARCHAR,
-    street VARCHAR,
-    house VARCHAR,
-    flat VARCHAR,
+    to_country VARCHAR,
+    to_city VARCHAR,
+    to_street VARCHAR,
+    to_house VARCHAR,
+    to_flat VARCHAR,
     UNIQUE(shopping_cart_id, payment_id, delivery_id)
 );
 

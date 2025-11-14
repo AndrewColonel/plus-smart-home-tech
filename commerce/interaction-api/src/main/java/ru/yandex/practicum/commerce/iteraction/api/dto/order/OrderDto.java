@@ -26,9 +26,9 @@ public class OrderDto {
     private Double deliveryWeight;
     private Double deliveryVolume;
     private Boolean fragile;
-    private Double totalPrice;
-    private Double deliveryPrice;
-    private Double productPrice;
+    private Double totalPrice; // Общая стоимость товары+налог+доставка
+    private Double deliveryPrice; // стоимость доставки;
+    private Double productPrice; // Стоимость товаров в заказе
 //    private AddressDto deliveryAddress;
 
 

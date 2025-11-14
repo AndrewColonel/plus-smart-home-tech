@@ -11,10 +11,8 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.warehouse.*;
 import ru.yandex.practicum.commerce.iteraction.api.exception.*;
 import ru.yandex.practicum.commerce.iteraction.api.dto.common.AddressDto;
 import ru.yandex.practicum.commerce.warehouse.model.entity.OrderBooking;
-import ru.yandex.practicum.commerce.warehouse.model.entity.OrderBookingState;
 import ru.yandex.practicum.commerce.warehouse.repository.OrderBookingRepository;
 import ru.yandex.practicum.commerce.warehouse.repository.WarehouseRepository;
-import ru.yandex.practicum.commerce.warehouse.model.WarehouseMapper;
 import ru.yandex.practicum.commerce.warehouse.model.entity.WarehouseItem;
 
 import java.security.SecureRandom;
@@ -203,7 +201,6 @@ public class WarehouseServiceImpl implements WarehouseService {
                         orderBookingRepository.save(OrderBooking.builder()
                                 .orderId(orderId)
                                 .products(checkedWarehouseItems)
-                                .warehouseAddress(toEntity(getWarehouseAddress()))
                                 .build());
                     }
                 }
@@ -252,6 +249,7 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .deliveryvolume(deliveryvolume)
                 .deliveryweight(deliveryweight)
                 .fragile(fragile)
+                .fromAddress(getWarehouseAddress())
                 .build();
     }
 
