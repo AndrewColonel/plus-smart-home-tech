@@ -12,4 +12,6 @@ public interface WarehouseRepository extends JpaRepository<WarehouseItem, Long> 
     Optional<WarehouseItem> findByProductId(UUID productId);
 
     List<WarehouseItem> findByProductIdIn(List<UUID> productIds);
+
+
 }

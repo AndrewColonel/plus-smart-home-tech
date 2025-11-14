@@ -6,6 +6,7 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductCategory;
 import ru.yandex.practicum.commerce.iteraction.api.dto.store.ProductDto;
 import ru.yandex.practicum.commerce.iteraction.api.dto.store.SetProductQuantityRequest;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface StoreService {
@@ -28,5 +29,7 @@ public interface StoreService {
 
     // Получить сведения по товару из БД.
     ProductDto getProductById(UUID productId);
+
+    List<ProductDto> getProductList (List<UUID> productIds);
 
 }

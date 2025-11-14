@@ -14,6 +14,7 @@ import ru.yandex.practicum.commerce.iteraction.api.dto.store.SetProductQuantityR
 import ru.yandex.practicum.commerce.shopping.store.model.entity.Product;
 import ru.yandex.practicum.commerce.shopping.store.repository.ProductReposiitory;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -41,7 +42,7 @@ public class StoreServiceImpl implements StoreService {
     // Обновление товара в ассортименте, например уточнение описания, характеристик и т.д.
     @Override
     public ProductDto updateProduct(ProductDto productDto) {
-        getProduct(UUID.fromString(productDto.getProductId()));
+        getProduct(productDto.getProductId());
         return toDto(reposiitory.save(toEntity(productDto)));
     }
 
@@ -57,7 +58,7 @@ public class StoreServiceImpl implements StoreService {
     // Установка статуса по товару. API вызывается со стороны склада.
     @Override
     public boolean setStatusProduct(SetProductQuantityRequest request) {
-        Product product = getProduct(UUID.fromString(request.getProductId()));
+        Product product = getProduct(request.getProductId());
         product.setQuantityState(request.getQuantityState());
         return reposiitory.save(product).getQuantityState()
                 .equals(request.getQuantityState());
@@ -68,6 +69,15 @@ public class StoreServiceImpl implements StoreService {
     public ProductDto getProductById(UUID productId) {
         return toDto(getProduct(productId));
     }
+
+    // Получить сведения по списку товаров из БД.
+    @Override
+    public List<ProductDto> getProductList (List<UUID> productIds) {
+        return reposiitory.findByProductIdIn(productIds).stream()
+                .map(ProductMapper::toDto)
+                .toList();
+    }
+
 
     // вспомогательный метод
     public Product getProduct(UUID productId) {

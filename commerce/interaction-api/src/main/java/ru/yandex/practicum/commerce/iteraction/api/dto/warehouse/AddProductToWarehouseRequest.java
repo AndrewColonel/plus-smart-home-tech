@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -14,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class AddProductToWarehouseRequest {
     @NotBlank
-    private String productId;
+    private UUID productId;
     @NotNull
     private Integer quantity;
 }

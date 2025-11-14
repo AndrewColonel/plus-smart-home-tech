@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS dimension;
-DROP TABLE IF EXISTS warehouse_items CASCADE;
+DROP TABLE IF EXISTS order_booking;
+DROP TABLE IF EXISTS booking;
+DROP TABLE IF EXISTS warehouse_items;
 
 CREATE TABLE IF NOT EXISTS warehouse_items(
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -11,3 +12,17 @@ CREATE TABLE IF NOT EXISTS warehouse_items(
     weight DECIMAL(6, 2) NOT NULL,
     quantity INTEGER NOT NULL CHECK (quantity >= 0)
  );
+
+CREATE TABLE IF NOT EXISTS booking(
+    booking_id UUID PRIMARY KEY,
+    order_id UUID,
+    delivery_id UUID,
+    UNIQUE(order_id, delivery_id)
+);
+
+CREATE TABLE IF NOT EXISTS order_booking(
+    booking_id UUID NOT NULL REFERENCES booking(booking_id) ON DELETE CASCADE,
+    product_id UUID NOT NULL,
+    quantity BIGINT NOT NULL CHECK (quantity >= 0),
+    PRIMARY KEY (booking_id, product_id)
+);

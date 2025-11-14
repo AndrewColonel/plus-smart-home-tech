@@ -1,6 +1,6 @@
 logging:
   level:
-    ru.yandex.practicum.infra.configserver: INFO
+    ru.yandex.practicum.infra.config-server: INFO
     org:
       springframework: INFO
 
@@ -16,11 +16,13 @@ spring:
           searchLocations:
             - classpath:config/telemetry/{application}
             - classpath:config/commerce/{application}
+            - classpath:config/infra/{application}
     discovery:
       enabled: true
 
 server:
   port: 0
+#  port: 8888
 
 management:
   endpoints:

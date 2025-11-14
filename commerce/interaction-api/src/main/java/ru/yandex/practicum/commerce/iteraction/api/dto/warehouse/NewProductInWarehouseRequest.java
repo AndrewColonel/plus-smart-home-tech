@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotNull;
 public class NewProductInWarehouseRequest {
 
     @NotBlank
-    private String productId;
+    private UUID productId;
     @NotBlank
     private Boolean fragile;
     @NotNull

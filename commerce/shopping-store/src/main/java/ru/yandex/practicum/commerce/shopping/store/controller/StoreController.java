@@ -15,6 +15,8 @@ import ru.yandex.practicum.commerce.shopping.store.service.StoreService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -66,6 +68,12 @@ public class StoreController {
 //            @RequestBody UUID Id,
             @NotBlank @PathVariable("productId") UUID productId) {
         return service.getProductById(productId);
+    }
+
+    @Loggable
+    @GetMapping("/products")
+    public List<ProductDto> getList(@NotNull @RequestBody List<UUID> productIds) {
+        return service.getProductList(productIds);
     }
 
 }
