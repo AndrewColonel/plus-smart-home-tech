@@ -32,5 +32,6 @@ public class OrderBooking {
     )
     @MapKeyColumn(name = "product_id")  // ключ (UUID)
     @Column(name = "quantity")          // значения (Integer)
+    @Builder.Default
     private Map<UUID, Integer> products = new HashMap<>();
 }

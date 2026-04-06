@@ -30,6 +30,7 @@ public class Scenario {
             name = "scenario_conditions",
             joinColumns = @JoinColumn( name = "scenario_id"),
             inverseJoinColumns = @JoinColumn(name = "condition_id"))
+    @Builder.Default
     private Map<String, Condition> conditions = new HashMap<>();
 
 
@@ -41,6 +42,7 @@ public class Scenario {
             name = "scenario_actions",
             joinColumns = @JoinColumn(name = "scenario_id"),
             inverseJoinColumns = @JoinColumn(name = "action_id"))
+    @Builder.Default
     private Map<String, Action> actions = new HashMap<>();
 
     @Transient
